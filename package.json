@@ -1,0 +1,9 @@
+{
+  "dependencies": {
+    "figlet": "^1.2.1",
+    "react": "^16.6.3"
+  },
+  "devDependencies": {
+    "babel-preset-es2015": "^6.24.1"
+  }
+}
