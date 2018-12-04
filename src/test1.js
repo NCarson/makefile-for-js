@@ -1,11 +1,6 @@
-import figlet from 'figlet'
-import react from 'react'
+import emoji from 'node-emoji'
 
-figlet('Makefile-for-JS Works!', function(err, data) {
-    if (err) {
-        console.log('Something went wrong...');
-        console.dir(err);
-        return;
-    }
-    console.log(data)
-});
+function klassy(text) {
+    return emoji.emojify(`:tada: ${text} :tophat: :cat:`, (name)=> console.log("cant find emoji",name))
+}
+export default klassy

@@ -27,9 +27,13 @@ TARGETS := $(TARGET_DIR)/$(BUNDLE_BASENAME).min.js \
 		   $(TARGET_DIR)/$(CSS_BASENAME).min.css \
 		   $(TARGET_DIR)/$(CSS_BASENAME).min.css.gz \
 
-EXCL_SRC_DIRS := ./codesplit
+EXCL_SRC_DIRS := ./codesplit ./umd
 
 include $(BASE_DIR)/js.makefile
+
+# XXX define your own rules AFTER the include
+# otherwise you will over write the default
+# rule, aka `make` without arguments.
 
 clean:
 	rm -f $(TARGETS)

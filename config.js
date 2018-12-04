@@ -1,0 +1,1 @@
+/home/lukehand/src/chess/makefile-for-js/config.dev.js

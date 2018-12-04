@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang='en'>
+  <head>
+    <title>Makefile Template for JavaScript</title>
+    <link rel="stylesheet" href="/dist/main.min.css">
+  </head>
+  <body>
+    <div id="app">
+    </div>
+    <div>
+        <h3>Look! Its dragable circles</h3>
+        <svg height=400 width=400 />
+    </div>
+      {{{cdns}}}
+
+      <script type="text/javascript" src="/dist/vendor.min.js?{{ts_vendor}}" charset="utf-8"></script>
+      <script type="text/javascript" src="/dist/bundle.min.js?{{ts_bundle}}" charset="utf-8"></script>
+      <script type="text/javascript" src="/dist/codesplit.min.js?{{ts_codesplit}}" charset="utf-8"></script>
+
+      <script type="text/javascript" src="https://unpkg.com/makefile-for-js-example@0.0.1/dist/makefileforjs.js"></script>
+
+      <noscript>
+         javascript must be enabled to view this page
+      </noscript>
+  </body>
+</html>
+
