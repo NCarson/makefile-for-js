@@ -3,6 +3,49 @@
 #	 first default 'all' rule.
 
 ######################################
+#  Commands
+######################################
+
+# put in your options you need here
+#
+BABEL_OPTIONS ?= --presets=es2015
+# react and post ES6
+# BABEL_OPTIONS := --presets=es2015,react --plugins transform-react-jsx,transform-object-rest-spread,transform-class-properties 
+
+# LINTER_OPTIONS := --parser babel-eslint --plugin react --plugin import
+#
+# for using cdn libs
+BROWSERIFY_OPTIONS := --transform browserify-global-shim 
+#
+# umd bundles
+# BROWSERIFY_OPTIONS := '-s Bundle'
+
+# gzip is probably installed, sudo apt-get install gzip
+GZIP ?= gzip $(GZIP_OPTIONS)
+
+# XXX These should be installed globally (npm -g install `da-package`) from npm.
+
+# browserify is the only mainstream bundler that behaves well
+# on the command line. Very necessary
+BROWSERIFY ?= browserify $(BROWSERIFY_OPTIONS)
+
+# You dont need uglifyjs is dont specify min.js or min.js.gz targets.
+UGLIFYJS ?= uglifyjs $(UGLIFYJS_OPTIONS)
+
+# you dont have to use babel but browserify will expect es5
+BABEL ?= babel $(BABEL_OPTIONS) # npm i -g babel-cli #not babel
+# optional linter
+#LINTER := eslint $(ESLINT_OPTIONS)
+
+# optional for templating
+JSON ?= json
+TEMPLATER ?= mustache
+TEMPLATE_SFX ?= .mustache
+
+#optional for phobia rule
+BUNDLE-PHOBIA ?= bundle-phobia # npm i -g babel-cli
+ 
+######################################
 #  Files / Direcs
 ######################################
 
@@ -25,6 +68,7 @@ CONFIG_PROD ?= $(BASE_DIR)/config.prod.js
 CONFIG_DEV ?= $(BASE_DIR)/config.dev.js
 ifdef PRODUCTION
 CONFIG ?= $(CONFIG_PROD)
+export PRODUCTION
 else
 CONFIG ?= $(CONFIG_DEV)
 endif
@@ -38,73 +82,35 @@ BUILD_DIR ?=./build
 SRC_DIR ?=./
 STATIC_DIR ?= $(BASE_DIR)/public
 DEP_FILE ?= $(BUILD_DIR)/.deps #node_modules deps
-SRC_CONFIG ?= $(BASE_DIR)/config.js
+SRC_CONFIG ?= $(SRC_DIR)/config.js
 REPOS_NAME ?= node_modules
 
-BUILD_CONFIG := $(patsubst $(BASE_DIR)%,$(BUILD_DIR)%,$(SRC_CONFIG))
-
-#expose config*.js to the search path
-vpath %.js $(BASE_DIR)
-vpath $(BUILD_DIR)
-
-######################################
-#  Find files
-######################################
-es5_to_js = $(basename $(basename $1)).js
-js_to_es5 = $(basename $1).es5.js
-
-ifeq (strip($(EXCL_SRC_DIRS)),)
-	_EXC = 
-else
-	_EXC =  -not \( $(patsubst %,-path % -prune -o,$(EXCL_SRC_DIRS)) -path $(BUILD_DIR) -prune \)
-endif
-SRC_FILES = $(shell find $(SRC_DIR) $(_EXC) -name '*.js')
-ES5_FILES = $(patsubst $(SRC_DIR)%.js,$(BUILD_DIR)/%.js,$(SRC_FILES)) $(BUILD_DIR)/config.js
-CSS_FILES = $(shell find $(SRC_DIR) $(_EXC) -name '*.css')
-BUILD_TARGETS = $(patsubst $(TARGET_DIR)%,$(BUILD_DIR)%,$(TARGETS))
-
-######################################
-#  Commands
-######################################
-
-# put in your options you need here
-#
-BABEL_OPTIONS ?= --presets=es2015# --plugins transform-react-jsx --plugins transform-class-properties
-# LINTER_OPTIONS := --parser babel-eslint --plugin react --plugin import
-#
-# for using cdn libs
-BROWSERIFY_OPTIONS := --transform browserify-global-shim 
-#
-# umd bundles
-# BROWSERIFY_OPTIONS := '-s Bundle'
-
-# gzip is probably installed, sudo apt-get install gzip
-GZIP ?= gzip $(GZIP_OPTIONS)
-
-# XXX These should be installed globally (npm -g install `da-package`) from npm.
-
-# browserify is the only mainstream bundler that behaves well
-# on the command line. Very necessary
-BROWSERIFY ?= browserify $(BROWSERIFY_OPTIONS)
-# You dont need uglifyjs is dont specify min.js or min.js.gz targets.
-UGLIFYJS ?= uglifyjs $(UGLIFYJS_OPTIONS)
-
-# you dont have to use babel but browserify will expect es5
-BABEL ?= babel $(BABEL_OPTIONS) # npm i -g babel-cli #not babel
-# optional linter
-#LINTER := eslint $(ESLINT_OPTIONS)
-
-# optional for templating
-JSON ?= json
-TEMPLATER ?= mustache
-TEMPLATE_SFX ?= .mustache
-
-#optional for phobia rule
-BUNDLE-PHOBIA ?= bundle-phobia # npm i -g babel-cli
- 
 ######################################
 # Shell Commands / Macros
 ######################################
+
+NORMAL=$(shell tput sgr0)
+BLACK=$(shell tput setaf 0)
+RED=$(shell tput setaf 1)
+GREEN=$(shell tput setaf 2)
+YELLOW=$(shell tput setaf 3)
+BLUE=$(shell tput setaf 4)
+MAGENTA=$(shell tput setaf 5)
+CYAN=$(shell tput setaf 6)
+WHITE=$(shell tput setaf 7)
+GRAY=$(shell tput setaf 8)
+
+BOLD=$(shell tput bold)
+BLINK=$(shell tput blink)
+REVERSE=$(shell tput smso)
+UNDERLINE=$(shell tput smul)
+
+
+_info_msg = $(shell printf "%-25s $(3)$(2)$(NORMAL)\n" "$(1)")
+
+define info_msg 
+	@printf "%-25s $(3)$(2)$(NORMAL)\n" "$(1)"
+endef
 
 # strips library paths to import names
 # 		          remove root       ignore local stuff       remove node_modules    first direc
@@ -119,9 +125,8 @@ EXC_DEPS = $(shell cat $(DEP_FILE) | sed 's/ / -x /g' | sed 's/^/ -x /')
 #browiserify flags to force inclusion
 INC_DEPS = echo $(shell $(ONLY_INCLUDE)) | sed 's/ / -r /g' | sed 's/^/ -r /'
 
-
 ifneq ($(JSON),)
-set_template_val = $(JSON) -I -f $(IDX_JSON) -e 'this.$(1)="$(2)"'
+set_template_val = $(JSON) -I -f $(IDX_JSON) -e 'this.$(1)="$(2)"' 2>/dev/null
 endif
 
 set_timestamp = $(call set_template_val,ts_$(1),$(shell date +%s))
@@ -155,4 +160,10 @@ minify_css ?= sed -e "s|/\*\(\\\\\)\?\*/|/~\1~/|g" \
 
 #gzipped
 %.gz: %
-	$(GZIP) $< --stdout > $@
+	@$(call info_msg,gizp - compress,$@,$(BLUE))
+	@$(GZIP) $< --stdout > $@
+
+#debug variable: `make print-MYVAR`
+print-%:
+	@echo '$*=$($*)'
+

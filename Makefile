@@ -1,8 +1,8 @@
 # this has to set before the include
 BASE_DIR := ./
-# use conf.Makefile instead of js.Makefile since 
+# XXX We use conf.Makefile instead of js.Makefile since 
 # we are going to define are own targets.
-include conf.$(MAKE)file
+include conf.makefile
 
 # gzip static assets
 COMPRESS_FILES := $(shell find $(STATIC_DIR)/ \
@@ -11,10 +11,10 @@ COMPRESS_FILES := $(shell find $(STATIC_DIR)/ \
 	-o -name '*.css')
 COMPRESS_FILES_GZ := $(patsubst %,%.gz,$(COMPRESS_FILES))
 
-# in case these actually exist as files `$(MAKE)` would be confused without .PHONY
+# in case these actually exist as files `make` would be confused without .PHONY
 .PHONY: all clean template code cdn
 
-# The first rule in a $(MAKE)file is the default if you just type `make`.
+# The first rule in a makefile is the default if you just type `make`.
 # Traditionally is called all
 all: template static
 
@@ -31,7 +31,7 @@ clean: clean-gz
 clean-gz:
 	rm -f $(COMPRESS_FILES_GZ) 
 
-# This $(MAKE)s sure all the code is already built before it makes the templates.
+# This makes sure all the code is already built before it makes the templates.
 template: code $(IDX_JSON)
 	cd template && $(MAKE)
 
@@ -41,6 +41,17 @@ code:
 	cd src/codesplit && $(MAKE)
 	cd src && $(MAKE)
 
+# copy files to start new project
+repo:
+	mkdir -p repo/public/dist
+	mkdir -p repo/src
+	cp src/Makefile repo/src.Makefile
+	cp src/codesplit/Makefile repo/codesplit.Makefile
+	cp src/umd/Makefile repo/umd.Makefile
+	cp Makefile conf.makefile js.makefile config.dev.js config.prod.js repo/
+	mkdir -p repo/template
+	cp template/index.mustache repo/template
+	
 # Updates cdn in index.json info when .cdn_libs changes.
 $(IDX_JSON): $(EXCL_FILE)
 # Sometimes npm's dont have devolpment builds so just use prod
@@ -52,8 +63,7 @@ else
 endif
 
 # gzip static stuff
+# this  does not have to do anything
+# since .gz files have a rule in conf.makefile
 static: $(COMPRESS_FILES_GZ)
-
-dep-file: $(BUILD_DIR) $(ES5_FILES)
-	@$(BROWSERIFY) --list $(ES5_FILES) | $(STRIP_DEPS) > $(DEP_FILE) 
 
