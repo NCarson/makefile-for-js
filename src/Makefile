@@ -29,7 +29,7 @@ TARGETS := $(TARGET_DIR)/$(BUNDLE_BASENAME).min.js \
 
 EXCL_SRC_DIRS := ./codesplit ./umd
 
-include $(BASE_DIR)/js.makefile
+include $(BASE_DIR)/.js.makefile
 
 # XXX define your own rules AFTER the include
 # otherwise you will over write the default

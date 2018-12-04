@@ -18,6 +18,7 @@
 * Build configs are isolated by directory
 * Supports development and production modes
 * Language independent
+* Easy to read colorized colorized output
 
 So ... super-fast builds ... not so much config.
 
@@ -54,9 +55,9 @@ two being the most important and basic.
     These will be available in the build dir as config.js depending on the 
     environment e.g. `make` or `PRODUCTION=1 make`.
 
-* [conf.makefile](/NCarson/makefile-for-js/blob/master/src/conf.makefile)
+* [.conf.makefile](/NCarson/makefile-for-js/blob/master/src/conf.makefile)
  - This file is used to config js.makefile.
-* [js.makefile](/NCarson/makefile-for-js/blob/master/src/conf.makefile)
+* [.js.makefile](/NCarson/makefile-for-js/blob/master/src/conf.makefile)
  - This file has the rules for compiling.
     
 ### Install

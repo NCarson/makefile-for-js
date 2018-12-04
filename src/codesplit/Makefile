@@ -22,7 +22,7 @@ TARGETS := $(TARGET_DIR)/$(BUNDLE_BASENAME).min.js \
 ######################################
 LINTER :=
 BABEL :=
-include $(BASE_DIR)/js.makefile
+include $(BASE_DIR)/.js.makefile
 
 clean:
 	rm -f $(TARGETS)

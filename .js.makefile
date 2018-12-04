@@ -12,7 +12,7 @@ ifeq ($(TARGETS),)
 $(error TARGETS is undefined)
 endif
 
-include $(BASE_DIR)/conf.makefile
+include $(BASE_DIR)/.conf.makefile
 
 ######################################
 #  Find files

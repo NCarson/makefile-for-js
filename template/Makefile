@@ -6,7 +6,7 @@ TARGET_DIR = $(BASE_DIR)/public/
 TARGETS = $(TARGET_DIR)/index.html \
 		$(TARGET_DIR)/index.html.gz
 
-include $(BASE_DIR)/js.makefile
+include $(BASE_DIR)/.js.makefile
 
 .PHONY: clean
 

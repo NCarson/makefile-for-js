@@ -2,7 +2,7 @@
 BASE_DIR := ./
 # XXX We use conf.Makefile instead of js.Makefile since 
 # we are going to define are own targets.
-include conf.makefile
+include .conf.makefile
 
 # gzip static assets
 COMPRESS_FILES := $(shell find $(STATIC_DIR)/ \
@@ -48,7 +48,7 @@ repo:
 	cp src/Makefile repo/src.Makefile
 	cp src/codesplit/Makefile repo/codesplit.Makefile
 	cp src/umd/Makefile repo/umd.Makefile
-	cp Makefile conf.makefile js.makefile config.dev.js config.prod.js repo/
+	cp Makefile .conf.makefile .js.makefile config.dev.js config.prod.js repo/
 	mkdir -p repo/template
 	cp template/index.mustache repo/template
 	

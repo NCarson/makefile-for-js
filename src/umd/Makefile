@@ -12,7 +12,7 @@ TARGETS := $(TARGET_DIR)/$(UMD_BASENAME).min.js \
 	       $(TARGET_DIR)/$(UMD_BASENAME).js \
 	       $(TARGET_DIR)/$(UMD_BASENAME).js.gz \
 
-include $(BASE_DIR)/js.makefile
+include $(BASE_DIR)/.js.makefile
 
 clean:
 	rm -f $(TARGETS)
