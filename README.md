@@ -6,7 +6,17 @@
 <img 
     alt='screenshot' 
     src='https://raw.githubusercontent.com/NCarson/makefile-for-js/master/.screen.png'
-    width='300' />
+    width='500' />
+
+[Features](#features)
+[Important Files](#important-files)
+[Quickstart](#quickstart)
+[Minimal Example](#minimal-example)
+[Code Splitting](#code-splitting)
+[config.js](#config.js)
+[Building UMD models](#building-umd-type-models)
+[CSS](#css)
+[Templating](#templating)
 
 ### Features
 
@@ -143,7 +153,7 @@ clean:
 	rm -fr $(BUILD_DIR)
 ```
 
-### config.dev.js & config.prod.js
+### config.js
 
 Normally make is in dev mode and links against config.dev.js
 which will show up as `config.js` in your source directory. If
