@@ -13,8 +13,8 @@
 [Quickstart](#quickstart)
 [Minimal Example](#minimal-example)
 [Code Splitting](#code-splitting)
-[config.js](#config.js)
-[Building UMD models](#building-umd-type-models)
+[config.js](#configjs)
+[Building UMD Bundles](#building-umd-type-bundles)
 [CSS](#css)
 [Templating](#templating)
 
@@ -49,26 +49,18 @@ You should glance through these to understand the process.
 The `Makefile`s are the most important for beginners. The first
 two being the most important and basic.
 
-* [Makefile](https://github.com/NCarson/makefile-for-js/blob/master/Makefile) - 
-example stubbed to see how to use the main project Makefile.
-https://github.com/NCarson/makefile-for-js/blob/master/Makefile
-* [src/Makefile](https://github.com/NCarson/makefile-for-js/blob/master/src/Makefile) - 
-example of regular project
-* [src/codesplit/Makefile](https://github.com/NCarson/makefile-for-js/blob/master/src/codesplit/Makefile) - 
-example of code splitting
-* [src/umd/Makefile](https://github.com/NCarson/makefile-for-js/blob/master/src/umd/Makefile) - 
-example of how to get a library build ready for npm
-* [src/template/Makefile](https://github.com/NCarson/makefile-for-js/blob/master/src/template/Makefile) - 
-example of an index.html using Mustache
+* [Makefile](https://github.com/NCarson/makefile-for-js/blob/master/Makefile) - example stubbed to see how to use the main project Makefile.
+* [src/Makefile](https://github.com/NCarson/makefile-for-js/blob/master/src/Makefile) - example of regular project
+* [src/codesplit/Makefile](https://github.com/NCarson/makefile-for-js/blob/master/src/codesplit/Makefile) - example of code splitting
+* [src/umd/Makefile](https://github.com/NCarson/makefile-for-js/blob/master/src/umd/Makefile) - example of how to get a library build ready for npm
+* [src/template/Makefile](https://github.com/NCarson/makefile-for-js/blob/master/src/template/Makefile) - example of an index.html using Mustache
 *  [config.dev.js](https://github.com/NCarson/makefile-for-js/blob/master/config.dev.js)
- / [config.prod.js](https://github.com/NCarson/makefile-for-js/blob/master/config.prod.js)
-
-    These will be available in the build dir as config.js depending on the 
-    environment e.g. `make` or `PRODUCTION=1 make`.
-* [.conf.makefile](https://github.com/NCarson/makefile-for-js/blob/master/.conf.makefile) - 
-This file is used to config js.makefile.
-* [.js.makefile](https://github.com/NCarson/makefile-for-js/blob/master/.js.makefile) - 
-This file has the rules for compiling.
+ / [config.prod.js](https://github.com/NCarson/makefile-for-js/blob/master/config.prod.js) 
+ 
+ These will be available in the build dir as config.js depending on the 
+ environment e.g. `make` or `PRODUCTION=1 make`.
+* [.conf.makefile](https://github.com/NCarson/makefile-for-js/blob/master/.conf.makefile) - This file is used to config js.makefile.
+* [.js.makefile](https://github.com/NCarson/makefile-for-js/blob/master/.js.makefile) - This file has the rules for compiling.
     
 ### Install
 
@@ -174,7 +166,7 @@ Then call make on it from the root Project Makefile. If the codesplit
 is underneath another src directory add `EXCL_SRC_DIRS := ./your_code_split_direc`
 to the parent code Makefile.
 
-### Building UMD type bundles
+### Building UMD Type Bundles
 
 See src/umd/Makefile. Crazy easy.  Instead of `BUNDLE_BASENAME` set `UMD_BASENAME`
 then: `TARGETS := $(TARGET_DIR)/$(UMD_BASENAME).min.js`. If you use it from a
