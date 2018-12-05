@@ -20,12 +20,13 @@ TARGET_DIR := $(BASE_DIR)/public/dist
 # XXX these are main targets to build
 # aka $(BUNDLE_BASENAME).js would build unminifed and un-gzipped
 # remove them if you dont want to build them
-TARGETS := $(TARGET_DIR)/$(BUNDLE_BASENAME).min.js \
-		   $(TARGET_DIR)/$(BUNDLE_BASENAME).min.js.gz \
-		   $(TARGET_DIR)/$(VENDOR_BASENAME).min.js \
-		   $(TARGET_DIR)/$(VENDOR_BASENAME).min.js.gz \
-		   $(TARGET_DIR)/$(CSS_BASENAME).min.css \
-		   $(TARGET_DIR)/$(CSS_BASENAME).min.css.gz \
+TARGETS :=  \
+	$(TARGET_DIR)/$(BUNDLE_BASENAME).min.js \
+  	$(TARGET_DIR)/$(BUNDLE_BASENAME).min.js.gz \
+  	$(TARGET_DIR)/$(VENDOR_BASENAME).min.js.gz \
+	$(TARGET_DIR)/$(VENDOR_BASENAME).min.js \
+	$(TARGET_DIR)/$(CSS_BASENAME).min.css \
+	$(TARGET_DIR)/$(CSS_BASENAME).min.css.gz \
 
 EXCL_SRC_DIRS := ./codesplit ./umd
 
