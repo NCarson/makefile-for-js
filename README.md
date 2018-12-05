@@ -150,10 +150,14 @@ clean:
 Normally make is in dev mode and links against config.dev.js
 which will show up as `config.js` in your source directory. If
 it is invoked with `PRODUCTION=1 make` `config.js` will be linked
-against `config.prod.js`. Minifying files is ignored in dev mode
-So if you specify a file named `bundle.js.min` you will get one
+against `config.prod.js`. 
+
+Minifying files is ignored in dev mode,
+so if you specify a file named `bundle.js.min` you will get one
 but it will just be a copy of `bundle.js`. This makes it easy to link
-to just one file in your html.
+to just one file in your html. 
+
+Source maps are enabled in dev and not in prod.
 
 ### Code Splitting
 
