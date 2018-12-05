@@ -52,6 +52,15 @@ repo:
 	mkdir -p repo/template
 	cp template/index.mustache repo/template
 	
+# pulls last record 
+get_dev_cdns = $(foreach href,\
+			   $(shell cut -d'	' -f2-3 $(EXCL_FILE) | awk 'NF>0{print $$NF}'),\
+			   $(call make_script_link,$(href)))
+
+# pulls first record
+get_prod_cdns = $(foreach href,\
+				$(shell cut -d'	' -f2 $(EXCL_FILE)),\
+			    $(call make_script_link,$(href)))
 # Updates cdn in index.json info when .cdn_libs changes.
 $(IDX_JSON): $(EXCL_FILE)
 # Sometimes npm's dont have devolpment builds so just use prod

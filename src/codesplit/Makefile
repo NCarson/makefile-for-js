@@ -7,9 +7,7 @@
 # XXX leading direcs './' ARE IMPORTANT
 BASE_DIR := ../../
 BUNDLE_BASENAME := codesplit
-VENDOR_BASENAME := d3_codesplit
 TARGET_DIR := $(BASE_DIR)/public/dist
-
 
 # XXX these are main targets to build
 # aka $(BUNDLE_BASENAME).js would build unminifed and un-gzipped
@@ -20,6 +18,7 @@ TARGETS := $(TARGET_DIR)/$(BUNDLE_BASENAME).min.js \
 ######################################
 #  Overide settings for directory
 ######################################
+# we dont need to transpile so why waste time
 LINTER :=
 BABEL :=
 include $(BASE_DIR)/.js.makefile

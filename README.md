@@ -3,7 +3,10 @@
 
 ## *Make only what you need.*
 
-![screenshot](https://raw.githubusercontent.com/NCarson/makefile-for-js/master/.screen.png)
+<img 
+    alt='screenshot' 
+    src='https://raw.githubusercontent.com/NCarson/makefile-for-js/master/.screen.png'
+    width='300' />
 
 ### Features
 
@@ -19,7 +22,7 @@
 * Can be modified to support any toolchain.
 * Build configs are isolated by directory.
 * Supports development and production modes.
-* Is Language independent.
+* Is language independent.
 * Has easy to read colorized output.
 
 So ... super-fast builds ... not so much config.
@@ -47,14 +50,14 @@ example of code splitting
 example of how to get a library build ready for npm
 * [src/template/Makefile](https://github.com/NCarson/makefile-for-js/blob/master/src/template/Makefile) - 
 example of an index.html using Mustache
-*  [config.dev.js](https://github.com/NCarson/makefile-for-js/blob/master/src/config.dev.js)
- / [config.prod.js](https://github.com/NCarson/makefile-for-js/blob/master/src/config.prod.js)
+*  [config.dev.js](https://github.com/NCarson/makefile-for-js/blob/master/config.dev.js)
+ / [config.prod.js](https://github.com/NCarson/makefile-for-js/blob/master/config.prod.js)
 
     These will be available in the build dir as config.js depending on the 
     environment e.g. `make` or `PRODUCTION=1 make`.
-* [.conf.makefile](https://github.com/NCarson/makefile-for-js/blob/master/src/.conf.makefile) - 
+* [.conf.makefile](https://github.com/NCarson/makefile-for-js/blob/master/.conf.makefile) - 
 This file is used to config js.makefile.
-* [.js.makefile](https://github.com/NCarson/makefile-for-js/blob/master/src/.js.makefile) - 
+* [.js.makefile](https://github.com/NCarson/makefile-for-js/blob/master/.js.makefile) - 
 This file has the rules for compiling.
     
 ### Install

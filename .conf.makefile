@@ -137,13 +137,6 @@ set_timestamp = $(call set_template_val,ts_$(1),$(shell date +%s))
 
 make_script_link = <script type=\"text/javascript\" src=\"$(1)\"></script>
 
-# pulls last record 
-get_dev_cdns = $(foreach href,$(shell cut -d'	' -f2-3 $(EXCL_FILE) | awk 'NF>0{print $$NF}'),\
-			   $(call make_script_link,$(href)))
-
-# pulls first record
-get_prod_cdns = $(foreach href,$(shell cut -d'	' -f2 $(EXCL_FILE)),\
-			   $(call make_script_link,$(href)))
 
 #http://www.tero.co.uk/scripts/minify.php
 minify_css ?= sed -e "s|/\*\(\\\\\)\?\*/|/~\1~/|g" \
