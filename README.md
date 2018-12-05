@@ -3,7 +3,7 @@
 
 ## *Make only what you need.*
 
-![screenshot](/NCarson/makefile-for-js/blob/master/.screen.png)
+![screenshot](https://raw.githubusercontent.com/NCarson/makefile-for-js/master/.screen.png)
 
 ### Features
 
@@ -36,30 +36,25 @@ You should glance through these to understand the process.
 The `Makefile`s are the most important for beginners. The first
 two being the most important and basic.
 
-* [Makefile](/NCarson/makefile-for-js/blob/master/Makefile) - 
+* [Makefile](https://github.com/NCarson/makefile-for-js/blob/master/Makefile) - 
 example stubbed to see how to use the main project Makefile.
-
-* [src/Makefile](/NCarson/makefile-for-js/blob/master/src/Makefile) - 
+https://github.com/NCarson/makefile-for-js/blob/master/Makefile
+* [src/Makefile](https://github.com/NCarson/makefile-for-js/blob/master/src/Makefile) - 
 example of regular project
-
-* [src/codesplit/Makefile](/NCarson/makefile-for-js/blob/master/src/codesplit/Makefile) - 
+* [src/codesplit/Makefile](https://github.com/NCarson/makefile-for-js/blob/master/src/codesplit/Makefile) - 
 example of code splitting
-
-* [src/umd/Makefile](/NCarson/makefile-for-js/blob/master/src/umd/Makefile) - 
+* [src/umd/Makefile](https://github.com/NCarson/makefile-for-js/blob/master/src/umd/Makefile) - 
 example of how to get a library build ready for npm
-
-* [src/template/Makefile](/NCarson/makefile-for-js/blob/master/src/template/Makefile) - 
+* [src/template/Makefile](https://github.com/NCarson/makefile-for-js/blob/master/src/template/Makefile) - 
 example of an index.html using Mustache
-
-*  [config.dev.js](/NCarson/makefile-for-js/blob/master/src/config.dev.js)
- / [config.prod.js](/NCarson/makefile-for-js/blob/master/src/config.prod.js)
+*  [config.dev.js](https://github.com/NCarson/makefile-for-js/blob/master/src/config.dev.js)
+ / [config.prod.js](https://github.com/NCarson/makefile-for-js/blob/master/src/config.prod.js)
 
     These will be available in the build dir as config.js depending on the 
     environment e.g. `make` or `PRODUCTION=1 make`.
-
-* [.conf.makefile](/NCarson/makefile-for-js/blob/master/src/.conf.makefile) - 
+* [.conf.makefile](https://github.com/NCarson/makefile-for-js/blob/master/src/.conf.makefile) - 
 This file is used to config js.makefile.
-* [.js.makefile](/NCarson/makefile-for-js/blob/master/src/.js.makefile) - 
+* [.js.makefile](https://github.com/NCarson/makefile-for-js/blob/master/src/.js.makefile) - 
 This file has the rules for compiling.
     
 ### Install
