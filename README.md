@@ -9,6 +9,7 @@
     width='500' />
 
 [Features](#features) /
+[Supported Targets](#supported-targets) /
 [Important Files](#important-files) /
 [Quickstart](#quickstart) /
 [Minimal Example](#minimal-example) /
@@ -17,6 +18,7 @@
 [Building UMD Bundles](#building-umd-type-bundles) /
 [CSS](#css) /
 [Templating](#templating) /
+[Further Reading](#further-reading) /
 
 ### Features
 
@@ -37,6 +39,25 @@
 * Has easy to read colorized output.
 
 So ... super-fast builds ... not so much config.
+
+### Supported Targets
+    
+- build/\*.js - linted and transpiled code
+- build/\[bundle\].js - bundled project code
+- build/\[vendor\].js - bundled vendor code
+- build/\[umd\].js - bundled UMD library code
+- \*min.js - minified JS
+- \*\[main\].css - catenated css
+- \*.min.css - catenated css
+- \*.html - templated html
+- \*.gz - gzip
+
+```shell
+REACT=1 make # sets uptranspiling and linting for React
+POST_ES6=1 make # sets news ES features like object spreads
+NODE_ENV=production make # production version
+PRODUCTION=1 make # same as above
+```
 
 ### Important Files
 

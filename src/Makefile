@@ -10,8 +10,7 @@
 #  Direcs and files
 ######################################
 
-# XXX leading direcs './' ARE IMPORTANT
-BASE_DIR := ../
+BASE_DIR := ..
 VENDOR_BASENAME := vendor
 BUNDLE_BASENAME := bundle
 CSS_BASENAME := main
@@ -27,6 +26,7 @@ TARGETS :=  \
 	$(TARGET_DIR)/$(VENDOR_BASENAME).min.js \
 	$(TARGET_DIR)/$(CSS_BASENAME).min.css \
 	$(TARGET_DIR)/$(CSS_BASENAME).min.css.gz \
+	../template/index.json
 
 EXCL_SRC_DIRS := ./codesplit ./umd
 
@@ -38,4 +38,4 @@ include $(BASE_DIR)/.js.makefile
 
 clean:
 	rm -f $(TARGETS)
-	rm -fr $(BUILD_DIR) $(IDX_JSON_FILE)
+	rm -fr $(BUILD_DIR)

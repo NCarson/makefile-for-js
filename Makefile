@@ -1,5 +1,5 @@
 # in case these actually exist as files `make` would be confused without .PHONY
-.PHONY: all clean
+.PHONY: all clean repo
 
 # The first rule in a makefile is the default if you just type `make`.
 # Traditionally is called all
@@ -15,7 +15,6 @@ clean:
 	cd src/codesplit && $(MAKE) clean
 	cd src/umd && $(MAKE) clean
 	cd template && $(MAKE) clean
-	rm -f $(COMPRESS_FILES_GZ) 
 
 
 # copy files to start new project

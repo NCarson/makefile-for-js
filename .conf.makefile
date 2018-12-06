@@ -12,6 +12,10 @@ endif
 MAKEFLAGS += --no-builtin-rules
 SUFFIXES :=
 
+ifeq ($(NODE_ENV),production)
+PRODUCTION := 1
+endif
+
 ######################################
 #  Knobs
 ######################################
@@ -30,9 +34,7 @@ SUFFIXES :=
 
 # XXX put in your options you need here
 # ?= means you can overide from command line
-# `BABEL_OPTIONS="my special options"
-
-
+# like: `BABEL_OPTIONS="my special options" make`
 
 # XXX Npm packages should be installed globally 
 # (suo npm -g install `da-package`).
@@ -40,8 +42,6 @@ SUFFIXES :=
 ######################################
 #  Babel
  
-BABEL_OPTIONS ?=
-
 ifdef REACT
 BABEL_OPTIONS += --presets=es2015,react --plugins transform-react-jsx
 else
@@ -143,10 +143,8 @@ MODULES_NAME ?= node_modules# npm direc name
 
 EXCL_SUFFIX ?= .cdn.json
 EXCL_FILE ?= $(BASE_DIR)/.exclude$(EXCL_SUFFIX) # libs listed here wont be built in bundle or vendor (for cdn)
-
-IDX_JSON ?= index.json # stores bundle info for templating
-IDX_JSON_FILE ?= $(TEMPLATE_DIR)/$(IDX_JSON)
-IDX_HTML_FILE ?= $(STATIC_DIR)/index.html
+IDX_JSON ?= index.json
+IDX_JSON_FILE := $(TEMPLATE_DIR)/$(IDX_JSON)
 
 ######################################
 # Shell Commands / Macros

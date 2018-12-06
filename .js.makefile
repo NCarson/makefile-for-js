@@ -90,7 +90,11 @@ ifneq ($(JSON),)
 mfs_excluded_libs = $(JSON) -f $(EXCL_FILE) -a name
 
 # set timestamps
-set_template_val = $(JSON) -I -f $(IDX_JSON_FILE) -e 'this.$(1)="$(2)"' 2>/dev/null
+define set_template_val
+	@ test -f $(IDX_JSON_FILE) || echo "{}" > $(IDX_JSON_FILE)
+	@ $(JSON) -I -f $(IDX_JSON_FILE) -e 'this.$(1)="$(2)"' 2>/dev/null
+endef
+
 set_timestamp = $(call set_template_val,ts_$(1),$(shell date +%s))
 
 #list cdn hrefs
@@ -221,11 +225,12 @@ else
 	@ cp $< $@ #were pretending to uglify since were in dev mode
 endif
 
+#test -f $@ || echo "{}" > $@
 define mjs_make_bundle
 	@ mkdir -p $(BUILD_DIR)
 	@ $(call info_msg,browerisfy - $1,$2 $3,$(BOLD)$(MAGENTA))
-	@ $(BROWSERIFY) $5 -o $2 $(ES5_FILES) 
-	@ $(shell $(call set_timestamp,$4))
+	@ $(BROWSERIFY) $5 -o $2 $(ES5_FILES) $(3)
+	@ $(call set_timestamp,$4)
 endef
 
 .PRECIOUS: %/$(UMD_BASENAME).js
