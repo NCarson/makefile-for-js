@@ -7,11 +7,12 @@
     alt='screenshot' 
     src='https://raw.githubusercontent.com/NCarson/makefile-for-js/master/.screen.png'
     width='500' />
+Notice that eslint and babel are working in parallel!
 
 [Features](#features) /
 [Supported Targets](#supported-targets) /
 [Important Files](#important-files) /
-[Quickstart](#quickstart) /
+[Quick Start](#quickstart) /
 [Minimal Example](#minimal-example) /
 [Code Splitting](#code-splitting) /
 [config.js](#configjs) /
@@ -32,7 +33,7 @@
 * Support for linters.
 * Support for babel.
 * Supports gzipped and minimized targets.
-* Can be modified to support any toolchain.
+* Can be modified to support any tool chain.
 * Build configs are isolated by directory.
 * Supports development and production modes.
 * Is language independent.
@@ -57,8 +58,10 @@ REACT=1 make # sets uptranspiling and linting for React
 POST_ES6=1 make # sets news ES features like object spreads
 NODE_ENV=production make # production version
 PRODUCTION=1 make # same as above
-```
 
+make print-YOUR_VAR # for debugging; just prints the variable
+make phobia # lists the vendor dependency sizes with bundle-phobia
+```
 ### Important Files
 
 This is a template not a build system. The defaults should 
@@ -76,7 +79,7 @@ example stubbed to see how to use the main project Makefile.
 * [src/Makefile](https://github.com/NCarson/makefile-for-js/blob/master/src/Makefile) - example of regular project
 * [src/codesplit/Makefile](https://github.com/NCarson/makefile-for-js/blob/master/src/codesplit/Makefile) - example of code splitting
 * [src/umd/Makefile](https://github.com/NCarson/makefile-for-js/blob/master/src/umd/Makefile) - example of how to get a library build ready for npm
-* [src/template/Makefile](https://github.com/NCarson/makefile-for-js/blob/master/src/template/Makefile) - example of an index.html using Mustache
+* [src/template/Makefile](https://github.com/NCarson/makefile-for-js/blob/master/template/Makefile) - example of an index.html using Mustache
 *  [config.dev.js](https://github.com/NCarson/makefile-for-js/blob/master/config.dev.js)
  / [config.prod.js](https://github.com/NCarson/makefile-for-js/blob/master/config.prod.js) These will be available in the build dir as config.js depending on the 
 environment e.g. `make` or `PRODUCTION=1 make`.
@@ -89,7 +92,7 @@ environment e.g. `make` or `PRODUCTION=1 make`.
 * Make sure you have GNU makefile. Ubuntu/Debian: `sudo apt-get install make`
 * core: `sudo npm install -g browserify uglify`
 * optional for ES6 (if your not sure you want it): `sudo npm install -g babel-cli` 
-You will still need presets in your dev-dependicies such as `babel-preset-es2015`.
+You will still need presets in your dev-dependencies such as `babel-preset-es2015`.
 * optional templating: `sudo npm install -g mustache json`
 * optional linting: `sudo npm install -g eslint`
 * optional for using bundle-phobia `sudo npm install -g bundle-phobia`
@@ -211,13 +214,13 @@ See .cdn\_libs, template/Makefile, template/index.mustache, and template/index.j
 Timestamps of the build time are available so you write hrefs like
 /dist/vendor.js?123456. The next build will have a higher number. So you
 can guarantee you will get a fresh version loaded in your browser without having to load
-in other files. This can save a lot of time while devolping.
+in other files. This can save a lot of time while developing.
 
 Cdn Libs are available under `cdns` if you have filled in .cdn\_libs
 The format is:
 `library\_name dev\_href production\_href`
 or:
-`library\_name production\_href` if no devolpment
+`library\_name production\_href` if no development
 library is available.
 Example:
 ```
