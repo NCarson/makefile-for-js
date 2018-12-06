@@ -38,5 +38,4 @@ include $(BASE_DIR)/.js.makefile
 
 clean:
 	rm -f $(TARGETS)
-	rm -fr $(BUILD_DIR)
-
+	rm -fr $(BUILD_DIR) $(IDX_JSON_FILE)

@@ -21,6 +21,7 @@
 ### Features
 
 * Knows how to 'do the right thing' for average cases.
+* Supports parallel builds out of the box: `make --jobs=4`.
 * Automatically splits bundle and vendor.
 * Supports code splitting.
 * Supports UMD Builds for libraries.
@@ -144,6 +145,7 @@ clean:
 	rm -fr $(BUILD_DIR)
 ```
 
+
 ### config.js
 
 Normally make is in dev mode and links against config.dev.js
@@ -204,5 +206,12 @@ In this example d3 is automatically not included in the vendor build
 since it is listed in .cdn\_libs. index.json will now have the urls for cdn
 libs but it is your responsibility to put them in the template.
 
+### Further Reading
+
+- [GNU Make Manual](https://www.gnu.org/software/make/manual/make.html)
+
+- [Building Systems With Make](https://www.integralist.co.uk/posts/building-systems-with-make/)
+
+- [The Lost Art of Makefile](https://www.olioapps.com/blog/the-lost-art-of-the-makefile/)
 
 

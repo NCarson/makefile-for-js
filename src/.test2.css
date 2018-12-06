@@ -3,3 +3,7 @@
     margin: 1em;
     border: .3em blue dashed;
 }
+
+.test2.devmode {
+    border: .2em blue dashed;
+}

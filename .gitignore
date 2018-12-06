@@ -6,3 +6,4 @@ dist
 *.swp
 template/index.json
 config.js
+*.json
