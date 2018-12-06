@@ -14,6 +14,11 @@ endif
 
 include $(BASE_DIR)/.conf.makefile
 
+_info_msg = $(shell printf "%-25s $(3)$(2)$(NORMAL)\n" "$(1)")
+define info_msg 
+	@printf "%-25s $(3)$(2)$(NORMAL)\n" "$(1)"
+endef
+
 ######################################
 #  Find files
 ######################################
@@ -108,9 +113,10 @@ else
 mfs_excluded_libs = echo
 endif
 
-%.json:
-	@ $(call info_msg,json - create,$@,$(WHITE))
-	@ echo "{}" > $@
+#.PRECIOUS: %.json
+#%.json:
+#	@ $(call info_msg,json - create,$@,$(WHITE))
+#	@ echo "{}" > $@
 
 # Updates cdn in index.json info when EXCL_FILES changes.
 %$(IDX_JSON): $(EXCL_FILE)
@@ -134,6 +140,10 @@ ifneq ($(TEMPLATER),)
 else
 	$(error no TEMPLATER program has been set)
 endif
+
+$(COMPRESS_FILES_GZ) : $(COMPRESS_FILES)
+	@ $(call info_msg,gizp - compress,$@,$(BLUE))
+	@ $(GZIP) $< --stdout > $@
 
 ######################################
 # CSS

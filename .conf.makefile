@@ -13,72 +13,115 @@ MAKEFLAGS += --no-builtin-rules
 SUFFIXES :=
 
 ######################################
+#  Knobs
+######################################
+
+# set for react options on babel and eslint
+# you  still need to install babel transforms locally
+# REACT := 1
+
+# set for latest syntax like spread op and static classes
+# you  still need to install babel transforms locally
+# POST_ES6 := 1
+
+######################################
 #  Commands
 ######################################
 
-# put in your options you need here
-# ?= means they will set if they have not already
-#
-BABEL_OPTIONS ?= --presets=es2015 --source-maps=inline
-# react and post ES6
-# BABEL_OPTIONS := --presets=es2015,react --plugins transform-react-jsx,transform-object-rest-spread,transform-class-properties 
-# add source maps in devolpment
-ifndef PRODUCTION
-	BABEL_OPTIONS += --source-maps=inline
+# XXX put in your options you need here
+# ?= means you can overide from command line
+# `BABEL_OPTIONS="my special options"
+
+
+
+# XXX Npm packages should be installed globally 
+# (suo npm -g install `da-package`).
+
+######################################
+#  Babel
+ 
+BABEL_OPTIONS ?=
+
+ifdef REACT
+BABEL_OPTIONS += --presets=es2015,react --plugins transform-react-jsx
+else
+BABEL_OPTIONS += --presets=es2015
 endif
 
-# LINTER_OPTIONS := --parser babel-eslint --plugin react --plugin import
-#
+# add source maps in devolpment
+ifndef PRODUCTION
+BABEL_OPTIONS += --source-maps=inline
+endif
+
+# latest ES features
+ifdef POST_ES6 
+BABEL_OPTIONS += transform-object-rest-spread,transform-class-properties 
+endif
+
+# you dont have to use babel but browserify will expect es5
+# npm i -g babel-cli #not babel
+BABEL ?= babel $(BABEL_OPTIONS) 
+
+######################################
+#  Browserify
+
 # for using cdn libs
-BROWSERIFY_OPTIONS := --transform browserify-global-shim 
+BROWSERIFY_OPTIONS ?= --transform browserify-global-shim 
 # add source maps in devolpment
 ifndef PRODUCTION
 	BROWSERIFY_OPTIONS += -d
 endif
 
-# gzip is probably installed, sudo apt-get install gzip
-GZIP ?= gzip $(GZIP_OPTIONS)
-
-# XXX These should be installed globally (npm -g install `da-package`) from npm.
-
 # browserify is the only mainstream bundler that behaves well
 # on the command line. Very necessary
 BROWSERIFY ?= browserify $(BROWSERIFY_OPTIONS)
 
-# You dont need uglifyjs is dont specify min.js or min.js.gz targets.
-UGLIFYJS ?= uglifyjs $(UGLIFYJS_OPTIONS)
-
-# you dont have to use babel but browserify will expect es5
-BABEL ?= babel $(BABEL_OPTIONS) # npm i -g babel-cli #not babel
-# optional linter
-LINTER ?= eslint $(ESLINT_OPTIONS) #npm i -g eslint
-
+######################################
+#  Templating
+ 
 # optional for templating
 JSON ?= json
 TEMPLATER ?= mustache
 TEMPLATE_SFX ?= .mustache
+ 
+######################################
+#  Others
+ 
+# gzip is probably installed, sudo apt-get install gzip
+GZIP ?= gzip $(GZIP_OPTIONS)
+
+# You dont need uglifyjs is dont specify min.js or min.js.gz targets.
+UGLIFYJS ?= uglifyjs $(UGLIFYJS_OPTIONS)
+
+# optional linter
+LINTER_OPTIONS := --parser babel-eslint --plugin import
+ifdef REACT
+LINTER_OPTIONS += --plugin react
+endif 
+#npm i -g eslint
+LINTER ?= eslint $(ESLINT_OPTIONS) 
 
 #optional for phobia rule
-BUNDLE-PHOBIA ?= bundle-phobia # npm i -g bundle-phobia
+# npm i -g bundle-phobia
+BUNDLE-PHOBIA ?= bundle-phobia 
  
 ######################################
 #  Files / Direcs
 ######################################
 
-GZ_SUFFIXES = .html .svg .css
-
+## direcs
 BUILD_DIR ?= ./build
 SRC_DIR ?= ./
 TEMPLATE_DIR ?= $(BASE_DIR)/template
 STATIC_DIR ?= $(BASE_DIR)/public
 
+## bundle names
 VENDOR_BASENAME ?= vendor
 BUNDLE_BASENAME ?= bundle
 UMD_BASENAME ?= umd
 CSS_BASENAME ?= main
 
 ## config
-
 SRC_CONFIG ?= $(SRC_DIR)config.js
 CONFIG_PROD ?= $(BASE_DIR)/config.prod.js
 CONFIG_DEV ?= $(BASE_DIR)/config.dev.js
@@ -124,11 +167,3 @@ BOLD=$(shell tput bold)
 BLINK=$(shell tput blink)
 REVERSE=$(shell tput smso)
 UNDERLINE=$(shell tput smul)
-
-_info_msg = $(shell printf "%-25s $(3)$(2)$(NORMAL)\n" "$(1)")
-define info_msg 
-	@printf "%-25s $(3)$(2)$(NORMAL)\n" "$(1)"
-endef
-
-
-
