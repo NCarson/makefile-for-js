@@ -2,6 +2,8 @@
 #	 is read first and will will wipe out the
 #	 first default 'all' rule.
  
+#TODO find a good way to see if commands are present
+
 # BASE_DIR defines the root of the of the project.
 # It is always required to be defined in the parent.
 ifeq ($(BASE_DIR),)
@@ -16,17 +18,19 @@ ifeq ($(NODE_ENV),production)
 PRODUCTION := 1
 endif
 
+find_command = $(shell if [ -z "$1" ]; then which $1 || echo; else echo 0; fi;)
+
 ######################################
 #  Knobs
 ######################################
 
 # set for react options on babel and eslint
 # you  still need to install babel transforms locally
-# REACT := 1
+REACT := 1
 
 # set for latest syntax like spread op and static classes
 # you  still need to install babel transforms locally
-# POST_ES6 := 1
+POST_ES6 := 1
 
 ######################################
 #  Commands
@@ -55,12 +59,16 @@ endif
 
 # latest ES features
 ifdef POST_ES6 
-BABEL_OPTIONS += transform-object-rest-spread,transform-class-properties 
+BABEL_OPTIONS += --plugins transform-object-rest-spread,transform-class-properties 
 endif
 
 # you dont have to use babel but browserify will expect es5
 # npm i -g babel-cli #not babel
 BABEL ?= babel $(BABEL_OPTIONS) 
+
+#ifeq ($(call find_command,$(BABEL)),)
+#$(error cant find "$(BABEL)" in the path)
+#endif
 
 ######################################
 #  Browserify
@@ -99,7 +107,7 @@ ifdef REACT
 LINTER_OPTIONS += --plugin react
 endif 
 #npm i -g eslint
-LINTER ?= eslint $(ESLINT_OPTIONS) 
+LINTER ?= eslint $(LINTER_OPTIONS) 
 
 #optional for phobia rule
 # npm i -g bundle-phobia

@@ -24,6 +24,7 @@ repo:
 	cp src/Makefile repo/src.Makefile
 	cp src/codesplit/Makefile repo/codesplit.Makefile
 	cp src/umd/Makefile repo/umd.Makefile
+	cp template/Makefile repo/template.Makefile
 	cp Makefile .conf.makefile .js.makefile config.dev.js config.prod.js repo/
 	mkdir -p repo/template
 	cp template/index.mustache repo/template

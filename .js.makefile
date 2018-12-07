@@ -137,7 +137,7 @@ endif
 #template
 $(BUILD_DIR)/%.html: %.json %$(TEMPLATE_SFX)
 ifneq ($(TEMPLATER),)
-	@ mkdir -p $(BUILD_DIR)
+	@ mkdir -p `dirname $@`
 	$(call info_msg,template - create,$@,$(BOLD))
 	@$(TEMPLATER) $< $(addsuffix $(TEMPLATE_SFX),$(basename $<)) > $@ 
 else
@@ -170,12 +170,11 @@ minify_css ?= sed -e "s|/\*\(\\\\\)\?\*/|/~\1~/|g" \
 .PRECIOUS: %.min.css
 #minify css
 %.min.css: %.css
+	@ mkdir -p `dirname $@`
 ifdef PRODUCTION
-	@ mkdir -p $(BUILD_DIR)
 	@ $(call info_msg,css - minify (prod/on),$@,$(BLUE))
 	@ cat $< | $(minify_css) > $@
 else
-	@ mkdir -p $(BUILD_DIR)
 	@ $(call info_msg,css - minify (dev/off),$@,$(GRAY))
 	@ cp $< $@
 endif
@@ -183,7 +182,7 @@ endif
 .PRECIOUS: %/$(CSS_BASENAME).css
 #cat css into one file
 %/$(CSS_BASENAME).css: $(CSS_FILES)
-	@ mkdir -p $(BUILD_DIR)
+	@ mkdir -p `dirname $@`
 	@ $(call info_msg,css - cat,$^,$(BOLD)$(YELLOW))
 	@ echo "/* XXX	Auto Generated; modifications will be OVERWRITTEN; see js.makefile XXX */" > $@
 	@ for name in $(CSS_FILES); do printf "\n/* $$name */" >>$@ ; cat $$name >> $@; done;
@@ -203,7 +202,7 @@ STRIP_DEPS ?= \
 #browiserify flags to force exclusion
 EXC_DEPS = $(shell cat $(DEP_FILE) | sed 's/ / -x /g' | sed 's/^/ -x /')
 #removes libraries found in exclude file
-ONLY_INCLUDE = $(mfs_excluded_libs) | cut -d" " -f1 | grep -v -f - $(DEP_FILE)
+ONLY_INCLUDE = $(mfs_excluded_libs) | cut -d" " -f1 | grep -Fx -v -f - $(DEP_FILE)
 #browiserify flags to force inclusion
 INC_DEPS = $(shell $(ONLY_INCLUDE) | sed 's/ / -r /g' | sed 's/^/ -r /')
 
@@ -220,7 +219,7 @@ INC_DEPS = $(shell $(ONLY_INCLUDE) | sed 's/ / -r /g' | sed 's/^/ -r /')
 #minfy
 %.min.js: %.js
 ifdef PRODUCTION
-	@ mkdir -p $(BUILD_DIR)
+	@ mkdir -p `dirname $@`
 	@ $(call info_msg,uglify - minify (prod/on),$@,$(BLUE))
 	@ $(UGLIFYJS) -cmo $@ $<
 else
@@ -230,7 +229,7 @@ endif
 
 #test -f $@ || echo "{}" > $@
 define mjs_make_bundle
-	@ mkdir -p $(BUILD_DIR)
+	@ mkdir -p `dirname $@`
 	@ $(call info_msg,browerisfy - $1,$2 $3,$(BOLD)$(MAGENTA))
 	@ $(BROWSERIFY) $5 -o $2 $(ES5_FILES) $(3)
 	@ $(call set_timestamp,$4)
@@ -257,7 +256,7 @@ endef
 .PRECIOUS: $(BUILD_DIR)/%.js
 #babel
 $(BUILD_DIR)/%.js: %.js 
-	@ mkdir -p $(BUILD_DIR)
+	@ mkdir -p `dirname $@`
 ifneq ($(LINTER),)
 	@ $(call info_msg,eslint - lint,$<,$(GREEN))
 	@ $(LINTER) $<
