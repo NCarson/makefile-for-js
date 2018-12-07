@@ -49,13 +49,44 @@ TEMPLATE_BUILD_FILES = $(patsubst $(SRC_DIR)%$(TEMPLATE_SFX),$(BUILD_DIR)/%.html
 #  Phonies
 ######################################
 
-.PHONY: all phobia
+.PHONY: all phobia clean clean-bundle clean-vendor clean-umd clean-css clean-gz
 
 all: $(SRC_CONFIG) $(TARGETS)
 
-phobia: $(DEP_FILE)
+clean:
+	rm -f $(TARGETS)
+	rm -fr $(BUILD_DIR)
+
+clean-bundle:
+	rm -f $(BUNDLE_TARGETS)
+
+clean-vendor:
+	rm -f $(VENDOR_TARGETS)
+
+clean-umd:
+	rm -f $(UMD_TARGETS)
+
+clean-css:
+	rm -f $(CSS_TARGETS)
+
+clean-gz:
+	rm -f $(COMPRESS_FILES_GZ)
+
+.PHONY: list-deps list-cdn phobia-deps phobia-cdn
+
+list-deps:
 	@cat $(DEP_FILE)
+
+list-cdn:
+	@ $(mfs_excluded_libs)
+
+phobia-deps: $(DEP_FILE) list-deps
 	@cat $(DEP_FILE) | xargs -L1 $(BUNDLE-PHOBIA)
+
+phobia-cdn: list-cdn
+	@ $(mfs_excluded_libs) | xargs -L1 $(BUNDLE-PHOBIA)
+
+
 
 ######################################
 #  Rules
@@ -63,7 +94,7 @@ phobia: $(DEP_FILE)
 
 $(PACKAGE_LOCK):
 	$(call info_message,touch - create,$@)
-	@touch $(PACKAGE_LOCK)
+	@ touch $(PACKAGE_LOCK)
 
 #XXX pattern rules aka `targets with %` will not wipe out default
 
@@ -105,14 +136,13 @@ set_timestamp = $(call set_template_val,ts_$(1),$(shell date +%s))
 mfs_cdn_dev = $(shell $(JSON) -f $(EXCL_FILE) -a -e 'this.href=this.dev || this.prod'  -a href | tr '\n' ' ')
 mfs_cdn_prod  = $(JSON) -f $(EXCL_FILE) -a -e 'this.href=this.prod'  -a href | tr '\n' ' '
 
-
 make_script_link = <script type=\"text/javascript\" src=\"$(1)\"></script>\n
-# pulls last record 
+# pulls dev href or prod href
 get_dev_cdns = $(foreach href,\
 			   $(mfs_cdn_dev),\
 			   $(call make_script_link,$(href)))
 
-# pulls first record
+# pulls prod href
 get_prod_cdns = $(foreach href,\
 				$(shell $(mfs_cdn_prod)),\
 			    $(call make_script_link,$(href)))
@@ -166,9 +196,9 @@ minify_css ?= sed -e "s|/\*\(\\\\\)\?\*/|/~\1~/|g" \
 	-e "s| \([{;:,]\)|\1|g" \
 	-e "s|\([{;:,]\) |\1|g" 
 
-#make will delete these as 'intermediate' without this
+# make will delete these as 'intermediate' without this
 .PRECIOUS: %.min.css
-#minify css
+## minify css
 %.min.css: %.css
 	@ mkdir -p `dirname $@`
 ifdef PRODUCTION
@@ -180,7 +210,7 @@ else
 endif
 
 .PRECIOUS: %/$(CSS_BASENAME).css
-#cat css into one file
+## cat css into one file
 %/$(CSS_BASENAME).css: $(CSS_FILES)
 	@ mkdir -p `dirname $@`
 	@ $(call info_msg,css - cat,$^,$(BOLD)$(YELLOW))
@@ -191,7 +221,7 @@ endif
 ######################################
 # Bundle
 
-# strips library paths to import names
+## strips library paths to import names
 # 		          remove root       ignore local stuff       remove node_modules    first direc
 STRIP_DEPS ?= \
 	sed "s:^`cd $(BASE_DIR) && pwd`/::" |\
@@ -199,11 +229,11 @@ STRIP_DEPS ?= \
 	sed "s:^$(strip $(MODULES_NAME))::" |\
 	cut -d "/" -f2 |sort |uniq
 
-#browiserify flags to force exclusion
+## browiserify flags to force exclusion
 EXC_DEPS = $(shell cat $(DEP_FILE) | sed 's/ / -x /g' | sed 's/^/ -x /')
-#removes libraries found in exclude file
+## removes libraries found in exclude file
 ONLY_INCLUDE = $(mfs_excluded_libs) | cut -d" " -f1 | grep -Fx -v -f - $(DEP_FILE)
-#browiserify flags to force inclusion
+## browiserify flags to force inclusion
 INC_DEPS = $(shell $(ONLY_INCLUDE) | sed 's/ / -r /g' | sed 's/^/ -r /')
 
 # find deps
@@ -216,7 +246,7 @@ INC_DEPS = $(shell $(ONLY_INCLUDE) | sed 's/ / -r /g' | sed 's/^/ -r /')
 	@$(BROWSERIFY) --list $(ES5_FILES) | $(STRIP_DEPS) > $@
 
 .PRECIOUS: %.min.js
-#minfy
+## minfy
 %.min.js: %.js
 ifdef PRODUCTION
 	@ mkdir -p `dirname $@`
@@ -227,7 +257,6 @@ else
 	@ cp $< $@ #were pretending to uglify since were in dev mode
 endif
 
-#test -f $@ || echo "{}" > $@
 define mjs_make_bundle
 	@ mkdir -p `dirname $@`
 	@ $(call info_msg,browerisfy - $1,$2 $3,$(BOLD)$(MAGENTA))
@@ -236,17 +265,17 @@ define mjs_make_bundle
 endef
 
 .PRECIOUS: %/$(UMD_BASENAME).js
-#umd
+## umd bundle
 %/$(UMD_BASENAME).js: $(ES5_FILES) $(DEP_FILE)
 	$(call mjs_make_bundle,umd,$@,$(EXC_DEPS),$(UMD_BASENAME),-s $(UMD_BASENAME))
 
 .PRECIOUS: %/$(VENDOR_BASENAME).js
-#vendor
+## vendor vendor bundle
 %/$(VENDOR_BASENAME).js: $(DEP_FILE)
 	$(call mjs_make_bundle,vendor,$@,$(INC_DEPS),$(VENDOR_BASENAME))
 
 .PRECIOUS: %/$(BUNDLE_BASENAME).js
-#bundle
+## source bundle
 %/$(BUNDLE_BASENAME).js: $(DEP_FILE) $(ES5_FILES)
 	$(call mjs_make_bundle,bundle,$@,$(EXC_DEPS),$(BUNDLE_BASENAME))
 
@@ -254,7 +283,7 @@ endef
 # Transpile
 
 .PRECIOUS: $(BUILD_DIR)/%.js
-#babel
+## lint and babel
 $(BUILD_DIR)/%.js: %.js 
 	@ mkdir -p `dirname $@`
 ifneq ($(LINTER),)

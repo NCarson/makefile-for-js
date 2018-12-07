@@ -129,6 +129,18 @@ BUNDLE_BASENAME ?= bundle
 UMD_BASENAME ?= umd
 CSS_BASENAME ?= main
 
+BUNDLE_TARGET ?= $(TARGET_DIR)/$(BUNDLE_BASENAME).min.js \
+				 $(TARGET_DIR)/$(BUNDLE_BASENAME).min.js.gz
+
+VENDOR_TARGET ?= $(TARGET_DIR)/$(VENDOR_BASENAME).min.js.gz \
+				 $(TARGET_DIR)/$(VENDOR_BASENAME).min.js
+
+UMD_TARGET ?= $(TARGET_DIR)/$(UMD_BASENAME).min.js.gz \
+		      $(TARGET_DIR)/$(UMD_BASENAME).min.js
+
+CSS_TARGET ?= $(TARGET_DIR)/$(CSS_BASENAME).min.css \
+              $(TARGET_DIR)/$(CSS_BASENAME).min.css.gz
+
 ## config
 SRC_CONFIG ?= $(SRC_DIR)config.js
 CONFIG_PROD ?= $(BASE_DIR)/config.prod.js

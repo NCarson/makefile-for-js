@@ -36,6 +36,3 @@ include $(BASE_DIR)/.js.makefile
 # otherwise you will over write the default
 # rule, aka `make` without arguments.
 
-clean:
-	rm -f $(TARGETS)
-	rm -fr $(BUILD_DIR)
