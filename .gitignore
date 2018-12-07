@@ -3,7 +3,8 @@ public
 node_modules
 repo
 dist
-*.swp
 template/index.json
 config.js
+package-lock.json
+*.swp
 *.json

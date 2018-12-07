@@ -85,8 +85,12 @@ $(TARGET_DIR)%: $(BUILD_DIR)%
 ######################################
 # Template
  
-ifneq ($(JSON),)
+ifneq ($(JSON),) #JSON
+
 # list library names
+#
+# make sure we output something or ONLY_INCLUDE will not work
+
 mfs_excluded_libs = $(JSON) -f $(EXCL_FILE) -a name
 
 # set timestamps
@@ -113,14 +117,9 @@ get_prod_cdns = $(foreach href,\
 				$(shell $(mfs_cdn_prod)),\
 			    $(call make_script_link,$(href)))
 
-else
-mfs_excluded_libs = echo
-endif
-
-#.PRECIOUS: %.json
-#%.json:
-#	@ $(call info_msg,json - create,$@,$(WHITE))
-#	@ echo "{}" > $@
+$(EXCL_FILE):
+	@ $(call info_msg,json - create,$@,$(BOLD))
+	@ echo "[]" > $@
 
 # Updates cdn in index.json info when EXCL_FILES changes.
 %$(IDX_JSON): $(EXCL_FILE)
@@ -148,6 +147,10 @@ endif
 $(COMPRESS_FILES_GZ) : $(COMPRESS_FILES)
 	@ $(call info_msg,gizp - compress,$@,$(BLUE))
 	@ $(GZIP) $< --stdout > $@
+
+else #JSON
+mfs_excluded_libs = echo " "
+endif #JSON
 
 ######################################
 # CSS
@@ -209,7 +212,7 @@ INC_DEPS = $(shell $(ONLY_INCLUDE) | sed 's/ / -r /g' | sed 's/^/ -r /')
 # notice order-only prereq: | 
 # ES5_FILES will only be a prereq if PACKAGE_LOCK is old.
 # Otherwise vendor would be dependent on ES5_FILES and always be rebuilt.
-%$(DEP_SUFFIX): $(PACKAGE_LOCK) | $(ES5_FILES)
+%$(DEP_SUFFIX): $(EXCL_FILE) $(PACKAGE_LOCK) | $(ES5_FILES)
 	@$(call info_msg,browserify - find deps,$@,$(MAGENTA))
 	@$(BROWSERIFY) --list $(ES5_FILES) | $(STRIP_DEPS) > $@
 

@@ -6,7 +6,8 @@
 <img 
     alt='screenshot' 
     src='https://raw.githubusercontent.com/NCarson/makefile-for-js/master/.screen.png'
-    width='500' />
+    width='600' />
+
 Notice that eslint and babel are working in parallel!
 
 [Features](#features) /
@@ -49,7 +50,7 @@ So ... super-fast builds ... not so much config.
 - build/\[umd\].js - bundled UMD library code
 - \*min.js - minified JS
 - \*\[main\].css - catenated css
-- \*.min.css - catenated css
+- \*.min.css - minified css
 - \*.html - templated html
 - \*.gz - gzip
 
@@ -99,7 +100,6 @@ You will still need presets in your dev-dependencies such as `babel-preset-es201
 
 #### Windows (Maybe, I've never tried):
 
-(If you try open up a issue so I know it is possible or not.)
 Get the GNU UTILS for powershell.  Get npm and follow the same the commands as above.
 
 #### Other \*Nix (Should, never tried):
@@ -145,7 +145,7 @@ BASE_DIR := ./
 include .conf.makefile
 .PHONY: all clean
 all: 
-    cd src && $(MAKE)
+	cd src && $(MAKE)
 clean:
 	cd src && $(MAKE) clean
 ```
@@ -169,7 +169,6 @@ clean:
 	rm -fr $(BUILD_DIR)
 ```
 
-
 ### config.js
 
 Normally make is in dev mode and links against config.dev.js
@@ -186,8 +185,8 @@ Source maps are enabled in dev and not in prod.
 
 ### Code Splitting
 
-Just start another directory with the Makefile filled in :).
-Then call make on it from the root Project Makefile. If the codesplit
+Just start another directory with a new src Makefile filled in :).
+Then call make on it from the root project Makefile. If the codesplit
 is underneath another src directory add `EXCL_SRC_DIRS := ./your_code_split_direc`
 to the parent code Makefile.
 
@@ -195,7 +194,7 @@ to the parent code Makefile.
 
 See src/umd/Makefile. Crazy easy.  Instead of `BUNDLE_BASENAME` set `UMD_BASENAME`
 then: `TARGETS := $(TARGET_DIR)/$(UMD_BASENAME).min.js`. If you use it from a
-cdn it will availabe as `window.UMD_BASENAME`
+cdn it will availabe as `window.UMD_BASENAME` Or you can publish it on NPM.
 
 See https://unpkg.com/makefile-for-js-example@0.0.1/ for what the example builds.
 
@@ -233,9 +232,7 @@ libs but it is your responsibility to put them in the template.
 ### Further Reading
 
 - [GNU Make Manual](https://www.gnu.org/software/make/manual/make.html)
-
 - [Building Systems With Make](https://www.integralist.co.uk/posts/building-systems-with-make/)
-
 - [The Lost Art of Makefile](https://www.olioapps.com/blog/the-lost-art-of-the-makefile/)
 
 
