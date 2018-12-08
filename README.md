@@ -6,7 +6,7 @@
 <img 
     alt='screenshot' 
     src='https://raw.githubusercontent.com/NCarson/makefile-for-js/master/.screen.png'
-    width='600' />
+    width='800' />
 
 Notice that eslint and babel are working in parallel!
 
@@ -171,7 +171,7 @@ clean:
 
 ### A Penny For Your Thoughts ...
 
-<img src="./.dot-graph.svg" width=500>
+<img src="./.dot-graph.svg" width=800>
 
 See `make dot-graph` from src/Makefile.
 ### config.js
