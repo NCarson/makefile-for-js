@@ -171,8 +171,7 @@ clean:
 
 ### A Penny For Your Thoughts ...
 
-![graph of dependencies](./.dot-graph.svg)
-<img src="./.dot-graph.svg">
+<img src="./.dot-graph.svg" width=500>
 
 See `make dot-graph` from src/Makefile.
 ### config.js
