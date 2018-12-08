@@ -171,11 +171,10 @@ clean:
 
 ### A Penny For Your Thoughts ...
 
-![graph of dependencies](./dot-graph.svg)
-<img src="./dot-graph.svg">
+![graph of dependencies](./.dot-graph.svg)
+<img src="./.dot-graph.svg">
 
 See `make dot-graph` from src/Makefile.
-
 ### config.js
 
 Normally make is in dev mode and links against config.dev.js
