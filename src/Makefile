@@ -49,8 +49,9 @@ include $(BASE_DIR)/.makefiles/conf.makefile
 
 #  makes a dependency graph with dot
 #  https://github.com/lindenb/makefile2graph
+.PHONY: dot-graph
 dot-graph: $(TARGETS)
-	make -Bnd | make2graph | dot -Tpng -o ../.dot-graph.png
+	make -Bnd | make2graph | dot -Tsvg -o ../.dot-graph.svg
 
 
 # XXX define your own rules AFTER the include

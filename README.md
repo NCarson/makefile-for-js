@@ -169,12 +169,13 @@ clean:
 	rm -fr $(BUILD_DIR)
 ```
 
-#### A Penny for your thoughts ...
+#### A Penny For Your Thoughts ...
 
 <img 
     alt='screenshot' 
-    src='https://raw.githubusercontent.com/NCarson/makefile-for-js/master/.dot-graph.png'
+    src='https://raw.githubusercontent.com/NCarson/makefile-for-js/master/.dot-graph.svg'
     width='600' />
+See `make dot-graph` from src/Makefile.
 
 ### config.js
 
