@@ -169,12 +169,11 @@ clean:
 	rm -fr $(BUILD_DIR)
 ```
 
-#### A Penny For Your Thoughts ...
+### A Penny For Your Thoughts ...
 
-<img 
-    alt='screenshot' 
-    src='https://raw.githubusercontent.com/NCarson/makefile-for-js/master/.dot-graph.svg'
-    width='600' />
+![graph of dependencies](./dot-graph.svg)
+<img src="./dot-graph.svg">
+
 See `make dot-graph` from src/Makefile.
 
 ### config.js
