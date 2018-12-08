@@ -169,6 +169,13 @@ clean:
 	rm -fr $(BUILD_DIR)
 ```
 
+#### A Penny for your thoughts ...
+
+<img 
+    alt='screenshot' 
+    src='https://raw.githubusercontent.com/NCarson/makefile-for-js/master/.dot-graph.png'
+    width='600' />
+
 ### config.js
 
 Normally make is in dev mode and links against config.dev.js
@@ -234,5 +241,6 @@ libs but it is your responsibility to put them in the template.
 - [GNU Make Manual](https://www.gnu.org/software/make/manual/make.html)
 - [Building Systems With Make](https://www.integralist.co.uk/posts/building-systems-with-make/)
 - [The Lost Art of Makefile](https://www.olioapps.com/blog/the-lost-art-of-the-makefile/)
+- [Makefile man - John Graham-Cumming's list of make articles](https://blog.jgc.org/2013/02/updated-list-of-my-gnu-make-articles.html)
 
 

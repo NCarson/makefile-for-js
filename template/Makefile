@@ -15,10 +15,4 @@ TARGETS = $(TARGET_DIR)/index.html \
 		$(TARGET_DIR)/index.html.gz \
 		$(COMPRESS_FILES_GZ)
 
-include $(BASE_DIR)/.js.makefile
-
-.PHONY: clean
-clean:
-	rm -f $(TARGETS) $(COMPRESS_FILES_GZ)
-	rm -fr $(BUILD_DIR)
-
+include $(BASE_DIR)/.conf.makefile

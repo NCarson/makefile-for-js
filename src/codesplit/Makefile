@@ -21,9 +21,4 @@ TARGETS := $(TARGET_DIR)/$(BUNDLE_BASENAME).min.js \
 # we dont need to transpile so why waste time
 LINTER :=
 BABEL :=
-include $(BASE_DIR)/.js.makefile
-
-clean:
-	rm -f $(TARGETS)
-	rm -fr $(BUILD_DIR)
-
+include $(BASE_DIR)/.conf.makefile

@@ -6,8 +6,15 @@
 
 # BASE_DIR defines the root of the of the project.
 # It is always required to be defined in the parent.
+
 ifeq ($(BASE_DIR),)
-$(error BASE_DIR is undefined)
+  $(error BASE_DIR is undefined)
+endif
+ifeq ($(TARGET_DIR),)
+  $(error TARGET_DIR is undefined)
+endif
+ifeq ($(TARGETS),)
+  $(error TARGETS is undefined)
 endif
 
 # wipe out built in C stuff
@@ -18,11 +25,22 @@ ifeq ($(NODE_ENV),production)
 PRODUCTION := 1
 endif
 
+MFS_CONF_DEFINED := 1
+
 find_command = $(shell if [ -z "$1" ]; then which $1 || echo; else echo 0; fi;)
 
 ######################################
 #  Knobs
 ######################################
+
+# include targets for bundling js
+USE_JS := 1
+
+# include targets for bundling css
+USE_CSS := 1
+
+# include targets for compiling templates
+USE_TEMPLATE := 1
 
 # set for react options on babel and eslint
 # you  still need to install babel transforms locally
@@ -118,6 +136,7 @@ BUNDLE-PHOBIA ?= bundle-phobia
 ######################################
 
 ## direcs
+MAKEFILE_DIR ?= ./.makefiles
 BUILD_DIR ?= ./build
 SRC_DIR ?= ./
 TEMPLATE_DIR ?= $(BASE_DIR)/template
@@ -128,18 +147,6 @@ VENDOR_BASENAME ?= vendor
 BUNDLE_BASENAME ?= bundle
 UMD_BASENAME ?= umd
 CSS_BASENAME ?= main
-
-BUNDLE_TARGET ?= $(TARGET_DIR)/$(BUNDLE_BASENAME).min.js \
-				 $(TARGET_DIR)/$(BUNDLE_BASENAME).min.js.gz
-
-VENDOR_TARGET ?= $(TARGET_DIR)/$(VENDOR_BASENAME).min.js.gz \
-				 $(TARGET_DIR)/$(VENDOR_BASENAME).min.js
-
-UMD_TARGET ?= $(TARGET_DIR)/$(UMD_BASENAME).min.js.gz \
-		      $(TARGET_DIR)/$(UMD_BASENAME).min.js
-
-CSS_TARGET ?= $(TARGET_DIR)/$(CSS_BASENAME).min.css \
-              $(TARGET_DIR)/$(CSS_BASENAME).min.css.gz
 
 ## config
 SRC_CONFIG ?= $(SRC_DIR)config.js
@@ -185,3 +192,121 @@ BOLD=$(shell tput bold)
 BLINK=$(shell tput blink)
 REVERSE=$(shell tput smso)
 UNDERLINE=$(shell tput smul)
+
+_info_msg = $(shell printf "%-25s $(3)$(2)$(NORMAL)\n" "$(1)")
+define info_msg 
+	@printf "%-25s $(3)$(2)$(NORMAL)\n" "$(1)"
+endef
+
+######################################
+#  Phonies
+######################################
+
+.PHONY: all clean clean-gz 
+
+all: $(SRC_CONFIG) $(TARGETS)
+
+clean:
+	rm -f $(TARGETS)
+	rm -fr $(BUILD_DIR)
+
+clean-gz:
+	rm -f $(COMPRESS_FILES_GZ)
+
+######################################
+# Targets
+
+# everything is built in the BUILD_DIR and then moved to TARGET_DIR
+ 
+$(TARGET_DIR)%: $(BUILD_DIR)%
+	@ $(call info_msg,target - cp,$@,$(WHITE))
+	@ mkdir -p $(shell dirname $@)
+	@ cp $(patsubst $(TARGET_DIR)%,$(BUILD_DIR)%,$@) $@
+
+#debug variable: `make print-MYVAR`
+#https://blog.melski.net/2010/11/30/makefile-hacks-print-the-value-of-any-variable/
+print-%:
+	@ echo '$*=$($*)'
+
+.PRECIOUS: %.gz
+#gzipped
+%.gz: %
+	@ $(call info_msg,gizp - compress,$@,$(BLUE))
+	@ $(GZIP) $< --stdout > $@
+
+######################################
+# Include
+######################################
+
+######################################
+# Set-up
+ 
+# for find command
+ifeq (strip($(EXCL_SRC_DIRS)),)
+   _MFS_EXCLUDE = 
+else
+   _MFS_EXCLUDE =  -not \( $(patsubst %,-path % -prune -o,$(EXCL_SRC_DIRS)) -path $(BUILD_DIR) -prune \)
+endif
+
+# switch out dev or prod config if necessary
+ifneq ($(realpath $(CONFIG)),$(shell realpath $(SRC_CONFIG)))
+  $(info $(call _info_msg,config - link,$(CONFIG),$(GREEN)))
+  $(shell test -f $(SRC_CONFIG) && rm -f $(SRC_CONFIG))
+  $(shell rm -f $(SRC_CONFIG))
+  $(shell ln -s $(CONFIG) $(SRC_CONFIG))
+  $(shell touch $(SRC_CONFIG))
+endif
+
+######################################
+# JavaScript
+ 
+ifdef USE_JS
+
+.PHONY: clean-bundle clean-vendor clean-umd
+
+clean-bundle:
+	rm -f $(BUNDLE_TARGETS)
+
+clean-vendor:
+	rm -f $(VENDOR_TARGETS)
+
+clean-umd:
+	rm -f $(UMD_TARGETS)
+
+.PHONY: list-deps list-cdn phobia-deps phobia-cdn
+
+list-deps:
+	@cat $(DEP_FILE)
+
+list-cdn:
+	@ $(mfs_excluded_libs)
+
+phobia-deps: $(DEP_FILE) list-deps
+	@cat $(DEP_FILE) | xargs -L1 $(BUNDLE-PHOBIA)
+
+phobia-cdn: list-cdn
+	@ $(mfs_excluded_libs) | xargs -L1 $(BUNDLE-PHOBIA)
+ 
+include $(BASE_DIR)/$(MAKEFILE_DIR)/js.makefile
+
+endif 
+######################################
+# CSS
+ifdef USE_CSS
+
+.PHONY: clean-css
+
+clean-css:
+	rm -f $(CSS_TARGETS)
+
+include $(BASE_DIR)/$(MAKEFILE_DIR)/css.makefile
+
+endif 
+######################################
+# Template
+ifdef USE_TEMPLATE
+ 
+include $(BASE_DIR)/$(MAKEFILE_DIR)/template.makefile
+
+endif
+
