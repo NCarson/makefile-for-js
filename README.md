@@ -84,8 +84,8 @@ example stubbed to see how to use the main project Makefile.
 *  [config.dev.js](https://github.com/NCarson/makefile-for-js/blob/master/config.dev.js)
  / [config.prod.js](https://github.com/NCarson/makefile-for-js/blob/master/config.prod.js) These will be available in the build dir as config.js depending on the 
 environment e.g. `make` or `PRODUCTION=1 make`.
-* [.conf.makefile](https://github.com/NCarson/makefile-for-js/blob/master/.conf.makefile) - This file is used to config js.makefile.
-* [.js.makefile](https://github.com/NCarson/makefile-for-js/blob/master/.js.makefile) - This file has the rules for compiling.
+* [.conf.makefile](https://github.com/NCarson/makefile-for-js/blob/master/.makefiles/conf.makefile) - This file is used to config js.makefile.
+* [.js.makefile](https://github.com/NCarson/makefile-for-js/blob/master/.makefiles/js.makefile) - This file has the rules for compiling.
     
 ### Install
 
@@ -102,7 +102,10 @@ You will still need presets in your dev-dependencies such as `babel-preset-es201
 
 Get the GNU UTILS for powershell.  Get npm and follow the same the commands as above.
 
-#### Other \*Nix (Should, never tried):
+#### Other \*Nix (Maybe, never tried):
+    BSD style command line tools (like MacOS and OpenBSD) will probably have
+    incompatabilites and you have to install GNU tools see:
+    https://www.topbug.net/blog/2013/04/14/install-and-use-gnu-command-line-tools-in-mac-os-x/
 
 (If you get this to work open up a issue with type of \*nix so I know it is possible.)
 
@@ -169,7 +172,7 @@ clean:
 	rm -fr $(BUILD_DIR)
 ```
 
-### A Penny For Your Thoughts ...
+**A Picture Is Worth a Thousand Words ...**
 
 <img src="./.dot-graph.svg" width=800>
 

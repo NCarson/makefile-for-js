@@ -15,4 +15,4 @@ TARGETS = $(TARGET_DIR)/index.html \
 		$(TARGET_DIR)/index.html.gz \
 		$(COMPRESS_FILES_GZ)
 
-include $(BASE_DIR)/.conf.makefile
+include $(BASE_DIR)/.makefiles/conf.makefile

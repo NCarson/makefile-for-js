@@ -12,4 +12,4 @@ TARGETS := $(TARGET_DIR)/$(UMD_BASENAME).min.js \
 	       $(TARGET_DIR)/$(UMD_BASENAME).js \
 	       $(TARGET_DIR)/$(UMD_BASENAME).js.gz \
 
-include $(BASE_DIR)/.conf.makefile
+include $(BASE_DIR)/.makefiles/conf.makefile
