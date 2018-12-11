@@ -6,7 +6,7 @@ endif
 #  Find files
 ######################################
 
-SRC_FILES = $(shell find $(SRC_DIR) $(_MFS_EXCLUDE) -name '*.js')  $(SRC_CONFIG)
+SRC_FILES = $(shell find $(SRC_DIR) $(_MFS_EXCLUDE) -name '*.js')
 ES5_FILES = $(patsubst $(SRC_DIR)%.js,$(BUILD_DIR)/%.js,$(SRC_FILES))
 
 ######################################
@@ -50,9 +50,9 @@ endif
 
 define mjs_make_bundle
 	@ mkdir -p `dirname $@`
-	@ $(call info_msg,browerisfy - $1,$2 $3,$(BOLD)$(MAGENTA))
-	@ $(BROWSERIFY) $5 -o $2 $(ES5_FILES) $(3)
-	@ $(call set_timestamp,$4)
+	@ $(call info_msg,browerisfy - $1,$2 $3 $4,$(BOLD)$(MAGENTA))
+	@ $(BROWSERIFY) $6 -o $2 $3 $4
+	@ $(call set_timestamp,$5)
 endef
 
 MFS_EXCLUDED_LIBS = $(JSON) -f $(EXCL_FILE) -a name
@@ -66,17 +66,17 @@ INC_DEPS = $(shell $(ONLY_INCLUDE) | sed 's/ / -r /g' | sed 's/^/ -r /')
 
 ## umd bundle
 %/$(UMD_BASENAME).js: $(ES5_FILES) $(DEP_FILE)
-	$(call mjs_make_bundle,umd,$@,$(EXC_DEPS),$(UMD_BASENAME),-s $(UMD_BASENAME))
+	$(call mjs_make_bundle,umd,$@,$(ES5_FILES),$(EXC_DEPS),$(UMD_BASENAME),-s $(UMD_BASENAME))
 
 .PRECIOUS: %/$(VENDOR_BASENAME).js
 ## vendor vendor bundle
 %/$(VENDOR_BASENAME).js: $(DEP_FILE)
-	$(call mjs_make_bundle,vendor,$@,$(INC_DEPS),$(VENDOR_BASENAME))
+	$(call mjs_make_bundle,vendor,$@,,$(INC_DEPS),$(VENDOR_BASENAME))
 
 .PRECIOUS: %/$(BUNDLE_BASENAME).js
 ## source bundle
 %/$(BUNDLE_BASENAME).js: $(DEP_FILE) $(ES5_FILES)
-	$(call mjs_make_bundle,bundle,$@,$(EXC_DEPS),$(BUNDLE_BASENAME))
+	$(call mjs_make_bundle,bundle,$@,$(ES5_FILES),$(EXC_DEPS),$(BUNDLE_BASENAME))
 
 ######################################
 # Transpile

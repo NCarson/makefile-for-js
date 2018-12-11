@@ -42,6 +42,8 @@ USE_CSS := 1
 # include targets for compiling templates
 USE_TEMPLATE := 1
 
+#USE_SOURCEMAPS := 1
+
 # set for react options on babel and eslint
 # you  still need to install babel transforms locally
 REACT := 1
@@ -49,6 +51,8 @@ REACT := 1
 # set for latest syntax like spread op and static classes
 # you  still need to install babel transforms locally
 POST_ES6 := 1
+
+#USE_CONFIG := 1
 
 ######################################
 #  Commands
@@ -93,9 +97,11 @@ BABEL ?= babel $(BABEL_OPTIONS)
 
 # for using cdn libs
 BROWSERIFY_OPTIONS ?= --transform browserify-global-shim 
-# add source maps in devolpment
-ifndef PRODUCTION
-	BROWSERIFY_OPTIONS += -d
+ifdef USE_SOURCEMAPS
+  # add source maps in development
+  ifndef PRODUCTION
+	  BROWSERIFY_OPTIONS += -d
+  endif
 endif
 
 # browserify is the only mainstream bundler that behaves well
@@ -204,7 +210,7 @@ endef
 
 .PHONY: all clean clean-gz 
 
-all: $(SRC_CONFIG) $(TARGETS)
+all: $(TARGETS)
 
 clean:
 	rm -f $(TARGETS)
@@ -248,13 +254,15 @@ else
    _MFS_EXCLUDE =  -not \( $(patsubst %,-path % -prune -o,$(EXCL_SRC_DIRS)) -path $(BUILD_DIR) -prune \)
 endif
 
-# switch out dev or prod config if necessary
-ifneq ($(realpath $(CONFIG)),$(shell realpath $(SRC_CONFIG)))
-  $(info $(call _info_msg,config - link,$(CONFIG),$(GREEN)))
-  $(shell test -f $(SRC_CONFIG) && rm -f $(SRC_CONFIG))
-  $(shell rm -f $(SRC_CONFIG))
-  $(shell ln -s $(CONFIG) $(SRC_CONFIG))
-  $(shell touch $(SRC_CONFIG))
+ifdef USE_CONFIG
+  # switch out dev or prod config if necessary
+  ifneq ($(realpath $(CONFIG)),$(shell realpath $(SRC_CONFIG)))
+    $(info $(call _info_msg,config - link,$(CONFIG),$(GREEN)))
+    $(shell test -f $(SRC_CONFIG) && rm -f $(SRC_CONFIG))
+    $(shell rm -f $(SRC_CONFIG))
+    $(shell ln -s $(CONFIG) $(SRC_CONFIG))
+    $(shell touch $(SRC_CONFIG))
+  endif
 endif
 
 ######################################
