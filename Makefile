@@ -1,6 +1,6 @@
 
-SUBDIRS := src/umd src/codesplit src template
-.PHONY: all clean $(SUBDIRS)
+SUBDIRS := src/umd src/codesplit src template 
+.PHONY: all clean $(SUBDIRS) publish
 
 print-%:
 	@ echo '$*=$($*)'
@@ -15,6 +15,11 @@ $(SUBDIRS):
 # after the source direcs
 template: src src/umd src/codesplit
 
+publish: clean
+	cd src && $(MAKE)
+	cd src/codesplit && $(MAKE)
+	cd src/umd && $(MAKE)
+	npm publish
 
 # rm all build files and start fresh
 clean:
