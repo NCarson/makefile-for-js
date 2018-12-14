@@ -1,6 +1,6 @@
 {
   "name": "makefile-for-js-example",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Example umd library build",
   "main": "dist/makefileforjs.js",
   "dependencies": {
