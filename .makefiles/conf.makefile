@@ -272,14 +272,14 @@ ifdef USE_JS
 
 .PHONY: clean-bundle clean-vendor clean-umd
 
-clean-bundle:
-	rm -f $(BUNDLE_TARGETS)
-
-clean-vendor:
-	rm -f $(VENDOR_TARGETS)
-
-clean-umd:
-	rm -f $(UMD_TARGETS)
+#clean-bundle:
+#	rm -f $(BUNDLE_TARGETS)
+#
+#clean-vendor:
+#	rm -f $(VENDOR_TARGETS)
+#
+#clean-umd:
+#	rm -f $(UMD_TARGETS)
 
 .PHONY: list-deps list-cdn phobia-deps phobia-cdn
 

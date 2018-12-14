@@ -39,11 +39,11 @@ create-../%: FORCE
 	
 # copy makefile includes to ../direc
 update-../%: FORCE
-	cp .makefiles/* ../$*/$(SRC)
+	cp .makefiles/* ../$*/
 
 test-../%: FORCE
 	cp .eslintrc.js ../$*
-	cp .makefiles/* ../$*/$(SRC)
+	cp .makefiles/* ../$*/
 	rm ../$*/$(SRC)/config.js
 	cd ../$* && npm i
 	cd ../$* && npm i node-emoji

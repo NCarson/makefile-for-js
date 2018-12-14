@@ -177,6 +177,7 @@ clean:
 <img src="./.dot-graph.svg" width=800>
 
 See `make dot-graph` from src/Makefile.
+
 ### config.js
 
 Normally make is in dev mode and links against config.dev.js
