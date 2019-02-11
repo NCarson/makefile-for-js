@@ -19,6 +19,8 @@ publish: clean
 	cd src && $(MAKE)
 	cd src/codesplit && $(MAKE)
 	cd src/umd && $(MAKE)
+	npm version patch
+	git push --tags
 	npm publish
 
 # rm all build files and start fresh
@@ -40,11 +42,13 @@ create-../%: FORCE
 	cp -n template/Makefile template/index.mustache ../$*/$(TEMPLATE)
 	cp -n config.dev.js config.prod.js ../$*
 	cp -n .stub.package.json ../$*/package.json
-	cp -n .conf.makefile .js.makefile .css.makefile .template.makefile ../$*
+	mkdir -p ../$*/.makefiles
+	cp -n .makefiles/* ../$*/.makefiles/
 	
 # copy makefile includes to ../direc
 update-../%: FORCE
-	cp .makefiles/* ../$*/
+	mkdir -p ../$*/.makefiles
+	cp .makefiles/* ../$*/.makefiles
 
 test-../%: FORCE
 	cp .eslintrc.js ../$*
