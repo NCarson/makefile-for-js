@@ -30,6 +30,7 @@ module.exports = {
         "no-floating-decimal": "off",
         "max-lines-per-function": "off",
         "no-mixed-spaces-and-tabs": "off",
+        "no-cond-assign": "off"
 
         "import/no-unresolved": "warn",
 

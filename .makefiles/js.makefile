@@ -25,7 +25,7 @@ $(EXCL_FILE):
 # 		          remove root       ignore local stuff       remove node_modules    first direc
 STRIP_DEPS ?= \
 	sed "s:^`cd $(BASE_DIR) && pwd`/::" |\
-	grep  "^$(strip $(MODULES_NAME))" |\
+	grep "^$(strip $(MODULES_NAME))" |\
 	sed "s:^$(strip $(MODULES_NAME))::" |\
 	cut -d "/" -f2 |sort |uniq
 
@@ -69,13 +69,14 @@ INC_DEPS = $(shell $(ONLY_INCLUDE) | sed 's/ / -r /g' | sed 's/^/ -r /')
 	$(call mjs_make_bundle,umd,$@,$(ES5_FILES),$(EXC_DEPS),$(UMD_BASENAME),-s $(UMD_BASENAME))
 
 .PRECIOUS: %/$(VENDOR_BASENAME).js
-## vendor vendor bundle
+## vendor bundle
 %/$(VENDOR_BASENAME).js: $(DEP_FILE)
 	$(call mjs_make_bundle,vendor,$@,,$(INC_DEPS),$(VENDOR_BASENAME))
 
 .PRECIOUS: %/$(BUNDLE_BASENAME).js
+$(info $(LOCAl_NODE_FILES))
 ## source bundle
-%/$(BUNDLE_BASENAME).js: $(DEP_FILE) $(ES5_FILES)
+%/$(BUNDLE_BASENAME).js: $(DEP_FILE) $(ES5_FILES) $(LOCAL_NODE_FILES)
 	$(call mjs_make_bundle,bundle,$@,$(ES5_FILES),$(EXC_DEPS),$(BUNDLE_BASENAME))
 
 ######################################
