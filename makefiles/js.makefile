@@ -9,17 +9,24 @@ SUFFIXES :=
 ######################################
 #  Babel
 #
-# you dont have to use babel but browserify will expect es5
+# you dont have to use babel but browserify will expect es5ish???
+
+BABEL_PRESETS ?= --presets=es2015
 
 ifdef REACT
-	BABEL_OPTIONS += --presets=es2015,react --plugins transform-react-jsx
-else
-	BABEL_OPTIONS += --presets=es2015
+	BABEL_PRESETS +=,react
+endif
+
+BABEL_OPTIONS := $(BABEL_PRESETS)
+ifdef REACT
+	BABEL_OPTIONS += --plugins transform-react-jsx
 endif
 
 # add source maps in devolpment
 ifndef PRODUCTION
+ifdef USE_SOURCEMAPS
 	BABEL_OPTIONS += --source-maps=inline
+endif
 endif
 
 # latest ES features
@@ -70,7 +77,8 @@ BUNDLE-PHOBIA ?=bundle-phobia
 ######################################
 
 SRC_FILES = $(shell find $(SRC_DIR) $(_MFS_EXCLUDE) -name '*.js')
-ES5_FILES = $(patsubst $(SRC_DIR)%.js,$(BUILD_DIR)/%.js,$(SRC_FILES))
+ES5_FILES = $(patsubst $(SRC_DIR)%.js,$(BUILD_DIR)%.js,$(SRC_FILES))
+$(info $(BUILD_DIR)|$(ES5_FILES))
 
 ######################################
 #  Rules
@@ -108,10 +116,11 @@ STRIP_DEPS ?= \
 	sed "s:^$(strip $(MODULES_NAME))::" |\
 	cut -d "/" -f2 |sort |uniq
 
+
 # notice order-only prereq: | 
 # ES5_FILES will only be a prereq if PACKAGE_LOCK is old.
 # Otherwise vendor would be dependent on ES5_FILES and always be rebuilt.
-%$(DEP_SUFFIX): $(EXCL_FILE) $(PACKAGE_LOCK) | $(ES5_FILES)
+$(DEP_FILE): $(EXCL_FILE) $(PACKAGE_LOCK) | $(ES5_FILES)
 	@$(call info_msg,browserify - find deps,$@,$(MAGENTA))
 	@$(BROWSERIFY) --list $(ES5_FILES) | $(STRIP_DEPS) > $@
 
