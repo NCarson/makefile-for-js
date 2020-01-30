@@ -35,6 +35,9 @@ CSS_TARGET := \
 	$(TARGET_DIR)/$(CSS_BASENAME).min.css \
 	$(TARGET_DIR)/$(CSS_BASENAME).min.css.gz
 
+# library targets
+#TARGETS  := $(shell find . -path ./build -prune -o -name '*.js' -print | awk '{print "../lib/" $$0}')
+
 # XXX these are main targets to build
 # aka $(BUNDLE_BASENAME).js would build unminifed and un-gzipped
 # remove them if you dont want to build them

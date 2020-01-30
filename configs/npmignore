@@ -3,7 +3,6 @@
 .git
 .gitignore
 Makefile
-conf.makefile
 config.dev.js
 config.js
 config.prod.js
