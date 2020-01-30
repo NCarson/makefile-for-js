@@ -12,13 +12,28 @@
 #  Knobs
 ######################################
 #XXX dont set bool type variables to zero. 
-#    DONT DO: USE_THINGY=0
-#	 DO: USE_THINGY=
-#	 this is because make usually checks for existance of variable being set
 
-USE_BABEL:= 1
+#    BAD: USE_THINGY=0
+#	 GOOD: USE_THINGY=
+#
+#	 This is because make usually checks for existance of variable being set.
+#
+#XXX  watch out with spaces when setting variables
+#	  make is very literal in setting things
+#
+#     BAD: BASE_DIR := .. # will evaluate to ' .. '
+#     GOOD: BASE_DIR :=..# will evaluate to '..'
 
-USE_LINTER:= 1
+#     So the value starts right after assingment symbol and ends
+#     at newline or comment hash.
+
+#XXX  debug tips
+#	  inline: $(info |$(BASE_DIR)|) #pipes help show spaces
+#	  command line: `make print-BASE_DIR`
+
+USE_BABEL := 1 #babel (needs global install)
+
+USE_LINTER := 1 #eslint (needs global install)
 
 # set for easier debugging in web console
 USE_SOURCEMAPS := 1
@@ -31,12 +46,6 @@ REACT := 1
 # you still need to install babel transforms locally
 POST_ES6 := 1
 
-#turn off linter or set your own
-#LINTER :=
-
-#turn off babel or set your own
-#BABEL :=
-
 ######################################
 #  Direcs and files
 ######################################
@@ -47,6 +56,7 @@ BUILD_DIR := $(SRC_DIR)/build
 
 ######################################
 #  Package build
+#
 VENDOR_BASENAME := vendor # this will be the name of vendor bundle in TARGET_DIR
 BUNDLE_BASENAME := bundle # this will be the name of your source bundle TARGET_DIR
 TARGET_DIR := $(BASE_DIR)/public/dist  #finished files go here
@@ -88,9 +98,13 @@ TARGETS :=  $(BUNDLE_TARGET) $(VENDOR_TARGET)
 #    $(TARGET_DIR)/PostgrestFetcher.js \ # for individual imports
 #	 $(TARGET_DIR)/PostgrestQuery.js # etc ...
 
+#FIXME find the find command to pull out targets
 ######################################
 # Includes / Default Rules
 ######################################
+
+####################################
+# Rules
 
 .PHONY: all
 all: $(TARGETS)
@@ -100,24 +114,33 @@ clean:
 	rm -f $(TARGETS)
 	rm -fr $(BUILD_DIR)
 
-MAKE_DIR:= $(BASE_DIR)/makefile-for-js/makefiles/
-include $(MAKE_DIR)/common.makefile
-# you may want to take a peek at this also
-# as it contains other variables that can be changed from here.
-include $(MAKE_DIR)/js.makefile 
-
 #  makes a dependency graph with dot (super coolio)
 #  https://github.com/lindenb/makefile2graph
 .PHONY: dot-graph
 dot-graph: $(TARGETS) 
 	make -Bnd | make2graph | dot -Tsvg -o ../.dot-graph.svg
 
-# XXX define your own rules AFTER the includes
-# otherwise you will overwrite the default
-# rule, aka `make all` without arguments.
+####################################
+# Includes
+#
+MAKE_DIR:= $(BASE_DIR)/makefile-for-js/makefiles/
+include $(MAKE_DIR)/common.makefile
+# you may want to take a peek at this also
+# as it contains other variables that can be changed.
+include $(MAKE_DIR)/js.makefile 
+
+####################################
+# Custom programs (have to go after includes)
+#
+#LINTER := #set your own linter
+#BABEL := #set your own transpiler
+#BROWSERIFY := #custom browserify / browserify options
 
 ######################################
 # Your rules
 ######################################
+# XXX define your own rules AFTER the includes
+# 	  otherwise you will overwrite the default
+# 	  rule, aka `make all` without arguments.
 
 

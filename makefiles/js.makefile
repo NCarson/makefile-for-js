@@ -49,7 +49,7 @@ BROWSERIFY += $(BROWSERIFY_OPTIONS)
 UGLIFYJS ?= uglifyjs $(UGLIFYJS_OPTIONS)
 
 # optional linter
-LINTER_OPTIONS := --parser babel-eslint --plugin import
+LINTER_OPTIONS ?= --parser babel-eslint --plugin import
 ifdef REACT
 	LINTER_OPTIONS += --plugin react
 endif 
@@ -60,14 +60,12 @@ LINTER ?= eslint $(LINTER_OPTIONS)
 # npm i -g bundle-phobia
 BUNDLE-PHOBIA ?= bundle-phobia 
 
-
 ######################################
 #  Find files
 ######################################
 
 SRC_FILES = $(shell find $(SRC_DIR) $(_MFS_EXCLUDE) -name '*.js')
 ES5_FILES = $(patsubst $(SRC_DIR)%.js,$(BUILD_DIR)/%.js,$(SRC_FILES))
-
 
 ######################################
 #  Rules
