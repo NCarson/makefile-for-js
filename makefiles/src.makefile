@@ -41,24 +41,22 @@ POST_ES6 := 1
 #  Direcs and files
 ######################################
 
-BASE_DIR := ..
-SRC_DIR := ./
-BUILD_DIR := $(SRC_DIR)/build
+MAKE_DIR:= $(BASE_DIR)/makefile-for-js/makefiles/ # library of makefiles for includes
+BASE_DIR := .. # root direc of project
+SRC_DIR := ./ # src file direc
+BUILD_DIR := $(SRC_DIR)/build # intermediate build files
+#EXCL_SRC_DIRS := ./leave_me_alone ./and_me # ignore these direcs while building sources
+
+# Set this if you have a local node module
+# in another directory i.e. npm install --save ../my/local/node_module/.
+# This will will rebuild the bundle every time these dependencies change.
+#LOCAL_NODE_FILES =
 
 ######################################
 #  Package build
 VENDOR_BASENAME := vendor # this will be the name of vendor bundle in TARGET_DIR
 BUNDLE_BASENAME := bundle # this will be the name of your source bundle TARGET_DIR
 TARGET_DIR := $(BASE_DIR)/public/dist  #finished files go here
-
-# set this for ignored directories in your source direc
-# EXCL_SRC_DIRS := ./leave_me_alone ./and_me
-
-# Set this if you have a local node module
-# in another directory i.e. npm install --save ../my/local/node_module/.
-# This will will rebuild the bundle every time these dependencies change.
-#
-#LOCAL_NODE_FILES =
 
 #XXX make sure to define ungzipped version along 
 #    with gzipped so `make clean` works correctly.
@@ -76,17 +74,23 @@ TARGETS :=  $(BUNDLE_TARGET) $(VENDOR_TARGET)
 ######################################
 #  UMD libary build
 
+#TARGET_DIR := $(BASE_DIR)/lib  #finished files go here
+
 #UMD_BASENAME := umd
 #UMD_TARGET := \
 #	$(TARGET_DIR)/$(UMD_BASENAME).min.js \
 #	$(TARGET_DIR)/$(UMD_BASENAME).min.js.gz
 #
+# hand library targets
 #TARGETS := \
 #    $(TARGET_DIR)/../dist/$(UMD_BASENAME).js \
 #    $(TARGET_DIR)/../dist/$(UMD_BASENAME).min.js \
 #    $(TARGET_DIR)/../dist/$(UMD_BASENAME).min.js.gz \ # all components bundled
 #    $(TARGET_DIR)/PostgrestFetcher.js \ # for individual imports
 #	 $(TARGET_DIR)/PostgrestQuery.js # etc ...
+#
+# auto per file library targets
+#TARGETS  += $(shell find . -path ./build -prune -o -name '*.js' -print | awk '{print "../lib/" $$0}')
 
 ######################################
 # Includes / Default Rules
@@ -98,16 +102,15 @@ all: $(TARGETS)
 .PHONY: clean
 clean:
 	rm -f $(TARGETS)
-	rm -fr $(BUILD_DIR)
+	rm -fr $(BUILD_DIR) # dont put things you love in BUILD_DIR
 
-MAKE_DIR:= $(BASE_DIR)/makefile-for-js/makefiles/
 include $(MAKE_DIR)/common.makefile
 # you may want to take a peek at this also
 # as it contains other variables that can be changed from here.
 include $(MAKE_DIR)/js.makefile 
 
 #  makes a dependency graph with dot (super coolio)
-#  https://github.com/lindenb/makefile2graph
+#  install dot and https://github.com/lindenb/makefile2graph
 .PHONY: dot-graph
 dot-graph: $(TARGETS) 
 	make -Bnd | make2graph | dot -Tsvg -o ../.dot-graph.svg

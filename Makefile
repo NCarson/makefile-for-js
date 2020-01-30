@@ -7,6 +7,7 @@ NPM_FILES := \
 	$(CONFIG_DIR)/eslintrc.js.mjs  \
 	$(CONFIG_DIR)/exclude.cdn.json.mjs \
 	$(CONFIG_DIR)/npmignore.mjs \
+	$(CONFIG_DIR)/gitignore.mjs \
 	$(CONFIG_DIR)/package.json.mjs
 
 all: src npm
