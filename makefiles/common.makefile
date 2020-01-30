@@ -1,10 +1,3 @@
-#TODO find a good way to see if commands are present
-
-#XXX dont set bool type variables to zero. 
-#    DONT DO: USE_THINGY=0
-#	 DO: USE_THINGY=
-#	 this is because make usually checks for existance of variable being set
-
 ######################################
 # Common Vars
 ######################################
@@ -70,16 +63,11 @@ endef
 #	 first default 'all' rule.
 #
 
-#debug variable: `make print-MYVAR`
-#https://blog.melski.net/2010/11/30/makefile-hacks-print-the-value-of-any-variable/
-print-%:
-	@ echo '$*=$($*)'
-
 # gzip is probably installed, sudo apt-get install gzip
 GZIP ?= gzip $(GZIP_OPTIONS)
 .PRECIOUS: %.gz
-	#gzipped
-	%.gz: %
+#gzipped
+%.gz: %
 	@ $(call info_msg,gizp - compress,$@,$(BLUE))
 	@ $(GZIP) $< --stdout > $@
 
@@ -90,4 +78,24 @@ $(TARGET_DIR)%: $(BUILD_DIR)%
 	@ mkdir -p $(shell dirname $@)
 	@ cp $(patsubst $(TARGET_DIR)%,$(BUILD_DIR)%,$@) $@
 
+
+#debug variable: `make print-MYVAR`
+#https://blog.melski.net/2010/11/30/makefile-hacks-print-the-value-of-any-variable/
+print-%:
+	@ echo '$*=$($*)'
+MJS_HELP +=\nprint-%: print-varname - prints the value of varname
+
+_VARS_OLD := $(.VARIABLES)
+CUR-DIR := $(shell pwd)
+printall:
+	$(foreach v,                                        \
+		  $(filter-out $(_VARS_OLD) _VARS_OLD,$(.VARIABLES)), \
+		  $(info $(v) = $($(v))))
+MJS_HELP +=\nprintall: print all variables and values known to make
+
+export MJS_HELP
+.PHONY: help
+help:
+	@ echo "$$MJS_HELP"
+MJS_HELP +=\nhelp: print this message
 
