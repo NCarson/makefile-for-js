@@ -1,3 +1,8 @@
+
+# wipe out built in C stuff
+MAKEFLAGS += --no-builtin-rules
+SUFFIXES :=
+
 ######################################
 #  Commands
 ######################################
@@ -39,27 +44,26 @@ endif
 
 # browserify is the only mainstream bundler that behaves well
 # on the command line. Very necessary
-BROWSERIFY ?= browserify
-BROWSERIFY += $(BROWSERIFY_OPTIONS)
+BROWSERIFY ?=browserify
+BROWSERIFY +=$(BROWSERIFY_OPTIONS)
 
 ######################################
 #  Others
 
 # You dont need uglifyjs if you do not specify min.js or min.js.gz targets.
-UGLIFYJS ?= uglifyjs $(UGLIFYJS_OPTIONS)
+UGLIFYJS ?=uglifyjs $(UGLIFYJS_OPTIONS)
 
 # optional linter
-LINTER_OPTIONS := --parser babel-eslint --plugin import
+LINTER_OPTIONS ?= --parser babel-eslint --plugin import
 ifdef REACT
 	LINTER_OPTIONS += --plugin react
 endif 
 #npm i -g eslint
-LINTER ?= eslint $(LINTER_OPTIONS) 
+LINTER ?=eslint $(LINTER_OPTIONS) 
 
 #optional for phobia rule
 # npm i -g bundle-phobia
-BUNDLE-PHOBIA ?= bundle-phobia 
-
+BUNDLE-PHOBIA ?=bundle-phobia 
 
 ######################################
 #  Find files
@@ -68,7 +72,6 @@ BUNDLE-PHOBIA ?= bundle-phobia
 SRC_FILES = $(shell find $(SRC_DIR) $(_MFS_EXCLUDE) -name '*.js')
 ES5_FILES = $(patsubst $(SRC_DIR)%.js,$(BUILD_DIR)/%.js,$(SRC_FILES))
 
-
 ######################################
 #  Rules
 ######################################
@@ -76,16 +79,15 @@ ES5_FILES = $(patsubst $(SRC_DIR)%.js,$(BUILD_DIR)/%.js,$(SRC_FILES))
 ######################################
 # in case package lock does not exist
 #
-PACKAGE_LOCK ?= $(BASE_DIR)/package-lock.json # the npm package-lock
+PACKAGE_LOCK ?=$(BASE_DIR)/package-lock.json # the npm package-lock
 $(PACKAGE_LOCK):
 	$(call info_message,touch - create,$@)
 	@ touch $(PACKAGE_LOCK)
 
-
 ######################################
 # cdn libs to exclude from bundles
 
-EXCL_SUFFIX ?= .cdn.json
+EXCL_SUFFIX ?=.cdn.json
 EXCL_FILE ?= $(BASE_DIR)/.exclude$(EXCL_SUFFIX) # libs listed here wont be built in bundle or vendor (for cdn)
 $(EXCL_FILE):
 	@ $(call info_msg,json - create,$@,$(BOLD))
@@ -95,9 +97,9 @@ $(EXCL_FILE):
 # keeps track of vendor stuff that
 # should only be rebuild if npm has updated
  
-DEP_SUFFIX ?= .deps
-DEP_FILE ?= $(BUILD_DIR)/.$(VENDOR_BASENAME)$(DEP_SUFFIX) # keeps track of what modules the bundle is using
-MODULES_NAME ?= node_modules# npm direc name
+DEP_SUFFIX ?=.deps
+DEP_FILE ?=$(BUILD_DIR)/.$(VENDOR_BASENAME)$(DEP_SUFFIX) # keeps track of what modules the bundle is using
+MODULES_NAME ?=node_modules# npm direc name
 ## strips library paths to import names
 # 		          remove root       ignore local stuff       remove node_modules    first direc
 STRIP_DEPS ?= \
@@ -113,16 +115,17 @@ STRIP_DEPS ?= \
 	@$(call info_msg,browserify - find deps,$@,$(MAGENTA))
 	@$(BROWSERIFY) --list $(ES5_FILES) | $(STRIP_DEPS) > $@
 
+
 ######################################
 # minfy
 .PRECIOUS: %.min.js
 %.min.js: %.js
 	@ mkdir -p `dirname $@`
 ifdef PRODUCTION
-	@ $(call info_msg,uglify - minify (prod/on),$@,$(BLUE))
+	@ $(call info_msg,uglify - minify (production),$@,$(BLUE))
 	@ $(UGLIFYJS) -cmo $@ $<
 else
-	@ $(call info_msg,uglify - minify (dev/off),$@,$(GRAY))
+	@ $(call info_msg,uglify - minify (development),$@,$(GRAY))
 	@ cp $< $@ #were pretending to uglify since were in dev mode
 endif
 
@@ -147,17 +150,20 @@ INC_DEPS = $(shell $(ONLY_INCLUDE) | sed 's/ / -r /g' | sed 's/^/ -r /')
 %/$(UMD_BASENAME).js: $(ES5_FILES) $(DEP_FILE)
 	$(call mjs_make_bundle,umd,$@,$(ES5_FILES),$(EXC_DEPS),$(UMD_BASENAME),-s $(UMD_BASENAME))
 
+
 ######################################
 ## vendor bundle
 .PRECIOUS: %/$(VENDOR_BASENAME).js
 %/$(VENDOR_BASENAME).js: $(DEP_FILE)
 	$(call mjs_make_bundle,vendor,$@,,$(INC_DEPS),$(VENDOR_BASENAME))
 
+
 ######################################
 ## source bundle
 .PRECIOUS: %/$(BUNDLE_BASENAME).js
 %/$(BUNDLE_BASENAME).js: $(DEP_FILE) $(ES5_FILES) $(LOCAL_NODE_FILES)
 	$(call mjs_make_bundle,bundle,$@,$(ES5_FILES),$(EXC_DEPS),$(BUNDLE_BASENAME))
+
 
 ######################################
 ## transpile
@@ -180,7 +186,7 @@ endif
 # Others
 .PHONY: list-deps list-cdn phobia-deps phobia-cdn
 
-#TODO where is mfs_excluded_libs?
+#FIXME where is mfs_excluded_libs?
 #list-cdn:
 #	@ $(mfs_excluded_libs)
 
@@ -189,9 +195,18 @@ endif
  
 list-deps:
 	@cat $(DEP_FILE)
+MJS_HELP +=\nlist-deps: show local dependencies
 
 phobia-deps: $(DEP_FILE) list-deps
 	@cat $(DEP_FILE) | xargs -L1 $(BUNDLE-PHOBIA)
+MJS_HELP +=\nphobia-deps: list package dependencies from bundle-phobia (`npm i -g bundle-phobia`)
+
+#  makes a dependency graph with dot (super coolio)
+#  https://github.com/lindenb/makefile2graph
+.PHONY: dot-graph
+dot-graph: $(TARGETS) 
+	make -Bnd | make2graph | dot -Tsvg -o ../.dot-graph.svg
+MJS_HELP +=\ndot-graph: create a dependency graph of targets (needs makefile2graph https://github.com/lindenb/makefile2graph)
 
 
 

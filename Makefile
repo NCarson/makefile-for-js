@@ -13,7 +13,7 @@ NPM_FILES := \
 all: src npm
 
 .PHONY: src
-src: $(SRC_DIR)/src.makefile
+src: $(MAKE_DIR)/src.makefile
 	cd $(MAKE_DIR) && mkdir -p $(SRC_DIR) && install -m644 -p -t $(SRC_DIR) src.makefile
 
 .PHONY: npm
