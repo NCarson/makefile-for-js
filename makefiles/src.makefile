@@ -100,10 +100,11 @@ clean:
 	rm -f $(TARGETS)
 	rm -fr $(BUILD_DIR)
 
-include $(BASE_DIR)/.makefiles/common.makefile
+MAKE_DIR:= $(BASE_DIR)/makefile-for-js/makefiles/
+include $(MAKE_DIR)/common.makefile
 # you may want to take a peek at this also
 # as it contains other variables that can be changed from here.
-include $(BASE_DIR)/.makefiles/js.makefile 
+include $(MAKE_DIR)/js.makefile 
 
 #  makes a dependency graph with dot (super coolio)
 #  https://github.com/lindenb/makefile2graph
