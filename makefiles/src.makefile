@@ -100,6 +100,8 @@ TARGETS :=  $(BUNDLE_TARGET) $(VENDOR_TARGET)
 #
 #    find all source files (on default export per file) and append ../lib direc to them
 #    TARGETS  := $(shell find . -path ./build -prune -o -name '*.js' -print | awk '{print "../lib/" $$0}')
+#	 TARGETS += $(patsubst %.js,%.min.js,$(TARGETS))# minified
+#	 TARGETS += $(patsubst %.js,%.min.js.gz,$(TARGETS))# gzipped
 
 #FIXME find the find command to pull out targets
 ######################################
