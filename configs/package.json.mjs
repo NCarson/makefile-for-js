@@ -1,27 +1,34 @@
 {
   "name": "",
   "version": "",
+  "description": "",
   "main": "",
+  "files": [
+  ],
+  "repository": {
+    "type": "",
+    "url": ""
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
   "author": "",
   "license": "",
-  "description": "",
-  "devDependencies": {
-    "babel-eslint": "^8.2.6",
-    "babel-plugin-transform-class-properties": "^6.24.1",
-    "babel-plugin-transform-object-rest-spread": "^6.26.0",
-    "babel-plugin-transform-jsx": "^2.0.0",
-    "babel-preset-es2015": "^6.24.1",
-    "babel-preset-react": "^6.24.1",
-    "babel-runtime": "^6.26.0",
-    "browserify-global-shim": "^1.0.3",
-    "eslint": "^5.3.0",
-    "eslint-plugin-import": "^2.14.0",
-    "eslint-plugin-react": "^7.11.1"
+  "dependencies": {
   },
-  "browserify-global-shim": {
+  "peerDependicies": {
+  },
+  "devDependencies": {
+    "@babel/core": "^7.8.4",
+    "@babel/plugin-proposal-class-properties": "^7.8.3",
+    "@babel/plugin-syntax-dynamic-import": "^7.8.3",
+    "@babel/plugin-transform-object-assign": "^7.8.3",
+    "@babel/plugin-transform-react-jsx": "^7.8.3",
+    "@babel/preset-env": "^7.8.4",
+    "@babel/preset-react": "^7.8.3",
+    "browserify-global-shim": "^1.0.3",
+    "eslint": "^6.8.0",
+    "eslint-plugin-import": "^2.20.0",
+    "eslint-plugin-react": "^7.18.0"
   }
 }
