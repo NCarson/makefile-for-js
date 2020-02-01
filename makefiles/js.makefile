@@ -6,22 +6,27 @@ SUFFIXES :=
 ######################################
 #  Commands
 ######################################
+
+JSON ?= json#<https://github.com/trentm/json> for project details.
+
+# You dont need uglifyjs if you do not specify min.js or min.js.gz targets.
+UGLIFYJS ?=npx uglifyjs $(UGLIFYJS_OPTIONS)
+
+# optional linter
+LINTER_OPTIONS ?= --parser babel-eslint --plugin import
+ifdef REACT
+	LINTER_OPTIONS += --plugin react
+endif 
+LINTER ?=npx eslint $(LINTER_OPTIONS) 
+
+#optional for phobia rule
+BUNDLE-PHOBIA ?= npx bundle-phobia/index.js
+
 ######################################
 #  Babel
 #
 # you dont have to use babel but browserify will expect es5ish???
-
-BABEL_PRESETS ?= --presets=es2015
-
-ifdef REACT
-	BABEL_PRESETS +=,react
-endif
-
-BABEL_OPTIONS := $(BABEL_PRESETS)
-ifdef REACT
-	BABEL_OPTIONS += --plugins transform-react-jsx
-endif
-
+#
 # add source maps in devolpment
 ifndef PRODUCTION
 ifdef USE_SOURCEMAPS
@@ -29,13 +34,18 @@ ifdef USE_SOURCEMAPS
 endif
 endif
 
-# latest ES features
-ifdef POST_ES6 
-	BABEL_OPTIONS += --plugins transform-object-rest-spread,transform-class-properties 
+BABEL_OPTIONS := --presets=@babel/preset-env
+
+ifdef REACT
+	BABEL_REACT_OPTIONS += --presets=@babel/preset-react --plugins @babel/plugin-transform-react-jsx
 endif
 
-BABEL ?= babel
-BABEL += $(BABEL_OPTIONS) 
+# latest ES features
+ifdef POST_ES6 
+	BABEL_OPTIONS += --plugins @babel/plugin-transform-object-assign,@babel/plugin-proposal-class-properties,@babel/plugin-syntax-dynamic-import
+endif
+
+BABEL ?= npx babel $(BABEL_OPTIONS) $(BABEL_REACT_OPTIONS)
 
 ######################################
 #  Browserify
@@ -43,34 +53,16 @@ BABEL += $(BABEL_OPTIONS)
 # for using cdn libs
 BROWSERIFY_OPTIONS ?= --transform browserify-global-shim 
 ifdef USE_SOURCEMAPS
-	# add source maps in development
-	ifndef PRODUCTION
-	BROWSERIFY_OPTIONS += -d
+# add source maps in development
+ifndef PRODUCTION
+BROWSERIFY_OPTIONS += -d
 endif
 endif
 
 # browserify is the only mainstream bundler that behaves well
 # on the command line. Very necessary
-BROWSERIFY ?=browserify
-BROWSERIFY +=$(BROWSERIFY_OPTIONS)
+BROWSERIFY ?= npx browserify $(BROWSERIFY_OPTIONS)
 
-######################################
-#  Others
-
-# You dont need uglifyjs if you do not specify min.js or min.js.gz targets.
-UGLIFYJS ?=uglifyjs $(UGLIFYJS_OPTIONS)
-
-# optional linter
-LINTER_OPTIONS ?= --parser babel-eslint --plugin import
-ifdef REACT
-	LINTER_OPTIONS += --plugin react
-endif 
-#npm i -g eslint
-LINTER ?=eslint $(LINTER_OPTIONS) 
-
-#optional for phobia rule
-# npm i -g bundle-phobia
-BUNDLE-PHOBIA ?=bundle-phobia 
 
 ######################################
 #  Find files
@@ -78,7 +70,6 @@ BUNDLE-PHOBIA ?=bundle-phobia
 
 SRC_FILES = $(shell find $(SRC_DIR) $(_MFS_EXCLUDE) -name '*.js')
 ES5_FILES = $(patsubst $(SRC_DIR)%.js,$(BUILD_DIR)%.js,$(SRC_FILES))
-$(info $(BUILD_DIR)|$(ES5_FILES))
 
 ######################################
 #  Rules
@@ -102,28 +93,29 @@ $(EXCL_FILE):
 	@ echo "[]" > $@
 
 ######################################
-# keeps track of vendor stuff that
-# should only be rebuild if npm has updated
+# dep file
  
 DEP_SUFFIX ?=.deps
 DEP_FILE ?=$(BUILD_DIR)/.$(VENDOR_BASENAME)$(DEP_SUFFIX) # keeps track of what modules the bundle is using
 MODULES_NAME ?=node_modules# npm direc name
+
+## FIXME @ modular libries are broken. (just ignores them for now)
 ## strips library paths to import names
-# 		          remove root       ignore local stuff       remove node_modules    first direc
+#remove root, ignore local stuff, remove node_modules, first direc, no modular, 
 STRIP_DEPS ?= \
 	sed "s:^`cd $(BASE_DIR) && pwd`/::" |\
 	grep "^$(strip $(MODULES_NAME))" |\
 	sed "s:^$(strip $(MODULES_NAME))::" |\
-	cut -d "/" -f2 |sort |uniq
-
+	cut -d "/" -f2 |sort |uniq |\
+	grep -v ^@
 
 # notice order-only prereq: | 
 # ES5_FILES will only be a prereq if PACKAGE_LOCK is old.
 # Otherwise vendor would be dependent on ES5_FILES and always be rebuilt.
 $(DEP_FILE): $(EXCL_FILE) $(PACKAGE_LOCK) | $(ES5_FILES)
 	@$(call info_msg,browserify - find deps,$@,$(MAGENTA))
+	@mkdir -p $(BUILD_DIR)
 	@$(BROWSERIFY) --list $(ES5_FILES) | $(STRIP_DEPS) > $@
-
 
 ######################################
 # minfy
@@ -155,10 +147,11 @@ INC_DEPS = $(shell $(ONLY_INCLUDE) | sed 's/ / -r /g' | sed 's/^/ -r /')
 
 ######################################
 ## umd bundle
-.PRECIOUS: %/$(UMD_BASENAME).js
-%/$(UMD_BASENAME).js: $(ES5_FILES) $(DEP_FILE)
-	$(call mjs_make_bundle,umd,$@,$(ES5_FILES),$(EXC_DEPS),$(UMD_BASENAME),-s $(UMD_BASENAME))
 
+# we dont need dep file with umd
+.PRECIOUS: %/$(UMD_BASENAME).js
+%/$(UMD_BASENAME).js: $(ES5_FILES) 
+	$(call mjs_make_bundle,umd,$@,$(ES5_FILES),$(EXC_DEPS),$(UMD_BASENAME),-s $(UMD_BASENAME))
 
 ######################################
 ## vendor bundle
@@ -175,18 +168,17 @@ INC_DEPS = $(shell $(ONLY_INCLUDE) | sed 's/ / -r /g' | sed 's/^/ -r /')
 
 
 ######################################
-## transpile
+## transpile - lint and babel
 .PRECIOUS: $(BUILD_DIR)/%.js
-## lint and babel
-$(BUILD_DIR)/%.js: %.js 
+$(BUILD_DIR)/%.js: $(SRC_DIR)/%.js 
 	@ mkdir -p `dirname $@`
 ifneq ($(USE_LINTER),)
-	@ $(call info_msg,eslint - lint,$<,$(GREEN))
-	@ $(LINTER) $<
+	@ $(call info_msg,eslint - lint,$(SRC_DIR)$<,$(GREEN))
+	@ $(LINTER) $(SRC_DIR)/$<
 endif
 ifneq ($(USE_BABEL),)
 	@ $(call info_msg,babel - transplile,$@,$(BOLD)$(GREEN))
-	@ $(BABEL) $< --out-file $@ 
+	@ $(BABEL) $(SRC_DIR)/$< --out-file $@ 
 else
 	@ cp $< $@
 endif

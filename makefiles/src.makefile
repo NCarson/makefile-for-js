@@ -89,15 +89,12 @@ TARGETS :=  $(BUNDLE_TARGET) $(VENDOR_TARGET)
 ######################################
 #  UMD libary build
 
-#UMD_BASENAME :=umd
-#UMD_TARGET := \
-#	$(TARGET_DIR)/$(UMD_BASENAME).min.js \
-#	$(TARGET_DIR)/$(UMD_BASENAME).min.js.gz
-#
+#TARGET_DIR :=$(BASE_DIR)/lib# finished files go here
+#UMD_BASENAME :=umd#XXX this needs to be different from the source file names
 #TARGETS := \
-#    $(TARGET_DIR)/../dist/$(UMD_BASENAME).js \
-#    $(TARGET_DIR)/../dist/$(UMD_BASENAME).min.js \
-#    $(TARGET_DIR)/../dist/$(UMD_BASENAME).min.js.gz \ # all components bundled
+#    $(TARGET_DIR)/$(UMD_BASENAME).js \
+#    $(TARGET_DIR)/$(UMD_BASENAME).min.js \
+#    $(TARGET_DIR)/$(UMD_BASENAME).min.js.gz \ # all components bundled
 #    $(TARGET_DIR)/PostgrestFetcher.js \ # for individual imports
 #	 $(TARGET_DIR)/PostgrestQuery.js # etc ...
 
