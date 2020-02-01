@@ -97,6 +97,9 @@ TARGETS :=  $(BUNDLE_TARGET) $(VENDOR_TARGET)
 #    $(TARGET_DIR)/$(UMD_BASENAME).min.js.gz \ # all components bundled
 #    $(TARGET_DIR)/PostgrestFetcher.js \ # for individual imports
 #	 $(TARGET_DIR)/PostgrestQuery.js # etc ...
+#
+#    find all source files (on default export per file) and append ../lib direc to them
+#    TARGETS  := $(shell find . -path ./build -prune -o -name '*.js' -print | awk '{print "../lib/" $$0}')
 
 #FIXME find the find command to pull out targets
 ######################################
