@@ -99,9 +99,14 @@ TARGETS :=  $(BUNDLE_TARGET) $(VENDOR_TARGET)
 #	 $(TARGET_DIR)/PostgrestQuery.js # etc ...
 #
 #    find all source files (on default export per file) and append ../lib direc to them
-#    TARGETS  := $(shell find . -path ./build -prune -o -name '*.js' -print | awk '{print "../lib/" $$0}')
+#    leave out index as that probably goes in PROJECT_ROOT
+#	 TARGETS := $(shell find . -path ./build -prune -o -name '*.js' -print \
+#	 | grep -v ^./index.js$ \
+#	 | awk '{print "$(TARGET_DIR)" $$0}'  \
+#	 )
 #	 TARGETS += $(patsubst %.js,%.min.js,$(TARGETS))# minified
-#	 TARGETS += $(patsubst %.js,%.min.js.gz,$(TARGETS))# gzipped
+#    TARGETS += $(patsubst %.js,%.min.js.gz,$(TARGETS))# gzipped
+#    TARGETS += ../index.js
 
 #FIXME find the find command to pull out targets
 ######################################

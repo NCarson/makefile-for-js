@@ -63,6 +63,19 @@ endef
 #	 first default 'all' rule.
 #
 
+#FIXME move these js.makefile
+
+#move index.js to base dir
+$(BASE_DIR)/index.%: $(TARGET_DIR)/index.%
+	@ $(call info_msg,index.js - mv,$@,$(WHITE))
+	@ mv $< $@
+
+# everything is built in the BUILD_DIR and then moved to TARGET_DIR
+$(TARGET_DIR)%: $(BUILD_DIR)%
+	@ $(call info_msg,target - cp,$@,$(WHITE))
+	@ mkdir -p $(shell dirname $@)
+	@ cp $(patsubst $(TARGET_DIR)%,$(BUILD_DIR)%,$@) $@
+
 # gzip is probably installed, sudo apt-get install gzip
 GZIP ?= gzip $(GZIP_OPTIONS)
 .PRECIOUS: %.gz
@@ -70,13 +83,6 @@ GZIP ?= gzip $(GZIP_OPTIONS)
 %.gz: %
 	@ $(call info_msg,gizp - compress,$@,$(BLUE))
 	@ $(GZIP) $< --stdout > $@
-
-
-# everything is built in the BUILD_DIR and then moved to TARGET_DIR
-$(TARGET_DIR)%: $(BUILD_DIR)%
-	@ $(call info_msg,target - cp,$@,$(WHITE))
-	@ mkdir -p $(shell dirname $@)
-	@ cp $(patsubst $(TARGET_DIR)%,$(BUILD_DIR)%,$@) $@
 
 
 #debug variable: `make print-MYVAR`

@@ -173,7 +173,7 @@ INC_DEPS = $(shell $(ONLY_INCLUDE) | sed 's/ / -r /g' | sed 's/^/ -r /')
 $(BUILD_DIR)/%.js: $(SRC_DIR)/%.js 
 	@ mkdir -p `dirname $@`
 ifneq ($(USE_LINTER),)
-	@ $(call info_msg,eslint - lint,$(SRC_DIR)$<,$(GREEN))
+	@ $(call info_msg,eslint - lint,$<,$(GREEN))
 	@ $(LINTER) $(SRC_DIR)/$<
 endif
 ifneq ($(USE_BABEL),)
