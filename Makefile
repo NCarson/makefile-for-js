@@ -2,6 +2,7 @@ MAKE_DIR := makefiles
 CONFIG_DIR := configs
 ROOT_DIR := $(shell cd ..; echo `pwd`)
 SRC_DIR := $(ROOT_DIR)/src
+BABEL_LIB := /usr/local/lib/node_modules/@babel#XXX may be somewhere else ):
 
 NPM_FILES := \
 	$(CONFIG_DIR)/eslintrc.js.mjs  \
@@ -19,3 +20,4 @@ src: $(MAKE_DIR)/src.makefile
 .PHONY: npm
 npm: $(NPM_FILES)
 	install -m644 -p -t $(ROOT_DIR) $(NPM_FILES) $(MAKE_DIR)/root.makefile
+	cd .. && ln -s $(BABEL_LIB)
