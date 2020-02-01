@@ -9,26 +9,27 @@ SUFFIXES :=
 ######################################
 #  Babel
 #
-# you dont have to use babel but browserify will expect es5
-
-ifdef REACT
-	BABEL_OPTIONS += --presets=es2015,react --plugins transform-react-jsx
-else
-	BABEL_OPTIONS += --presets=es2015
-endif
-
+# you dont have to use babel but browserify will expect es5ish???
+#
 # add source maps in devolpment
 ifndef PRODUCTION
+	ifdef USE_SOURCEMAPS
 	BABEL_OPTIONS += --source-maps=inline
 endif
+endif
+
+BABEL_OPTIONS += --presets=es2015
+
+ifdef REACT
+	BABEL_OPTIONS += ,react --plugins transform-react-jsx
+else
 
 # latest ES features
 ifdef POST_ES6 
 	BABEL_OPTIONS += --plugins transform-object-rest-spread,transform-class-properties 
 endif
 
-BABEL ?= babel
-BABEL += $(BABEL_OPTIONS) 
+BABEL ?= npx babel $(BABEL_OPTIONS)
 
 ######################################
 #  Browserify

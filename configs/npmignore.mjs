@@ -1,14 +1,8 @@
-.cdn_libs
-.eslintrc.js
-.git
-.gitignore
+.*
 Makefile
-config.dev.js
-config.js
-config.prod.js
-js.makefile
-node_modules
+config.*
 package-lock.json
+node_modules
 public
 src
 template
