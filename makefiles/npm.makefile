@@ -18,6 +18,7 @@ USE_SYMLINK?=1
 # COMMANDS
 #######################################
 COPY := cp -b#preserve permissions, timestamps, make backups i.e ~
+LN := ln -r -s
 
 #######################################
 # DIRECS and FILES
@@ -84,8 +85,8 @@ HELP += \n\n**install-files**: Install make and config files.
 install-files:
 	mkdir -p $(SRC_DIR)
 ifneq ($(USE_SYMLINK),)
-	ln -r -s $(SRC_MAKE) $(SRC_DIR)/Makefile
-	ln -r -s $(ROOT_MAKE) ./Makefile
+	$(LN) $(SRC_MAKE) $(SRC_DIR)/Makefile
+	$(LN) $(ROOT_MAKE) ./Makefile
 else
 	$(COPY) $(SRC_MAKES) $(SRC_DIR)
 	$(COPY) $(ROOT_MAKES) .

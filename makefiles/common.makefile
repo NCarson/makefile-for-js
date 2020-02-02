@@ -42,22 +42,11 @@ endef
 # Common Rules
 ######################################
 
+######################################
+# help:
 #XXX default target
-HELP +=\n\n**printall**: print all variables and values known to make
-	_VARS_OLD := $(.VARIABLES)
-	_CUR-DIR := $(shell pwd)
-printall:
-	$(foreach v,                                        \
-		$(filter-out $(_VARS_OLD) _VARS_OLD,$(.VARIABLES)), \
-		$(info $(v) = $($(v))))
-
-HELP +=\n\n**print-%**: print-varname - prints the value of varname
-#https://blog.melski.net/2010/11/30/makefile-hacks-print-the-value-of-any-variable/
-print-%:
-	@ echo '$*=$($*)'
-
 HELP +=\n\n**help**: print this message
-ifneq ($(USE_MDLESS),)
+	ifneq ($(USE_MDLESS),)
 	_MDLESS := $(shell echo '|' `which mdless || echo cat`)
 else
 	_MDLESS := | echo cat
@@ -67,12 +56,33 @@ export HELP
 help:
 	@ echo "$$HELP" $(_MDLESS)
 
+######################################
+# printall:
+HELP +=\n\n**printall**: print all variables and values known to make
+	_VARS_OLD := $(.VARIABLES)
+	_CUR-DIR := $(shell pwd)
+printall:
+	$(foreach v,                                        \
+		$(filter-out $(_VARS_OLD) _VARS_OLD,$(.VARIABLES)), \
+		$(info $(v) = $($(v))))
+
+######################################
+# print-%:
+HELP +=\n\n**print-%**: print-varname - prints the value of varname
+#https://blog.melski.net/2010/11/30/makefile-hacks-print-the-value-of-any-variable/
+print-%:
+	@ echo '$*=$($*)'
+
+######################################
+# help-use:
 HELP +=\n\n**help-use**: print USE_VARNAME type help
 export HELP_USE
 .PHONY: help-use
 help-use:
 	@ echo "$$HELP_USE" $(_MDLESS)
 
+######################################
+# help-file:
 HELP +=\n\n**help-file**: print help for makefile
 export HELP_FILE
 .PHONY: help-file
