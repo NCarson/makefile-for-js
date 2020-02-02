@@ -3,6 +3,29 @@
 MAKEFLAGS += --no-builtin-rules
 SUFFIXES :=
 
+# BASE_DIR defines the root of the of the project.
+# It is always required to be defined in the parent.
+ifeq ($(BASE_DIR),)
+	$(error BASE_DIR is undefined)
+endif
+
+# directory finished files should go to
+ifeq ($(TARGET_DIR),)
+	$(error TARGET_DIR is undefined)
+endif
+
+# names of the finished files
+ifeq ($(TARGETS),)
+	$(error TARGETS is undefined)
+endif
+
+# for find command; set if you have direcs to skip
+ifeq (strip($(EXCL_SRC_DIRS)),)
+	_MFS_EXCLUDE = 
+else
+	_MFS_EXCLUDE =  -not \( $(patsubst %,-path % -prune -o,$(EXCL_SRC_DIRS)) -path $(BUILD_DIR) -prune \)
+endif
+
 ######################################
 #  Commands
 ######################################
@@ -194,20 +217,41 @@ endif
 #phobia-cdn: list-cdn
 #	@ $(mfs_excluded_libs) | xargs -L1 $(BUNDLE-PHOBIA)
  
+ HELP +=\nlist-deps: show local dependencies
 list-deps:
 	@cat $(DEP_FILE)
-MJS_HELP +=\nlist-deps: show local dependencies
 
+HELP +=\nphobia-deps: list package dependencies from bundle-phobia (`npm i -g bundle-phobia`)
 phobia-deps: $(DEP_FILE) list-deps
 	@cat $(DEP_FILE) | xargs -L1 $(BUNDLE-PHOBIA)
-MJS_HELP +=\nphobia-deps: list package dependencies from bundle-phobia (`npm i -g bundle-phobia`)
 
 #  makes a dependency graph with dot (super coolio)
 #  https://github.com/lindenb/makefile2graph
+HELP +=\ndot-graph: create a dependency graph of targets (needs makefile2graph https://github.com/lindenb/makefile2graph)
 .PHONY: dot-graph
 dot-graph: $(TARGETS) 
 	make -Bnd | make2graph | dot -Tsvg -o ../.dot-graph.svg
-MJS_HELP +=\ndot-graph: create a dependency graph of targets (needs makefile2graph https://github.com/lindenb/makefile2graph)
 
+
+#TODO move rules below into right order
+
+#move index.js to base dir
+$(BASE_DIR)/index.%: $(TARGET_DIR)/index.%
+	@ $(call info_msg,index.js - mv,$@,$(WHITE))
+	@ mv $< $@
+
+# everything is built in the BUILD_DIR and then moved to TARGET_DIR
+$(TARGET_DIR)%: $(BUILD_DIR)%
+	@ $(call info_msg,target - cp,$@,$(WHITE))
+	@ mkdir -p $(shell dirname $@)
+	@ cp $(patsubst $(TARGET_DIR)%,$(BUILD_DIR)%,$@) $@
+
+# gzip is probably installed, sudo apt-get install gzip
+GZIP ?= gzip $(GZIP_OPTIONS)
+.PRECIOUS: %.gz
+	#gzipped
+	%.gz: %
+	@ $(call info_msg,gizp - compress,$@,$(BLUE))
+	@ $(GZIP) $< --stdout > $@
 
 

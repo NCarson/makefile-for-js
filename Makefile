@@ -20,4 +20,5 @@ src: $(MAKE_DIR)/src.makefile
 .PHONY: npm
 npm: $(NPM_FILES)
 	install -m644 -p -t $(ROOT_DIR) $(NPM_FILES) $(MAKE_DIR)/root.makefile
+	install -m644 -p -t $(ROOT_DIR) $(NPM_FILES) $(MAKE_DIR)/npm.makefile
 	cd .. && ln -s $(BABEL_LIB)
