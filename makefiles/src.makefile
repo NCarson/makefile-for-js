@@ -56,22 +56,23 @@ POST_ES6 :=1
 BASE_DIR :=..
 SRC_DIR :=.
 BUILD_DIR :=$(SRC_DIR)/build
+TARGET_DIR :=$(BASE_DIR)/public/dist# finished files go here
+#TARGET_DIR :=$(BASE_DIR)/lib# library type
+
+# set this for ignored directories in your source direc
+# EXCL_SRC_DIRS :=./leave_me_alone ./and_me
+#
+# Set this if you have a local node module
+# in another directory i.e. npm install --save ../my/local/node_module/.
+# This will will rebuild the bundle every time these dependencies change.
+#
+#LOCAL_NODE_FILES =
 
 ######################################
 #  Package build
 #
 VENDOR_BASENAME :=vendor# this will be the name of vendor bundle in TARGET_DIR
 BUNDLE_BASENAME :=bundle# this will be the name of your source bundle TARGET_DIR
-TARGET_DIR :=$(BASE_DIR)/public/dist# finished files go here
-
-# set this for ignored directories in your source direc
-# EXCL_SRC_DIRS :=./leave_me_alone ./and_me
-
-# Set this if you have a local node module
-# in another directory i.e. npm install --save ../my/local/node_module/.
-# This will will rebuild the bundle every time these dependencies change.
-#
-#LOCAL_NODE_FILES =
 
 #XXX make sure to define ungzipped version along 
 #    with gzipped so `make clean` works correctly.
@@ -89,8 +90,7 @@ TARGETS :=  $(BUNDLE_TARGET) $(VENDOR_TARGET)
 ######################################
 #  UMD libary build
 
-#TARGET_DIR :=$(BASE_DIR)/lib# finished files go here
-#UMD_BASENAME :=umd#XXX this needs to be different from the source file names
+#UMD_BASENAME :=umd# XXX this needs to be different from the source file names
 #TARGETS := \
 #    $(TARGET_DIR)/$(UMD_BASENAME).js \
 #    $(TARGET_DIR)/$(UMD_BASENAME).min.js \
@@ -100,13 +100,14 @@ TARGETS :=  $(BUNDLE_TARGET) $(VENDOR_TARGET)
 #
 #    find all source files (on default export per file) and append ../lib direc to them
 #    leave out index as that probably goes in PROJECT_ROOT
-#	 TARGETS := $(shell find . -path ./build -prune -o -name '*.js' -print \
-#	 | grep -v ^./index.js$ \
-#	 | awk '{print "$(TARGET_DIR)" $$0}'  \
-#	 )
+#TARGETS := $(shell find . -path $(BUILD_DIR) -prune -o -name '*.js' -print \
+#	| grep -v ^./index.js$ \
+#	| cut -b1-2 --complement \
+#	| awk '{print "$(TARGET_DIR)/"$$0}'  \
+#	)
 #	 TARGETS += $(patsubst %.js,%.min.js,$(TARGETS))# minified
 #    TARGETS += $(patsubst %.js,%.min.js.gz,$(TARGETS))# gzipped
-#    TARGETS += ../index.js
+#    TARGETS += ../index.js# an index that imports all targets
 
 #FIXME find the find command to pull out targets
 ######################################
