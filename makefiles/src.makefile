@@ -4,11 +4,13 @@
 # For Development
 # run `make`
 
-MJS_HELP +=\nrun `make -j 8` to run with 8 threads (set the number to number of cores)! \
-		   \nrun `make -n` for a dry run that will print out the actually commands it would have used \
-		   \nrun `make --debug=b` basic debug dependency chain \
-		   \nrun `make -f PROJECT_ROOT/makefiles-for-js/makefiles/js.makefile -p` to print out rules of the js makefile \
-		   \n
+HELP_FILE +=\n\n**src.makefile**\
+\nCompile source code to targets.\
+\n\
+\nrun `make -j 8` to run with 8 threads (set the number to number of cores)! \
+\nrun `make -n` for a dry run that will print out the actually commands it would have used \
+\nrun `make --debug=b` basic debug dependency chain \
+\nrun `make -f PROJECT_ROOT/makefiles-for-js/makefiles/js.makefile -p` to print out rules of the js makefile
 
 ######################################
 #  Knobs
@@ -33,20 +35,20 @@ MJS_HELP +=\nrun `make -j 8` to run with 8 threads (set the number to number of 
 #	  inline: $(info |$(BASE_DIR)|) #pipes help show spaces
 #	  command line: `make print-BASE_DIR`
 
-USE_BABEL :=1 #babel (needs global install)
+HELP_USE += \n\n**USE_BABEL**: transpile with babel
+USE_BABEL ?=1
 
-USE_LINTER :=1 #eslint (needs global install)
+HELP_USE += \n\n**USE_LINTER**: use eslint
+USE_LINTER ?=1
 
-# set for easier debugging in web console
-USE_SOURCEMAPS :=1
+HELP_USE += \n\n**USE_SOURCEMAPS**: bundle source maps for debugging
+USE_SOURCEMAPS ?=1
 
-# set for react options on babel and eslint
-# you  still need to install babel transforms locally
-REACT :=1
+HELP_USE += \n\n**USE_REACT**: set transform flags for react
+USE_REACT ?=1
 
-# set for latest syntax like spread op and static classes
-# you still need to install babel transforms locally
-POST_ES6 :=1
+HELP_USE += \n\n**POST_US6**: babel transform for static class props and object spreads
+POST_ES6 ?=1
 
 ######################################
 #  Direcs and files
@@ -117,15 +119,16 @@ TARGETS :=  $(BUNDLE_TARGET) $(VENDOR_TARGET)
 ####################################
 # Rules
 
+HELP +=\n\n**all**: Make all the targets.
 .PHONY: all
 all: $(TARGETS)
-MJS_HELP +=\nall: make all the targets
+.DEFAULT_GOAL := all
 
+HELP +=\n\n**clean**: Remove targets and build direc.
 .PHONY: clean
 clean:
 	rm -f $(TARGETS)
 	rm -fr $(BUILD_DIR)
-MJS_HELP +=\nclean: remove targets and build direc
 
 ####################################
 # Includes

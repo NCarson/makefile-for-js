@@ -1,6 +1,13 @@
+HELP_FILE +=\n\n**common.makefile**\
+\nCommon makefile library
+
 ######################################
-# Common Vars
+# Knobs
 ######################################
+
+HELP_USE += \n\n**USE_MDLESS**: use mdless command to form command line markdown output \
+    https://brettterpstra.com/2015/08/21/mdless-better-markdown-in-terminal
+USE_MDLESS :=1
 
 # wipe out built in C stuff
 MAKEFLAGS += --no-builtin-rules
@@ -35,28 +42,39 @@ endef
 # Common Rules
 ######################################
 
-#XXX this should not contain any non-pattern rules as it
-#	 is read first and will will wipe out the
-#	 first default 'all' rule.
-#
+#XXX default target
+HELP +=\n\n**printall**: print all variables and values known to make
+	_VARS_OLD := $(.VARIABLES)
+	_CUR-DIR := $(shell pwd)
+printall:
+	$(foreach v,                                        \
+		$(filter-out $(_VARS_OLD) _VARS_OLD,$(.VARIABLES)), \
+		$(info $(v) = $($(v))))
 
-#debug variable: `make print-MYVAR`
+HELP +=\n\n**print-%**: print-varname - prints the value of varname
 #https://blog.melski.net/2010/11/30/makefile-hacks-print-the-value-of-any-variable/
 print-%:
 	@ echo '$*=$($*)'
-HELP +=\nprint-%: print-varname - prints the value of varname
 
-_VARS_OLD := $(.VARIABLES)
-CUR-DIR := $(shell pwd)
-printall:
-	$(foreach v,                                        \
-		  $(filter-out $(_VARS_OLD) _VARS_OLD,$(.VARIABLES)), \
-		  $(info $(v) = $($(v))))
-HELP +=\nprintall: print all variables and values known to make
-
+HELP +=\n\n**help**: print this message
+ifneq ($(USE_MDLESS),)
+	_MDLESS := $(shell echo '|' `which mdless || echo cat`)
+else
+	_MDLESS := | echo cat
+endif
+export HELP
 .PHONY: help
 help:
-	@ echo "$$HELP"
-HELP +=\nhelp: print this message
+	@ echo "$$HELP" $(_MDLESS)
 
-export HELP
+HELP +=\n\n**help-use**: print USE_VARNAME type help
+export HELP_USE
+.PHONY: help-use
+help-use:
+	@ echo "$$HELP_USE" $(_MDLESS)
+
+HELP +=\n\n**help-file**: print help for makefile
+export HELP_FILE
+.PHONY: help-file
+help-file:
+	@ echo "$$HELP_FILE" $(_MDLESS)

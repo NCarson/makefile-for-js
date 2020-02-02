@@ -1,7 +1,9 @@
+HELP_FILE +=\n\n**js.makefile**\
+\n    compiles .js sources through chain of linting, transpiling, bundling, minifing, and zipping.
 
 # wipe out built in C stuff
 MAKEFLAGS += --no-builtin-rules
-SUFFIXES :=
+SUFFIX;ES :=
 
 # BASE_DIR defines the root of the of the project.
 # It is always required to be defined in the parent.
@@ -99,16 +101,36 @@ ES5_FILES = $(patsubst $(SRC_DIR)%.js,$(BUILD_DIR)%.js,$(SRC_FILES))
 ######################################
 
 ######################################
-# in case package lock does not exist
-#
+# TARGETS
+# everything is built in the BUILD_DIR and then moved to TARGET_DIR
+$(TARGET_DIR)%: $(BUILD_DIR)%
+	@ $(call info_msg,target - cp,$@,$(WHITE))
+	@ mkdir -p $(shell dirname $@)
+	@ cp $(patsubst $(TARGET_DIR)%,$(BUILD_DIR)%,$@) $@
+
+######################################
+# gzip
+GZIP ?= gzip $(GZIP_OPTIONS)
+.PRECIOUS: %.gz
+%.gz: %
+	@ $(call info_msg,gizp - compress,$@,$(BLUE))
+	@ $(GZIP) $< --stdout > $@
+
+######################################
+# index.js
+$(BASE_DIR)/index.%: $(TARGET_DIR)/index.%
+	@ $(call info_msg,index.js - mv,$@,$(WHITE))
+	@ mv $< $@
+
+######################################
+# package.lock
 PACKAGE_LOCK ?=$(BASE_DIR)/package-lock.json # the npm package-lock
 $(PACKAGE_LOCK):
 	$(call info_message,touch - create,$@)
 	@ touch $(PACKAGE_LOCK)
 
 ######################################
-# cdn libs to exclude from bundles
-
+# .exclude.cdn.json : cdn libs to exclude from bundles
 EXCL_SUFFIX ?=.cdn.json
 EXCL_FILE ?= $(BASE_DIR)/.exclude$(EXCL_SUFFIX) # libs listed here wont be built in bundle or vendor (for cdn)
 $(EXCL_FILE):
@@ -117,7 +139,6 @@ $(EXCL_FILE):
 
 ######################################
 # dep file
- 
 DEP_SUFFIX ?=.deps
 DEP_FILE ?=$(BUILD_DIR)/.$(VENDOR_BASENAME)$(DEP_SUFFIX) # keeps track of what modules the bundle is using
 MODULES_NAME ?=node_modules# npm direc name
@@ -130,7 +151,9 @@ STRIP_DEPS ?= \
 	grep "^$(strip $(MODULES_NAME))" |\
 	sed "s:^$(strip $(MODULES_NAME))::" |\
 	cut -d "/" -f2 |sort |uniq |\
-	grep -v ^@
+	grep -v ^@ ||\
+	true
+
 
 # notice order-only prereq: | 
 # ES5_FILES will only be a prereq if PACKAGE_LOCK is old.
@@ -169,8 +192,7 @@ ONLY_INCLUDE = $(MFS_EXCLUDED_LIBS) | grep -Fx -v -f - $(DEP_FILE)
 INC_DEPS = $(shell $(ONLY_INCLUDE) | sed 's/ / -r /g' | sed 's/^/ -r /')
 
 ######################################
-## umd bundle
-
+# umd bundle
 # we dont need dep file with umd
 .PRECIOUS: %/$(UMD_BASENAME).js
 %/$(UMD_BASENAME).js: $(ES5_FILES) 
@@ -184,14 +206,14 @@ INC_DEPS = $(shell $(ONLY_INCLUDE) | sed 's/ / -r /g' | sed 's/^/ -r /')
 
 
 ######################################
-## source bundle
+# source bundle
 .PRECIOUS: %/$(BUNDLE_BASENAME).js
 %/$(BUNDLE_BASENAME).js: $(DEP_FILE) $(ES5_FILES) $(LOCAL_NODE_FILES)
 	$(call mjs_make_bundle,bundle,$@,$(ES5_FILES),$(EXC_DEPS),$(BUNDLE_BASENAME))
 
 
 ######################################
-## transpile - lint and babel
+# transpile - lint and babel
 .PRECIOUS: $(BUILD_DIR)/%.js
 $(BUILD_DIR)/%.js: $(SRC_DIR)/%.js 
 	@ mkdir -p `dirname $@`
@@ -217,41 +239,23 @@ endif
 #phobia-cdn: list-cdn
 #	@ $(mfs_excluded_libs) | xargs -L1 $(BUNDLE-PHOBIA)
  
- HELP +=\nlist-deps: show local dependencies
+ HELP +=\n\n**list-deps**: Show local dependencies.
 list-deps:
 	@cat $(DEP_FILE)
 
-HELP +=\nphobia-deps: list package dependencies from bundle-phobia (`npm i -g bundle-phobia`)
+HELP +=\n\n**phobia-deps**: List package dependencies from bundle-phobia. \
+\n     "sudo npm i -g bundle-phobia"
 phobia-deps: $(DEP_FILE) list-deps
 	@cat $(DEP_FILE) | xargs -L1 $(BUNDLE-PHOBIA)
 
 #  makes a dependency graph with dot (super coolio)
 #  https://github.com/lindenb/makefile2graph
-HELP +=\ndot-graph: create a dependency graph of targets (needs makefile2graph https://github.com/lindenb/makefile2graph)
+HELP +=\n\n**dot-graph**: Create a dependency graph of targets.  \
+\n    needs makefile2graph https://github.com/lindenb/makefile2graph)
 .PHONY: dot-graph
 dot-graph: $(TARGETS) 
 	make -Bnd | make2graph | dot -Tsvg -o ../.dot-graph.svg
 
 
-#TODO move rules below into right order
-
-#move index.js to base dir
-$(BASE_DIR)/index.%: $(TARGET_DIR)/index.%
-	@ $(call info_msg,index.js - mv,$@,$(WHITE))
-	@ mv $< $@
-
-# everything is built in the BUILD_DIR and then moved to TARGET_DIR
-$(TARGET_DIR)%: $(BUILD_DIR)%
-	@ $(call info_msg,target - cp,$@,$(WHITE))
-	@ mkdir -p $(shell dirname $@)
-	@ cp $(patsubst $(TARGET_DIR)%,$(BUILD_DIR)%,$@) $@
-
-# gzip is probably installed, sudo apt-get install gzip
-GZIP ?= gzip $(GZIP_OPTIONS)
-.PRECIOUS: %.gz
-	#gzipped
-	%.gz: %
-	@ $(call info_msg,gizp - compress,$@,$(BLUE))
-	@ $(GZIP) $< --stdout > $@
 
 
