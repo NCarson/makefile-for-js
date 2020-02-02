@@ -1,8 +1,5 @@
 module.exports = {
     "settings": {
-        "react": {
-            "version": "detect"
-        }
     },
     "env": {
         "browser": true,
@@ -11,24 +8,16 @@ module.exports = {
     },
     "extends": [
         "eslint:recommended",
-        "plugin:react/recommended",
         "plugin:import/errors"
     ],
     "parserOptions": {
-        "ecmaFeatures": {
-            "jsx": true
-        },
         "ecmaVersion": 2018,
         "sourceType": "module"
     },
     "plugins": [
-        "react"
     ],
     "rules": {
         //mine
-        "react/prop-types": "warn",
-        "react/no-find-dom-node" : "off",
-
         "import/no-unresolved": "warn",
         "no-unused-vars": "warn",
         "no-unsafe-finally": "off",

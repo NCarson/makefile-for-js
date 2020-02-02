@@ -44,7 +44,7 @@ endef
 #https://blog.melski.net/2010/11/30/makefile-hacks-print-the-value-of-any-variable/
 print-%:
 	@ echo '$*=$($*)'
-MJS_HELP +=\nprint-%: print-varname - prints the value of varname
+HELP +=\nprint-%: print-varname - prints the value of varname
 
 _VARS_OLD := $(.VARIABLES)
 CUR-DIR := $(shell pwd)
@@ -52,11 +52,11 @@ printall:
 	$(foreach v,                                        \
 		  $(filter-out $(_VARS_OLD) _VARS_OLD,$(.VARIABLES)), \
 		  $(info $(v) = $($(v))))
-MJS_HELP +=\nprintall: print all variables and values known to make
+HELP +=\nprintall: print all variables and values known to make
 
-export MJS_HELP
 .PHONY: help
 help:
-	@ echo "$$MJS_HELP"
-MJS_HELP +=\nhelp: print this message
+	@ echo "$$HELP"
+HELP +=\nhelp: print this message
 
+export HELP

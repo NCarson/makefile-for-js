@@ -1,2 +1,0 @@
-@babel/core @babel/cli @babel/preset-env @babel/preset-react browserify bundle-phobia-cli eslint eslint-plugin-import eslint-plugin-react
-uglify-js
