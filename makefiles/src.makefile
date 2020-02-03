@@ -35,6 +35,9 @@ HELP_FILE +=\n\n**src.makefile**\
 #	  inline: $(info |$(BASE_DIR)|) #pipes help show spaces
 #	  command line: `make print-BASE_DIR`
 
+HELP_USE += \n\n**PRODUCTION**: if set then use production options instead of development
+#PRODUCTION ?=1
+
 HELP_USE += \n\n**USE_BABEL**: transpile with babel
 USE_BABEL ?=1
 

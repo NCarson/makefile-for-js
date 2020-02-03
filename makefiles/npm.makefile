@@ -34,13 +34,14 @@ REACT_PACKAGES = react react-dom prop-types
 #GLOBAL_NPM_DIR := /usr/lib/node_modules#may be different like /usr/local/lib
 COMPILE_PACKAGES := \
 	@babel/cli  \
-	@babel/plugin-proposal-class-properties \
-	@babel/plugin-transform-object-assign \
-	@babel/preset-env \
 	@babel/core \
-	@babel/plugin-syntax-dynamic-import \
-	@babel/plugin-transform-react-jsx \
+	@babel/runtime \
+	@babel/preset-env \
 	@babel/preset-react \
+	@babel/plugin-proposal-class-properties \
+	@babel/plugin-syntax-dynamic-import \
+	@babel/plugin-transform-object-assign \
+	@babel/plugin-transform-react-jsx \
 	babel-eslint \
 	eslint-plugin-import \
 	eslint-plugin-react \
@@ -50,7 +51,7 @@ HELP +=\n\n**install-packages**: Install npm development packages (see COMPILE_P
     If USE_GLOBAL is defined will install as root globally
 .PHONY: install-packages
 install-packages:
-	cp --no-clobber package.json$(_NPM_SFX) package.json
+	stat package.json || cp --no-clobber package.json$(_NPM_SFX) package.json
 ifneq ($(USE_GLOBAL),)
 	sudo npm i -g $(COMPILE_PACKAGES)
 else
@@ -81,7 +82,6 @@ endif
 
 HELP += \n\n**install-files**: Install make and config files.
 .PHONY: install-files
-
 install-files:
 	mkdir -p $(SRC_DIR)
 ifneq ($(USE_SYMLINK),)
@@ -93,9 +93,7 @@ else
 endif
 	$(COPY) $(CONFIGS) .
 
-HELP += \n\n**all**: install files, packages
+HELP += \n\n**all**: install packages, files, packages
 .PHONY: all
-all: install-files install-packages global-link
-	echo all
-.DEFAULT_GOAL :=all
+all: install-packages install-files install-packages global-link
 

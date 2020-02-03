@@ -2,7 +2,7 @@ HELP_FILE +=\n\n**js.makefile**\
 \n    compiles .js sources through chain of linting, transpiling, bundling, minifing, and zipping.
 
 # wipe out built in C stuff
-MAKEFLAGS += --no-builtin-rules
+MAKEFLAGS += --no-builtin-rules --no-builtin-variables
 SUFFIX;ES :=
 
 # BASE_DIR defines the root of the of the project.
@@ -32,20 +32,20 @@ endif
 #  Commands
 ######################################
 
-JSON ?= json#<https://github.com/trentm/json> for project details.
+CMD_JSON ?= json#<https://github.com/trentm/json> for project details.
 
 # You dont need uglifyjs if you do not specify min.js or min.js.gz targets.
-UGLIFYJS ?=npx uglifyjs $(UGLIFYJS_OPTIONS)
+CMD_UGLIFYJS ?=npx uglifyjs $(CMD_UGLIFYJS_OPTIONS)
 
 # optional linter
-LINTER_OPTIONS ?= --parser babel-eslint --plugin import
+CMD_LINTER_OPTIONS ?= --parser babel-eslint --plugin import
 ifdef REACT
-	LINTER_OPTIONS += --plugin react
+	CMD_LINTER_OPTIONS += --plugin react
 endif 
-LINTER ?=npx eslint $(LINTER_OPTIONS) 
+CMD_LINTER ?=npx eslint $(CMD_LINTER_OPTIONS) 
 
 #optional for phobia rule
-BUNDLE-PHOBIA ?= npx bundle-phobia/index.js
+CMD_BUNDLE-PHOBIA ?= npx bundle-phobia/index.js
 
 ######################################
 #  Babel
@@ -55,38 +55,38 @@ BUNDLE-PHOBIA ?= npx bundle-phobia/index.js
 # add source maps in devolpment
 ifndef PRODUCTION
 ifdef USE_SOURCEMAPS
-	BABEL_OPTIONS += --source-maps=inline
+CMD_BABEL_OPTIONS += --source-maps=inline
 endif
 endif
 
-BABEL_OPTIONS := --presets=@babel/preset-env
+CMD_BABEL_OPTIONS := --presets=@babel/preset-env
 
-ifdef REACT
-	BABEL_REACT_OPTIONS += --presets=@babel/preset-react --plugins @babel/plugin-transform-react-jsx
+ifdef USE_REACT
+CMD_BABEL_REACT_OPTIONS += --presets=@babel/preset-react --plugins @babel/plugin-transform-react-jsx
 endif
 
 # latest ES features
 ifdef POST_ES6 
-	BABEL_OPTIONS += --plugins @babel/plugin-transform-object-assign,@babel/plugin-proposal-class-properties,@babel/plugin-syntax-dynamic-import
+CMD_BABEL_OPTIONS += --plugins @babel/plugin-transform-object-assign,@babel/plugin-proposal-class-properties,@babel/plugin-syntax-dynamic-import
 endif
 
-BABEL ?= npx babel $(BABEL_OPTIONS) $(BABEL_REACT_OPTIONS)
+CMD_BABEL := npx babel $(CMD_BABEL_OPTIONS) $(CMD_BABEL_REACT_OPTIONS)
 
 ######################################
 #  Browserify
 
 # for using cdn libs
-BROWSERIFY_OPTIONS ?= --transform browserify-global-shim 
+CMD_BROWSERIFY_OPTIONS ?= --transform browserify-global-shim 
 ifdef USE_SOURCEMAPS
 # add source maps in development
 ifndef PRODUCTION
-BROWSERIFY_OPTIONS += -d
+CMD_BROWSERIFY_OPTIONS += -d
 endif
 endif
 
 # browserify is the only mainstream bundler that behaves well
 # on the command line. Very necessary
-BROWSERIFY ?= npx browserify $(BROWSERIFY_OPTIONS)
+CMD_BROWSERIFY ?= npx browserify $(CMD_BROWSERIFY_OPTIONS)
 
 
 ######################################
@@ -104,7 +104,7 @@ ES5_FILES = $(patsubst $(SRC_DIR)%.js,$(BUILD_DIR)%.js,$(SRC_FILES))
 # TARGETS
 # everything is built in the BUILD_DIR and then moved to TARGET_DIR
 $(TARGET_DIR)%: $(BUILD_DIR)%
-	@ $(call info_msg,target - cp,$@,$(WHITE))
+	@ $(call info_msg,target - cp,$@,$(_WHITE))
 	@ mkdir -p $(shell dirname $@)
 	@ cp $(patsubst $(TARGET_DIR)%,$(BUILD_DIR)%,$@) $@
 
@@ -113,13 +113,13 @@ $(TARGET_DIR)%: $(BUILD_DIR)%
 GZIP ?= gzip $(GZIP_OPTIONS)
 .PRECIOUS: %.gz
 %.gz: %
-	@ $(call info_msg,gizp - compress,$@,$(BLUE))
+	@ $(call info_msg,gizp - compress,$@,$(_BLUE))
 	@ $(GZIP) $< --stdout > $@
 
 ######################################
 # index.js
 $(BASE_DIR)/index.%: $(TARGET_DIR)/index.%
-	@ $(call info_msg,index.js - mv,$@,$(WHITE))
+	@ $(call info_msg,index.js - mv,$@,$(_WHITE))
 	@ mv $< $@
 
 ######################################
@@ -134,7 +134,7 @@ $(PACKAGE_LOCK):
 EXCL_SUFFIX ?=.cdn.json
 EXCL_FILE ?= $(BASE_DIR)/.exclude$(EXCL_SUFFIX) # libs listed here wont be built in bundle or vendor (for cdn)
 $(EXCL_FILE):
-	@ $(call info_msg,json - create,$@,$(BOLD))
+	@ $(call info_msg,json - create,$@,$(_BOLD))
 	@ echo "[]" > $@
 
 ######################################
@@ -146,7 +146,7 @@ MODULES_NAME ?=node_modules# npm direc name
 ## FIXME @ modular libries are broken. (just ignores them for now)
 ## strips library paths to import names
 #remove root, ignore local stuff, remove node_modules, first direc, no modular, 
-STRIP_DEPS ?= \
+_STRIP_DEPS := \
 	sed "s:^`cd $(BASE_DIR) && pwd`/::" |\
 	grep "^$(strip $(MODULES_NAME))" |\
 	sed "s:^$(strip $(MODULES_NAME))::" |\
@@ -159,9 +159,9 @@ STRIP_DEPS ?= \
 # ES5_FILES will only be a prereq if PACKAGE_LOCK is old.
 # Otherwise vendor would be dependent on ES5_FILES and always be rebuilt.
 $(DEP_FILE): $(EXCL_FILE) $(PACKAGE_LOCK) | $(ES5_FILES)
-	@$(call info_msg,browserify - find deps,$@,$(MAGENTA))
+	@$(call info_msg,browserify - find deps,$@,$(_MAGENTA))
 	@mkdir -p $(BUILD_DIR)
-	@$(BROWSERIFY) --list $(ES5_FILES) | $(STRIP_DEPS) > $@
+	@$(CMD_BROWSERIFY) --list $(ES5_FILES) | $(_STRIP_DEPS) > $@
 
 ######################################
 # minfy
@@ -169,17 +169,17 @@ $(DEP_FILE): $(EXCL_FILE) $(PACKAGE_LOCK) | $(ES5_FILES)
 %.min.js: %.js
 	@ mkdir -p `dirname $@`
 ifdef PRODUCTION
-	@ $(call info_msg,uglify - minify (production),$@,$(BLUE))
-	@ $(UGLIFYJS) -cmo $@ $<
+	@ $(call info_msg,uglify - minify (production),$@,$(_BLUE))
+	@ $(CMD_UGLIFYJS) -cmo $@ $<
 else
-	@ $(call info_msg,uglify - minify (development),$@,$(GRAY))
+	@ $(call info_msg,uglify - minify (development),$@,$(_GRAY))
 	@ cp $< $@ #were pretending to uglify since were in dev mode
 endif
 
 define mjs_make_bundle
 	@ mkdir -p `dirname $@`
-	@ $(call info_msg,browerisfy - $1,$2 $3 $4,$(BOLD)$(MAGENTA))
-	@ $(BROWSERIFY) $6 -o $2 $3 $4
+	@ $(call info_msg,browerisfy - $1,$2 $3 $4,$(BOLD)$(_MAGENTA))
+	@ $(CMD_BROWSERIFY) $6 -o $2 $3 $4
 	@ $(call set_timestamp,$5)
 endef
 
@@ -218,12 +218,12 @@ INC_DEPS = $(shell $(ONLY_INCLUDE) | sed 's/ / -r /g' | sed 's/^/ -r /')
 $(BUILD_DIR)/%.js: $(SRC_DIR)/%.js 
 	@ mkdir -p `dirname $@`
 ifneq ($(USE_LINTER),)
-	@ $(call info_msg,eslint - lint,$<,$(GREEN))
-	@ $(LINTER) $(SRC_DIR)/$<
+	@ $(call info_msg,eslint - lint,$<,$(_GREEN))
+	@ $(CMD_LINTER) $(SRC_DIR)/$<
 endif
 ifneq ($(USE_BABEL),)
-	@ $(call info_msg,babel - transplile,$@,$(BOLD)$(GREEN))
-	@ $(BABEL) $(SRC_DIR)/$< --out-file $@ 
+	@ $(call info_msg,babel - transplile,$@,$(_BOLD)$(_GREEN))
+	@ $(CMD_BABEL) $(SRC_DIR)/$< --out-file $@ 
 else
 	@ cp $< $@
 endif
@@ -246,7 +246,7 @@ list-deps:
 HELP +=\n\n**phobia-deps**: List package dependencies from bundle-phobia. \
 \n     "sudo npm i -g bundle-phobia"
 phobia-deps: $(DEP_FILE) list-deps
-	@cat $(DEP_FILE) | xargs -L1 $(BUNDLE-PHOBIA)
+	@cat $(DEP_FILE) | xargs -L1 $(CMD_BUNDLE-PHOBIA)
 
 #  makes a dependency graph with dot (super coolio)
 #  https://github.com/lindenb/makefile2graph

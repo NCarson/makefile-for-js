@@ -17,25 +17,25 @@ SUFFIXES :=
 # Shell Commands / Macros
 ######################################
 
-NORMAL=$(shell tput sgr0)
-BLACK=$(shell tput setaf 0)
-RED=$(shell tput setaf 1)
-GREEN=$(shell tput setaf 2)
-YELLOW=$(shell tput setaf 3)
-BLUE=$(shell tput setaf 4)
-MAGENTA=$(shell tput setaf 5)
-CYAN=$(shell tput setaf 6)
-WHITE=$(shell tput setaf 7)
-GRAY=$(shell tput setaf 8)
+_NORMAL=$(shell tput sgr0)
+_BLACK=$(shell tput setaf 0)
+_RED=$(shell tput setaf 1)
+_GREEN=$(shell tput setaf 2)
+_YELLOW=$(shell tput setaf 3)
+_BLUE=$(shell tput setaf 4)
+_MAGENTA=$(shell tput setaf 5)
+_CYAN=$(shell tput setaf 6)
+_WHITE=$(shell tput setaf 7)
+_GRAY=$(shell tput setaf 8)
 
-BOLD=$(shell tput bold)
-BLINK=$(shell tput blink)
-REVERSE=$(shell tput smso)
-UNDERLINE=$(shell tput smul)
+_BOLD=$(shell tput bold)
+_BLINK=$(shell tput blink)
+_REVERSE=$(shell tput smso)
+_UNDERLINE=$(shell tput smul)
 
 _info_msg = $(shell printf "%-25s $(3)$(2)$(NORMAL)\n" "$(1)")
 define info_msg 
-@printf "%-25s $(3)$(2)$(NORMAL)\n" "$(1)"
+@printf "%-25s $(3)$(2)$(_NORMAL)\n" "$(1)"
 endef
 
 ######################################
@@ -60,11 +60,29 @@ help:
 # printall:
 HELP +=\n\n**printall**: print all variables and values known to make
 	_VARS_OLD := $(.VARIABLES)
-	_CUR-DIR := $(shell pwd)
 printall:
-	$(foreach v,                                        \
-		$(filter-out $(_VARS_OLD) _VARS_OLD,$(.VARIABLES)), \
-		$(info $(v) = $($(v))))
+	$(foreach v,\
+		$(sort $(filter-out $(_VARS_OLD) _VARS_OLD, $(.VARIABLES))), \
+		$(info $(v);$(origin $(v)) = $($(v))  ))
+
+# filter out env, default and auto vars
+_FILTERED_VARS := $(foreach V,\
+	$(.VARIABLES),\
+	$(if $(filter-out environment default automatic,$(origin $V)), $V))
+
+# filter out leader underscore vars
+_FILTERED_VARS2 := $(foreach V,\
+	$(_FILTERED_VARS),\
+	$(if $(filter-out _% HELP HELP_FILE HELP_USE,$V), $V))
+
+.PHONY: printvars
+printvars:
+	$(foreach v,\
+		$(sort $(_FILTERED_VARS2)),\
+		$(info $(origin $(v));$(v) = $($(v)) ))
+
+#this is good for starter
+#https://medium.com/stack-me-up/using-makefiles-the-right-way-a82091286950
 
 ######################################
 # print-%:
