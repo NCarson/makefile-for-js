@@ -1,127 +1,74 @@
-# For Production Mode aka NODE_ENV=production (minified)
-# run `PRODUCTION=1 make`
-
-# For Development
-# run `make`
-
-HELP_FILE +=\n\n**src.makefile**\
-\nCompile source code to targets.\
+HELP_FILE += \#src.makefile\
+\n\#\#\#JS project mananagment for source code.\
 \n\
-\nrun `make -j 8` to run with 8 threads (set the number to number of cores)! \
-\nrun `make -n` for a dry run that will print out the actually commands it would have used \
-\nrun `make --debug=b` basic debug dependency chain \
-\nrun `make -f PROJECT_ROOT/makefiles-for-js/makefiles/js.makefile -p` to print out rules of the js makefile
+\nrun `make help` see top level non-pattern rules\
+\nrun `make` development\
+\nrun `make PRODUCTION=1` production production mode (minified) aka NODE_ENV=production\
 
 ######################################
-#  Knobs
-######################################
-#XXX dont set bool type variables to zero. 
-
-#    BAD: USE_THINGY :=0
-#	 GOOD: USE_THINGY :=
-#
-#	 This is because make usually checks for existance of variable being set.
-#
-#XXX  watch out with spaces when setting variables
-#	  make is very literal in setting things
-#
-#     BAD: BASE_DIR := .. # will evaluate to ' .. '
-#     GOOD: BASE_DIR :=..# will evaluate to '..'
-
-#     So the value starts right after assingment symbol and ends
-#     at newline or comment hash.
-
-#XXX  debug tips
-#	  inline: $(info |$(BASE_DIR)|) #pipes help show spaces
-#	  command line: `make print-BASE_DIR`
-
-HELP_USE += \n\n**PRODUCTION**: if set then use production options instead of development
-#PRODUCTION ?=1
-
-HELP_USE += \n\n**USE_BABEL**: transpile with babel
-USE_BABEL ?=1
-
-HELP_USE += \n\n**USE_LINTER**: use eslint
-USE_LINTER ?=1
-
-HELP_USE += \n\n**USE_SOURCEMAPS**: bundle source maps for debugging
-USE_SOURCEMAPS ?=1
-
-HELP_USE += \n\n**USE_REACT**: set transform flags for react
-USE_REACT ?=1
-
-HELP_USE += \n\n**POST_US6**: babel transform for static class props and object spreads
-POST_ES6 ?=1
-
-######################################
-#  Direcs and files
+#  DIRECS and FILES
 ######################################
 
 #XXX dont add trailing '/' to paths
-BASE_DIR :=..
-SRC_DIR :=.
-BUILD_DIR :=$(SRC_DIR)/build
-TARGET_DIR :=$(BASE_DIR)/public/dist# finished files go here
-#TARGET_DIR :=$(BASE_DIR)/lib# library type
+DIR_BASE := ..
+DIR_SRC := .
+DIR_BUILD := $(DIR_SRC)/build
+DIR_MAKEJS:=$(DIR_BASE)/makefile-for-js
 
 # set this for ignored directories in your source direc
-# EXCL_SRC_DIRS :=./leave_me_alone ./and_me
+DIR_EXCL_SRC :=
 #
 # Set this if you have a local node module
 # in another directory i.e. npm install --save ../my/local/node_module/.
 # This will will rebuild the bundle every time these dependencies change.
-#
-#LOCAL_NODE_FILES =
+DIR_LOCAL_DEPS :=
 
+#######################################
+#  PACKAGE BUILD
 ######################################
-#  Package build
-#
-VENDOR_BASENAME :=vendor# this will be the name of vendor bundle in TARGET_DIR
-BUNDLE_BASENAME :=bundle# this will be the name of your source bundle TARGET_DIR
+DIR_TARGET := $(DIR_BASE)/public/dist# finished files go here
+VENDOR_BASENAME :=vendor# this will be the name of vendor bundle in DIR_TARGET
+BUNDLE_BASENAME :=bundle# this will be the name of your source bundle DIR_TARGET
 
 #XXX make sure to define ungzipped version along 
 #    with gzipped so `make clean` works correctly.
 BUNDLE_TARGET := \
-	$(TARGET_DIR)/$(BUNDLE_BASENAME).min.js \
-	$(TARGET_DIR)/$(BUNDLE_BASENAME).min.js.gz
+	$(DIR_TARGET)/$(BUNDLE_BASENAME).min.js \
+	$(DIR_TARGET)/$(BUNDLE_BASENAME).min.js.gz
 
 VENDOR_TARGET := \
-	$(TARGET_DIR)/$(VENDOR_BASENAME).min.js \
-	$(TARGET_DIR)/$(VENDOR_BASENAME).min.js.gz
+	$(DIR_TARGET)/$(VENDOR_BASENAME).min.js \
+	$(DIR_TARGET)/$(VENDOR_BASENAME).min.js.gz
 
 # this it what make will try try to build
 TARGETS :=  $(BUNDLE_TARGET) $(VENDOR_TARGET)
 
+#######################################
+#  UMD LIBRARY BUILD
 ######################################
-#  UMD libary build
-
+#DIR_TARGET := $(DIR_BASE)/lib# library type
 #UMD_BASENAME :=umd# XXX this needs to be different from the source file names
 #TARGETS := \
-#    $(TARGET_DIR)/$(UMD_BASENAME).js \
-#    $(TARGET_DIR)/$(UMD_BASENAME).min.js \
-#    $(TARGET_DIR)/$(UMD_BASENAME).min.js.gz \ # all components bundled
-#    $(TARGET_DIR)/PostgrestFetcher.js \ # for individual imports
-#	 $(TARGET_DIR)/PostgrestQuery.js # etc ...
+#    $(DIR_TARGET)/$(UMD_BASENAME).js \
+#    $(DIR_TARGET)/$(UMD_BASENAME).min.js \
+#    $(DIR_TARGET)/$(UMD_BASENAME).min.js.gz \ # all components bundled
+#    $(DIR_TARGET)/PostgrestFetcher.js \ # for individual imports
+#	 $(DIR_TARGET)/PostgrestQuery.js # etc ...
 #
 #    find all source files (on default export per file) and append ../lib direc to them
 #    leave out index as that probably goes in PROJECT_ROOT
-#TARGETS := $(shell find . -path $(BUILD_DIR) -prune -o -name '*.js' -print \
+#TARGETS := $(shell find . -path $(DIR_BUILD) -prune -o -name '*.js' -print \
 #	| grep -v ^./index.js$ \
 #	| cut -b1-2 --complement \
-#	| awk '{print "$(TARGET_DIR)/"$$0}'  \
+#	| awk '{print "$(DIR_TARGET)/"$$0}'  \
 #	)
 #	 TARGETS += $(patsubst %.js,%.min.js,$(TARGETS))# minified
 #    TARGETS += $(patsubst %.js,%.min.js.gz,$(TARGETS))# gzipped
 #    TARGETS += ../index.js# an index that imports all targets
 
-#FIXME find the find command to pull out targets
-######################################
-# Includes / Default Rules
-######################################
-
 ####################################
-# Rules
-
+# RULES
+####################################
 HELP +=\n\n**all**: Make all the targets.
 .PHONY: all
 all: $(TARGETS)
@@ -131,29 +78,23 @@ HELP +=\n\n**clean**: Remove targets and build direc.
 .PHONY: clean
 clean:
 	rm -f $(TARGETS)
-	rm -fr $(BUILD_DIR)
+	rm -fr $(DIR_BUILD)
 
 ####################################
-# Includes
-#
-MAKE_DIR:=$(BASE_DIR)/makefile-for-js/makefiles/
-include $(MAKE_DIR)/common.makefile
-# you may want to take a peek at this also
-# as it contains other variables that can be changed.
-include $(MAKE_DIR)/js.makefile 
-
+# INCLUDES
 ####################################
-# Custom programs (have to go after includes)
-#
-#LINTER := #set your own linter
-#BABEL := #set your own transpiler
-#see js.makefile for more
+# make sure you put the files all on one line or there is weird scope issues
+# make sure all the base variables are defined before these are run
+_DIR_MAKE := $(DIR_MAKEJS)/makefiles
+include $(_DIR_MAKE)/js.makefile $(_DIR_MAKE)/common.makefile 
 
 ######################################
-# Your rules
+# YOUR RULES and OVERIDES
 ######################################
-# XXX define your own rules AFTER the includes
-# 	  otherwise you will overwrite the default
-# 	  rule, aka `make all` without arguments.
+
+# overide variables and rules here so you will overwrite
+# the include makefiles instead of the other way around
+#
+# USE_REACT :=
 
 

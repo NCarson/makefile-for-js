@@ -6,13 +6,13 @@ include $(MAKE_DIR)/common.makefile
 # KNOBS
 #######################################
 HELP_USE += \n\n**USE_GLOBAL**: install devolpment tools globally and keep out of local `node_modules` (lower disk usage for multiple projects.)
-USE_GLOBAL ?=1
+USE_GLOBAL :=1
 
 HELP_USE += \n\n**USE_REACT**: install react packages and configs
-USE_REACT ?=1
+USE_REACT :=1
 
 HELP_USE += \n\n**USE_SYMLINK**: Use symlinks instead of copying files
-USE_SYMLINK?=1
+USE_SYMLINK :=1
 
 #######################################
 # COMMANDS

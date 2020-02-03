@@ -1,0 +1,10 @@
+babel-eslint
+browserify-global-shim
+eslint-plugin-import
+eslint-plugin-react
+plugin-proposal-class-properties
+plugin-syntax-dynamic-import
+plugin-transform-object-assign
+plugin-transform-react-jsx
+preset-env
+preset-react

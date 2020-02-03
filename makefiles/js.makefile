@@ -1,19 +1,46 @@
-HELP_FILE +=\n\n**js.makefile**\
-\n    compiles .js sources through chain of linting, transpiling, bundling, minifing, and zipping.
+HELP_FILE +=\n\#js.makefile\
+\n\#\#\#Compiles .js sources through chain of linting, transpiling, bundling, minifing, and zipping.\
+\nrun `make -f PROJECT_ROOT/makefiles-for-js/makefiles/js.makefile -p` to print out rules of the js makefile
 
-# wipe out built in C stuff
-MAKEFLAGS += --no-builtin-rules --no-builtin-variables
-SUFFIX;ES :=
+#needed for pipefail option of bash
+SHELL := /bin/bash
 
-# BASE_DIR defines the root of the of the project.
+######################################
+#  Knobs
+######################################
+
+HELP_USE += \n\n**PRODUCTION**: If set then use production options instead of development\
+Also will be set if NODE_ENV=production in the environment.
+NODE_ENV ?=
+PRODUCTION :=
+ifeq ($(NODE_ENV),production)
+	PRODUCTION :=1
+endif
+
+HELP_USE += \n\n**USE_BABEL**: transpile with babel
+USE_BABEL :=1
+
+HELP_USE += \n\n**USE_LINTER**: use eslint
+USE_LINTER :=1
+
+HELP_USE += \n\n**USE_SOURCEMAPS**: bundle source maps for debugging
+USE_SOURCEMAPS :=1
+
+HELP_USE += \n\n**USE_REACT**: set transform flags for react
+USE_REACT :=1
+
+HELP_USE += \n\n**POST_US6**: babel transform for static class props and object spreads
+POST_ES6 :=1
+
+# DIR_BASE defines the root of the of the project.
 # It is always required to be defined in the parent.
-ifeq ($(BASE_DIR),)
-	$(error BASE_DIR is undefined)
+ifeq ($(DIR_BASE),)
+	$(error DIR_BASE is undefined)
 endif
 
 # directory finished files should go to
-ifeq ($(TARGET_DIR),)
-	$(error TARGET_DIR is undefined)
+ifeq ($(DIR_TARGET),)
+	$(error DIR_TARGET is undefined)
 endif
 
 # names of the finished files
@@ -22,36 +49,38 @@ ifeq ($(TARGETS),)
 endif
 
 # for find command; set if you have direcs to skip
-ifeq (strip($(EXCL_SRC_DIRS)),)
+ifeq (strip($(DIR_EXCL_SRC)),)
 	_MFS_EXCLUDE = 
 else
-	_MFS_EXCLUDE =  -not \( $(patsubst %,-path % -prune -o,$(EXCL_SRC_DIRS)) -path $(BUILD_DIR) -prune \)
+	_MFS_EXCLUDE =  -not \( $(patsubst %,-path % -prune -o,$(DIR_EXCL_SRC)) -path $(DIR_BUILD) -prune \)
 endif
 
 ######################################
-#  Commands
+#  COMMANDS
 ######################################
 
-CMD_JSON ?= json#<https://github.com/trentm/json> for project details.
+CMD_GZIP := gzip
+
+#CMD_JSON := json#<https://github.com/trentm/json> for project details.
 
 # You dont need uglifyjs if you do not specify min.js or min.js.gz targets.
-CMD_UGLIFYJS ?=npx uglifyjs $(CMD_UGLIFYJS_OPTIONS)
+CMD_UGLIFYJS :=npx uglifyjs $(CMD_UGLIFYJS_OPTIONS)
 
 # optional linter
-CMD_LINTER_OPTIONS ?= --parser babel-eslint --plugin import
-ifdef REACT
-	CMD_LINTER_OPTIONS += --plugin react
+CMD_LINTER_OPTIONS := --parser babel-eslint --plugin import
+ifdef USE_REACT
+CMD_LINTER_OPTIONS += --plugin react
 endif 
-CMD_LINTER ?=npx eslint $(CMD_LINTER_OPTIONS) 
+CMD_LINTER :=npx eslint $(CMD_LINTER_OPTIONS) 
 
 #optional for phobia rule
-CMD_BUNDLE-PHOBIA ?= npx bundle-phobia/index.js
+CMD_BUNDLE-PHOBIA := npx bundle-phobia/index.js
 
 ######################################
 #  Babel
 #
-# you dont have to use babel but browserify will expect es5ish???
-#
+CMD_BABEL := npx babel
+CMD_BABEL_OPTIONS += --presets=@babel/preset-env
 # add source maps in devolpment
 ifndef PRODUCTION
 ifdef USE_SOURCEMAPS
@@ -59,10 +88,8 @@ CMD_BABEL_OPTIONS += --source-maps=inline
 endif
 endif
 
-CMD_BABEL_OPTIONS := --presets=@babel/preset-env
-
 ifdef USE_REACT
-CMD_BABEL_REACT_OPTIONS += --presets=@babel/preset-react --plugins @babel/plugin-transform-react-jsx
+CMD_BABEL_OPTIONS += --presets=@babel/preset-react --plugins @babel/plugin-transform-react-jsx
 endif
 
 # latest ES features
@@ -70,13 +97,11 @@ ifdef POST_ES6
 CMD_BABEL_OPTIONS += --plugins @babel/plugin-transform-object-assign,@babel/plugin-proposal-class-properties,@babel/plugin-syntax-dynamic-import
 endif
 
-CMD_BABEL := npx babel $(CMD_BABEL_OPTIONS) $(CMD_BABEL_REACT_OPTIONS)
-
 ######################################
 #  Browserify
 
 # for using cdn libs
-CMD_BROWSERIFY_OPTIONS ?= --transform browserify-global-shim 
+CMD_BROWSERIFY_OPTIONS := --transform browserify-global-shim 
 ifdef USE_SOURCEMAPS
 # add source maps in development
 ifndef PRODUCTION
@@ -86,176 +111,161 @@ endif
 
 # browserify is the only mainstream bundler that behaves well
 # on the command line. Very necessary
-CMD_BROWSERIFY ?= npx browserify $(CMD_BROWSERIFY_OPTIONS)
+CMD_BROWSERIFY := npx browserify
 
 
 ######################################
-#  Find files
+#  FILES and DIRECS
 ######################################
 
-SRC_FILES = $(shell find $(SRC_DIR) $(_MFS_EXCLUDE) -name '*.js')
-ES5_FILES = $(patsubst $(SRC_DIR)%.js,$(BUILD_DIR)%.js,$(SRC_FILES))
+FILES_SRC = $(shell find $(DIR_SRC) $(_MFS_EXCLUDE) -name '*.js')
+FILES_ES5 = $(patsubst $(DIR_SRC)%.js,$(DIR_BUILD)%.js,$(FILES_SRC))
+FILE_PACKAGE_LOCK :=$(DIR_BASE)/package-lock.json# the npm package-lock
+FILE_EXCL := $(DIR_SRC)/exclude.deps# libs listed here wont be built in bundle or vendor (for cdn)
+FILE_DEPENDS :=$(DIR_BUILD)/$(VENDOR_BASENAME).deps# keeps track of what modules the bundle is using
+DIR_NODE_MODULES := $(DIR_BASE)/node_modules# npm direc name
 
 ######################################
-#  Rules
+#  RULES
 ######################################
-
-######################################
-# TARGETS
-# everything is built in the BUILD_DIR and then moved to TARGET_DIR
-$(TARGET_DIR)%: $(BUILD_DIR)%
-	@ $(call info_msg,target - cp,$@,$(_WHITE))
-	@ mkdir -p $(shell dirname $@)
-	@ cp $(patsubst $(TARGET_DIR)%,$(BUILD_DIR)%,$@) $@
-
-######################################
-# gzip
-GZIP ?= gzip $(GZIP_OPTIONS)
-.PRECIOUS: %.gz
-%.gz: %
-	@ $(call info_msg,gizp - compress,$@,$(_BLUE))
-	@ $(GZIP) $< --stdout > $@
-
-######################################
-# index.js
-$(BASE_DIR)/index.%: $(TARGET_DIR)/index.%
-	@ $(call info_msg,index.js - mv,$@,$(_WHITE))
-	@ mv $< $@
-
-######################################
-# package.lock
-PACKAGE_LOCK ?=$(BASE_DIR)/package-lock.json # the npm package-lock
-$(PACKAGE_LOCK):
-	$(call info_message,touch - create,$@)
-	@ touch $(PACKAGE_LOCK)
-
-######################################
-# .exclude.cdn.json : cdn libs to exclude from bundles
-EXCL_SUFFIX ?=.cdn.json
-EXCL_FILE ?= $(BASE_DIR)/.exclude$(EXCL_SUFFIX) # libs listed here wont be built in bundle or vendor (for cdn)
-$(EXCL_FILE):
-	@ $(call info_msg,json - create,$@,$(_BOLD))
-	@ echo "[]" > $@
-
-######################################
-# dep file
-DEP_SUFFIX ?=.deps
-DEP_FILE ?=$(BUILD_DIR)/.$(VENDOR_BASENAME)$(DEP_SUFFIX) # keeps track of what modules the bundle is using
-MODULES_NAME ?=node_modules# npm direc name
-
-## FIXME @ modular libries are broken. (just ignores them for now)
-## strips library paths to import names
-#remove root, ignore local stuff, remove node_modules, first direc, no modular, 
-_STRIP_DEPS := \
-	sed "s:^`cd $(BASE_DIR) && pwd`/::" |\
-	grep "^$(strip $(MODULES_NAME))" |\
-	sed "s:^$(strip $(MODULES_NAME))::" |\
-	cut -d "/" -f2 |sort |uniq |\
-	grep -v ^@ ||\
-	true
-
-
-# notice order-only prereq: | 
-# ES5_FILES will only be a prereq if PACKAGE_LOCK is old.
-# Otherwise vendor would be dependent on ES5_FILES and always be rebuilt.
-$(DEP_FILE): $(EXCL_FILE) $(PACKAGE_LOCK) | $(ES5_FILES)
-	@$(call info_msg,browserify - find deps,$@,$(_MAGENTA))
-	@mkdir -p $(BUILD_DIR)
-	@$(CMD_BROWSERIFY) --list $(ES5_FILES) | $(_STRIP_DEPS) > $@
-
-######################################
-# minfy
-.PRECIOUS: %.min.js
-%.min.js: %.js
-	@ mkdir -p `dirname $@`
-ifdef PRODUCTION
-	@ $(call info_msg,uglify - minify (production),$@,$(_BLUE))
-	@ $(CMD_UGLIFYJS) -cmo $@ $<
-else
-	@ $(call info_msg,uglify - minify (development),$@,$(_GRAY))
-	@ cp $< $@ #were pretending to uglify since were in dev mode
-endif
-
-define mjs_make_bundle
-	@ mkdir -p `dirname $@`
-	@ $(call info_msg,browerisfy - $1,$2 $3 $4,$(BOLD)$(_MAGENTA))
-	@ $(CMD_BROWSERIFY) $6 -o $2 $3 $4
-	@ $(call set_timestamp,$5)
-endef
-
-MFS_EXCLUDED_LIBS = $(JSON) -f $(EXCL_FILE) -a name
-## browiserify flags to force exclusion
-EXC_DEPS = $(shell cat $(DEP_FILE) | sed 's/ / -x /g' | sed 's/^/ -x /')
-## removes libraries found in exclude file
-ONLY_INCLUDE = $(MFS_EXCLUDED_LIBS) | grep -Fx -v -f - $(DEP_FILE)
-## browiserify flags to force inclusion
-INC_DEPS = $(shell $(ONLY_INCLUDE) | sed 's/ / -r /g' | sed 's/^/ -r /')
-
-######################################
-# umd bundle
-# we dont need dep file with umd
-.PRECIOUS: %/$(UMD_BASENAME).js
-%/$(UMD_BASENAME).js: $(ES5_FILES) 
-	$(call mjs_make_bundle,umd,$@,$(ES5_FILES),$(EXC_DEPS),$(UMD_BASENAME),-s $(UMD_BASENAME))
-
-######################################
-## vendor bundle
-.PRECIOUS: %/$(VENDOR_BASENAME).js
-%/$(VENDOR_BASENAME).js: $(DEP_FILE)
-	$(call mjs_make_bundle,vendor,$@,,$(INC_DEPS),$(VENDOR_BASENAME))
-
-
-######################################
-# source bundle
-.PRECIOUS: %/$(BUNDLE_BASENAME).js
-%/$(BUNDLE_BASENAME).js: $(DEP_FILE) $(ES5_FILES) $(LOCAL_NODE_FILES)
-	$(call mjs_make_bundle,bundle,$@,$(ES5_FILES),$(EXC_DEPS),$(BUNDLE_BASENAME))
-
-
-######################################
-# transpile - lint and babel
-.PRECIOUS: $(BUILD_DIR)/%.js
-$(BUILD_DIR)/%.js: $(SRC_DIR)/%.js 
-	@ mkdir -p `dirname $@`
-ifneq ($(USE_LINTER),)
-	@ $(call info_msg,eslint - lint,$<,$(_GREEN))
-	@ $(CMD_LINTER) $(SRC_DIR)/$<
-endif
-ifneq ($(USE_BABEL),)
-	@ $(call info_msg,babel - transplile,$@,$(_BOLD)$(_GREEN))
-	@ $(CMD_BABEL) $(SRC_DIR)/$< --out-file $@ 
-else
-	@ cp $< $@
-endif
 
 ######################################
 # Others
 .PHONY: list-deps list-cdn phobia-deps phobia-cdn
 
-#FIXME where is mfs_excluded_libs?
-#list-cdn:
-#	@ $(mfs_excluded_libs)
+HELP +=\n\n**phobia-cdn**: Show how much space you are saving in excluded libs
+phobia-cdn: list-cdn
+	@ $(mfs_excluded_libs) | xargs -L1 $(BUNDLE-PHOBIA)
 
-#phobia-cdn: list-cdn
-#	@ $(mfs_excluded_libs) | xargs -L1 $(BUNDLE-PHOBIA)
- 
- HELP +=\n\n**list-deps**: Show local dependencies.
+HELP +=\n\n**list-deps**: Show local dependencies.
 list-deps:
-	@cat $(DEP_FILE)
+	@cat $(FILE_DEPENDS)
 
 HELP +=\n\n**phobia-deps**: List package dependencies from bundle-phobia. \
-\n     "sudo npm i -g bundle-phobia"
-phobia-deps: $(DEP_FILE) list-deps
-	@cat $(DEP_FILE) | xargs -L1 $(CMD_BUNDLE-PHOBIA)
+	\n     "sudo npm i -g bundle-phobia"
+phobia-deps: $(FILE_DEPENDS) list-deps
+	@cat $(FILE_DEPENDS) | xargs -L1 $(CMD_BUNDLE-PHOBIA)
 
 #  makes a dependency graph with dot (super coolio)
 #  https://github.com/lindenb/makefile2graph
 HELP +=\n\n**dot-graph**: Create a dependency graph of targets.  \
-\n    needs makefile2graph https://github.com/lindenb/makefile2graph)
+	\n    needs makefile2graph https://github.com/lindenb/makefile2graph)
 .PHONY: dot-graph
 dot-graph: $(TARGETS) 
 	make -Bnd | make2graph | dot -Tsvg -o ../.dot-graph.svg
 
 
+######################################
+# targets
+#
+# everything is built in the DIR_BUILD and then moved to DIR_TARGET
+$(DIR_TARGET)%: $(DIR_BUILD)%
+	@ $(call _info_msg,target - cp,$@,$(_WHITE))
+	@ mkdir -p $(shell dirname $@)
+	@ cp $(patsubst $(DIR_TARGET)%,$(DIR_BUILD)%,$@) $@
+
+######################################
+# index.js
+$(DIR_BASE)/index.%: $(DIR_TARGET)/index.%
+	@ $(call _info_msg,index.js - mv,$@,$(_WHITE))
+	@ mv $< $@
+
+######################################
+# gzip
+#.PRECIOUS: %.gz
+%.gz: %
+	@ $(call _info_msg,gizp - compress,$@,$(_BLUE))
+	@ $(CMD_GZIP) $< --stdout > $@
+
+######################################
+# minfy
+#.PRECIOUS: %.min.js
+%.min.js: %.js
+	@ mkdir -p `dirname $@`
+ifdef PRODUCTION
+	@ $(call _info_msg,uglify - minify (production),$@,$(_BLUE))
+	@ $(CMD_UGLIFYJS) -cmo $@ $<
+else
+	@ $(call _info_msg,uglify - minify (development),$@,$(_GRAY))
+	@ cp $< $@ #were pretending to uglify since were in dev mode
+endif
+
+######################################
+# package-lock.json, exclude.deps
+$(FILE_EXCL) $(FILE_PACKAGE_LOCK):
+	@ $(call _info_msg,touch - create,$@,$(_BOLD))
+	@ touch $@
+
+######################################
+# vendor dep file
+# FIXME @ modular libries are broken.
+# TODO decide if ES5 files should be regular depend
+_SRC_PATH := $(shell pwd)
+_NODE_PATH := $(shell cd $(DIR_NODE_MODULES) && pwd)
+# notice order-only prereq: | 
+# FILES_ES5 will only be a prereq if PACKAGE_LOCK is old.
+# Otherwise vendor would be dependent on FILES_ES5 and always be rebuilt.
+#
+# 1. have browserify find dependencies
+# 2. filter out source direc and transform to package name
+$(FILE_DEPENDS): $(FILE_EXCL) $(FILE_PACKAGE_LOCK) | $(FILES_ES5)
+	@ $(call _info_msg,browserify - find deps,$@,$(_MAGENTA))
+	@ mkdir -p $(DIR_BUILD)
+	@ set -e; set -o pipefail; $(CMD_BROWSERIFY) --list $(FILES_ES5) \
+		| $(DIR_MAKEJS)/scripts/node_deps.py - $(_SRC_PATH) $(_NODE_PATH) > $@ \
+		> $@
+		
+######################################
+# bundle helpers
+#
+define _mjs_make_bundle
+	@ mkdir -p `dirname $@`
+	@ $(call _info_msg,browerisfy - $1,$2 $3 $4,$(BOLD)$(_MAGENTA))
+	@ $(CMD_BROWSERIFY) $(CMD_BROWSERIFY_OPTIONS) $6 -o $2 $3 $4
+endef
+
+## browserify flags to force exclusion
+_EXCL_DEPENDS = $(shell cat $(FILE_DEPENDS) | sed 's/ / -x /g' | sed 's/^/ -x /')
+# 1. remove excluded libs
+# 2 add browserify flags for inclusion
+_INCL_DEPENDS = $(shell \
+	cat $(FILE_DEPENDS) | grep -v -x -f $(FILE_EXCL) \
+	| sed 's/ / -r /g' | sed 's/^/ -r /')
+
+######################################
+# umd bundle
+# we dont need dep file with umd
+#.PRECIOUS: %/$(UMD_BASENAME).js
+%/$(UMD_BASENAME).js: $(FILES_ES5) 
+	$(call _mjs_make_bundle,umd,$@,$(FILES_ES5),$(_EXCL_DEPENDS),$(UMD_BASENAME),-s $(UMD_BASENAME))
+
+######################################
+## vendor bundle
+#.PRECIOUS: %/$(VENDOR_BASENAME).js
+%/$(VENDOR_BASENAME).js: $(FILE_DEPENDS)
+	$(call _mjs_make_bundle,vendor,$@,,$(_INCL_DEPENDS),$(VENDOR_BASENAME))
+
+######################################
+# source bundle
+#.PRECIOUS: %/$(BUNDLE_BASENAME).js
+%/$(BUNDLE_BASENAME).js: $(FILE_DEPENDS) $(FILES_ES5) $(DIR_LOCAL_DEPS)
+	$(call _mjs_make_bundle,bundle,$@,$(FILES_ES5),$(_EXCL_DEPENDS),$(BUNDLE_BASENAME))
+
+######################################
+# transpile - lint and babel
+#.PRECIOUS: $(DIR_BUILD)/%.js
+$(FILES_ES5): $(DIR_BUILD)/%.js: $(DIR_SRC)/%.js 
+	@ mkdir -p `dirname $@`
+ifneq ($(USE_LINTER),)
+	@ $(call _info_msg,eslint - lint,$<,$(_GREEN))
+	@ $(CMD_LINTER) $(DIR_SRC)/$<
+endif
+ifneq ($(USE_BABEL),)
+	@ $(call _info_msg,babel - transplile,$@,$(_BOLD)$(_GREEN))
+	@ $(CMD_BABEL) $(CMD_BABEL_OPTIONS) $(DIR_SRC)/$< --out-file $@ 
+else
+	@ $(call _info_msg,no babel - copy,$<,$(_WHITE))
+	@ cp $< $@
+endif
 
 
