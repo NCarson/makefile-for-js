@@ -14,19 +14,19 @@ import sys
 def main(args):
     """ Main entry point of the app """
     libs = set()
+    prog = sys.argv[0]
     for line in fileinput.input(files=args.file if len(args.file) > 0 else ('-', )):
         if line.startswith(args.src_dir):
             pass
         elif line.startswith(args.node_dir):
             if line.startswith('@'):
-                sys.stderr.write("%(prog)s: scoped directory not implimented yet:{line}".format(line=line))
-                sys.exit(1)
-            line = line[len(args.node_dir) + 1:]
-            lib = line.split('/')[0]
-            libs.add(lib)
+                sys.stderr.write("{prog}: scoped directory not implimented yet:{line}".format(prog, line=line))
+            else:
+                line = line[len(args.node_dir) + 1:]
+                lib = line.split('/')[0]
+                libs.add(lib)
         else:
-            sys.stderr.write("%(prog)s: unknown direc:{line}".format(line=line))
-            sys.exit(1)
+            sys.stderr.write("{prog}: unknown direc:{line}".format(prog=prog, line=line))
 
     sys.stdout.write('\n'.join(libs) +'\n')
 

@@ -1,6 +1,6 @@
-MAKE_DIR:=./makefile-for-js/makefiles/
-CONFIG_DIR := ./makefile-for-js/configs/
-include $(MAKE_DIR)/common.makefile
+DIR_MAKE:=./makefile-for-js/makefiles/
+DIR_CONFIG := ./makefile-for-js/configs/
+include $(DIR_MAKE)/common.makefile
 
 #######################################
 # KNOBS
@@ -17,20 +17,24 @@ USE_SYMLINK :=1
 #######################################
 # COMMANDS
 #######################################
-COPY := cp -b#preserve permissions, timestamps, make backups i.e ~
-LN := ln -r -s
+CMD_COPY := cp -b#preserve permissions, timestamps, make backups i.e ~
+CMD_LN := ln -r -s
 
 #######################################
 # DIRECS and FILES
 #######################################
-SRC_DIR := ./src# project src
-ROOT_MAKE :=$(MAKE_DIR)/root.makefile# project makefiles
-SRC_MAKE :=$(MAKE_DIR)/src.makefile# src direc makefiles
+DIR_SRC := ./src# project src
+ROOT_MAKE :=$(DIR_MAKE)/root.makefile# project makefiles
+SRC_MAKE :=$(DIR_MAKE)/src.makefile# src direc makefiles
 _NPM_SFX :=.mjs
-CONFIGS :=$(CONFIG_DIR)/*$(_NPM_SFX)#
+CONFIGS :=$(DIR_CONFIG)/*$(_NPM_SFX)#
+
 
 REACT_PACKAGES = react react-dom prop-types
 
+#######################################
+# RULES
+#######################################
 #GLOBAL_NPM_DIR := /usr/lib/node_modules#may be different like /usr/local/lib
 COMPILE_PACKAGES := \
 	@babel/cli  \
@@ -83,15 +87,15 @@ endif
 HELP += \n\n**install-files**: Install make and config files.
 .PHONY: install-files
 install-files:
-	mkdir -p $(SRC_DIR)
+	mkdir -p $(DIR_SRC)
 ifneq ($(USE_SYMLINK),)
-	$(LN) $(SRC_MAKE) $(SRC_DIR)/Makefile
-	$(LN) $(ROOT_MAKE) ./Makefile
+	$(CMD_LN) $(SRC_MAKE) $(DIR_SRC)/Makefile
+	$(CMD_LN) $(ROOT_MAKE) ./Makefile
 else
-	$(COPY) $(SRC_MAKES) $(SRC_DIR)
-	$(COPY) $(ROOT_MAKES) .
+	$(CMD_COPY) $(SRC_MAKES) $(DIR_SRC)
+	$(CMD_COPY) $(ROOT_MAKES) .
 endif
-	$(COPY) $(CONFIGS) .
+	$(CMD_COPY) $(CONFIGS) .
 
 HELP += \n\n**all**: install packages, files, packages
 .PHONY: all

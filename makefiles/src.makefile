@@ -95,6 +95,6 @@ include $(_DIR_MAKE)/js.makefile $(_DIR_MAKE)/common.makefile
 # overide variables and rules here so you will overwrite
 # the include makefiles instead of the other way around
 #
-# USE_REACT :=
+# USE_REACT := 2
 
 

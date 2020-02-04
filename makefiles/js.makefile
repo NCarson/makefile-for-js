@@ -208,6 +208,7 @@ _NODE_PATH := $(shell cd $(DIR_NODE_MODULES) && pwd)
 #
 # 1. have browserify find dependencies
 # 2. filter out source direc and transform to package name
+.DELETE_ON_ERROR:
 $(FILE_DEPENDS): $(FILE_EXCL) $(FILE_PACKAGE_LOCK) | $(FILES_ES5)
 	@ $(call _info_msg,browserify - find deps,$@,$(_MAGENTA))
 	@ mkdir -p $(DIR_BUILD)
