@@ -20,7 +20,3 @@ test.cfg: $(DIR_CONFIG)/test.cfg
 $(DIR_BKUP)/test.cfg: test.cfg
 	mkdir -p $(DIR_BKUP)
 	cp $< $(DIR_BKUP)/$< # copy from local
-
-
-
-
