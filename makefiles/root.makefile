@@ -1,8 +1,6 @@
+#FIXME: use $(MAKE) instead of cd src && make
 all:
 	cd src && make
-
-example:
-	cd example && make
 
 clean:
 	cd src && make clean
