@@ -35,14 +35,7 @@ _commit = $(shell cat $(FILE_COMMIT))
 _mnf_files = $(shell cat $(FILE_MANIFEST))
 _git_status = $(shell cd $(DIR_MAKEJS) && git status --porcelain)
 
-$(info ---------------- |$(_git_status)|-------------)
-ifeq ($(_git_status),)
-$(info ----------------- git clean)
-endif
 
-ifdef _git_status
-$(info ----------------- git defined)
-endif
 
 include $(DIR_MAKEJS)/lib/common.makefile
 
@@ -89,7 +82,13 @@ HELP +=\n\n**diffs**: make diff files if needed from MANIFEST files\
 \n    'your-file.diff'. It is up to the caller to merge the difference by hand. After\
 \n    edits are finished and integerated into your source (FIXME see FILE_COMMIT)\ reinstall files to get a new commit hash.
 .PHONY: diffs
+ifeq ($(_git_status),)
 diffs: $(_mnf_files:%=%.diff)
+else
+diffs:
+	@ echo $(DIR_MAKEJS) not clean. please commit before running diffs
+endif
+
 
 #######################################
 # .makefilejs/COMMIT
