@@ -33,6 +33,12 @@ _global_packages = $(shell cat $(DIR_CACHE)/GLOBAL_PACKAGES)
 _packages = $(shell cat $(DIR_CACHE)/PACKAGES)
 _commit = $(shell cat $(FILE_COMMIT))
 _mnf_files = $(shell cat $(FILE_MANIFEST))
+_git_status = $(shell cd $(DIR_MAKEJS) && git status --porcelain)
+
+$(info ---------------- |$(_git_status)|-------------)
+ifeq ($(_git_status),)
+$(info ----------------- git clean)
+endif
 
 include $(DIR_MAKEJS)/lib/common.makefile
 
@@ -40,16 +46,18 @@ include $(DIR_MAKEJS)/lib/common.makefile
 # RULES
 #######################################
 
-HELP +=\#\#\#project.makefile
+HELP +=\n\#\#\#project.makefile
 
 #######################################
 # all
+HELP +=\n\n**all**: TODO
 .DEFAULT_GOAL := all
 .PHONY: all
 all: $(FILE_COMMIT)
 
 #######################################
 # clean
+HELP +=\n\n**clean**: TODO
 .PHONY: clean
 clean:
 	rm --interactive=once $(_mnf_files) $(FILE_COMMIT) $(FILE_MANIFEST)

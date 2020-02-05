@@ -46,7 +46,7 @@ HELP_USE += \n\n**USE REACT**: set transform flags for react
 USE_REACT :=1
 
 HELP_USE += \n\n**POST US6**: babel transform for static class props and object spreads
-POST_ES6 :=1
+USE_POST_ES5 :=1
 
 # for find command; set if you have direcs to skip
 ifeq (strip($(DIR_EXCL_SRC)),)
@@ -96,7 +96,7 @@ CMD_BABEL_OPTIONS += --presets=@babel/preset-react --plugins @babel/plugin-trans
 endif
 
 # latest ES features
-ifdef POST_ES6 
+ifdef USE_POST_ES5 
 CMD_BABEL_OPTIONS += --plugins @babel/plugin-transform-object-assign,@babel/plugin-proposal-class-properties,@babel/plugin-syntax-dynamic-import
 endif
 
