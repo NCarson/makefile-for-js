@@ -70,6 +70,10 @@ TARGETS :=  $(BUNDLE_TARGET) $(VENDOR_TARGET)
 #    TARGETS += $(patsubst %.js,%.min.js.gz,$(TARGETS))# gzipped
 #    TARGETS += ../index.js# an index that imports all targets
 
+DIR_MAKEJS := ../makefile-for-js
+include $(DIR_MAKEJS)/lib/common.makefile
+include $(DIR_MAKEJS)/lib/js.makefile 
+
 ######################################
 #  COMMANDS
 ######################################
@@ -77,7 +81,7 @@ TARGETS :=  $(BUNDLE_TARGET) $(VENDOR_TARGET)
 ####################################
 # RULES
 ####################################
-HELP +=\#\#\#src.makefile
+HELP +=\n\#\#\#src.makefile
 
 HELP +=\n\n**all**: Make the `TARGETS`.
 .PHONY: all
@@ -90,14 +94,6 @@ clean:
 	rm -f $(TARGETS)
 	rm -fr $(DIR_BUILD)
 
-####################################
-# INCLUDES
-####################################
-# make sure you put the files all on one line or there is weird scope issues
-# make sure all the base variables are defined before these are run
-_DIR_MAKE := $(DIR_MAKEJS)/lib
-include $(_DIR_MAKE)/js.makefile $(_DIR_MAKE)/common.makefile 
-
 ######################################
 # YOUR RULES and OVERIDES
 ######################################
@@ -106,5 +102,6 @@ include $(_DIR_MAKE)/js.makefile $(_DIR_MAKE)/common.makefile
 # the include makefiles instead of the other way around
 #
 # USE_REACT := 2
+#
 
 

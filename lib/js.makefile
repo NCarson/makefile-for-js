@@ -2,48 +2,51 @@ HELP_FILE +=\n\#js.makefile\
 \n\#\#\#Compiles .js sources through chain of linting, transpiling, bundling, minifing, and zipping.\
 \nrun `make -f PROJECT_ROOT/makefiles-for-js/makefiles/js.makefile -p` to print out rules of the js makefile
 
+## DIR_BASE defines the root of the of the project.
+## It is always required to be defined in the parent.
+#ifeq ($(DIR_BASE),)
+#$(error DIR_BASE is undefined)
+#endif
+#
+## directory finished files should go to
+#ifeq ($(DIR_TARGET),)
+#$(error DIR_TARGET is undefined)
+#endif
+#
+## names of the finished files
+#ifeq ($(TARGETS),)
+#$(error TARGETS is undefined)
+#endif
+
 ######################################
 #  Knobs
 ######################################
 
-#HELP_USE += \n\n**USE_PRODUCTION**: If set then use production options instead of development.\
-Also will be set if NODE_ENV=production in the environment.
+HELP_USE += \n\#\#\#js.makefile
+
+HELP_USE += \n**USE PRODUCTION**: If set then use production options instead of development.\
+\n    Also will be set if NODE_ENV=production in the environment.
 NODE_ENV ?=
 USE_PRODUCTION :=
 ifeq ($(NODE_ENV),production)
 	USE_PRODUCTION :=1
 endif
 
-HELP_USE += \n\n**USE_BABEL**: transpile with babel
+
+HELP_USE += \n\n**USE BABEL**: transpile with babel
 USE_BABEL :=1
 
-HELP_USE += \n\n**USE_LINTER**: use eslint
+HELP_USE += \n\n**USE LINTER**: use eslint
 USE_LINTER :=1
 
-HELP_USE += \n\n**USE_SOURCEMAPS**: bundle source maps for debugging
+HELP_USE += \n\n**USE SOURCEMAPS**: bundle source maps for debugging
 USE_SOURCEMAPS :=1
 
-HELP_USE += \n\n**USE_REACT**: set transform flags for react
+HELP_USE += \n\n**USE REACT**: set transform flags for react
 USE_REACT :=1
 
-HELP_USE += \n\n**POST_US6**: babel transform for static class props and object spreads
+HELP_USE += \n\n**POST US6**: babel transform for static class props and object spreads
 POST_ES6 :=1
-
-# DIR_BASE defines the root of the of the project.
-# It is always required to be defined in the parent.
-ifeq ($(DIR_BASE),)
-$(error DIR_BASE is undefined)
-endif
-
-# directory finished files should go to
-ifeq ($(DIR_TARGET),)
-$(error DIR_TARGET is undefined)
-endif
-
-# names of the finished files
-ifeq ($(TARGETS),)
-$(error TARGETS is undefined)
-endif
 
 # for find command; set if you have direcs to skip
 ifeq (strip($(DIR_EXCL_SRC)),)
@@ -128,6 +131,8 @@ DIR_NODE_MODULES := $(DIR_BASE)/node_modules# npm direc name
 ######################################
 #  RULES
 ######################################
+
+HELP +=\n\#\#\#js.makefile
 
 #######################################
 # phobia-cdn

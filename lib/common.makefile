@@ -30,11 +30,14 @@ SUFFIXES :=
 # KNOBS
 ######################################
 
-HELP_USE += **USE_MDLESS**: use mdless command to form command line markdown output \
-    https://brettterpstra.com/2015/08/21/mdless-better-markdown-in-terminal
+HELP_USE += \n\#\#\#common.makefile\
+\n    *Note:* because of technically difficulity in mdless: 'USE MDLESS' should be 'USE_MDLESS' and so on.\n
+
+HELP_USE += \n**USE MDLESS**: use mdless command to form command line markdown output \
+\n     https://brettterpstra.com/2015/08/21/mdless-better-markdown-in-terminal
 USE_MDLESS :=1
 
-HELP_USE += \n\n**USE_COLOR**: colorize output
+HELP_USE += \n**USE COLOR**: colorize output
 USE_COLOR :=1
 
 #######################################
@@ -88,11 +91,10 @@ HELP +=\n\#\#\#common.makefile
 #######################################
 # help:
 HELP +=\n\n**help**: print this message
-export HELP
 .PHONY: help
 #XXX will be default target unless .DEFAULT_GOAL is set
 help:
-	@ echo "$$HELP" $(_MDLESS)
+	@ echo -e '$(HELP)' $(_MDLESS)
 
 #######################################
 # printall:
@@ -134,15 +136,14 @@ print-%:
 #######################################
 # help-use:
 HELP +=\n\n**help-use**: print USE_VARNAME type help
-export HELP_USE
 .PHONY: help-use
 help-use:
-	@ echo "$$HELP_USE" $(_MDLESS)
+	#@ echo "$$HELP_USE" $(_MDLESS)
+	@ echo -e '$(HELP_USE)'  $(_MDLESS)
 
 #######################################
 # help-file:
 HELP +=\n\n**help-file**: print help for makefile
-export HELP_FILE
 .PHONY: help-file
 help-file:
-	@ echo "$$HELP_FILE" $(_MDLESS)
+	@ echo -e '$(HELP_FILE)' $(_MDLESS)

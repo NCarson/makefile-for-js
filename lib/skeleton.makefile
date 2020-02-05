@@ -7,7 +7,7 @@ HELP_FILE += \n\#skeleton.makefile\
 \n- Hungarian variable notation: DIR_*, FILE_*, FILES_*, CMD_, USE_*\
 \n- All files should have knobs, files, commands, rules headers in the correct order (see this file.)\
 \n- All no pattern rules should have a sub header\
-\n- TODO and FIXME should be give context without other lines being included
+\n- TODO and FIXME should be give context without other lines being included\
 \
 \n**Variable style**\
 \n- non undscore prepended vars are *public* cmd line changeable\
@@ -25,6 +25,7 @@ HELP_FILE += \n\#skeleton.makefile\
 #  KNOBS
 ######################################
 
+#HELP_USE += \n\#\#\#skeleton.makefile
 #USE_THINGY := 1
 #HELP_USE += \n\n**USE_THINGY**: What a thingy does
 

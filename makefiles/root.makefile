@@ -1,5 +1,8 @@
 HELP_FILE += \n\#root.makefile\
-\n\#\#\#Top Level Project Makefile
+\n\#\#\#Top Level Project Makefile\
+\n- Makes source sub dirs\
+\n- publishes npm package\
+
 
 ######################################
 #  KNOBS
