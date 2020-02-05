@@ -2,19 +2,16 @@ HELP_FILE +=\n\#js.makefile\
 \n\#\#\#Compiles .js sources through chain of linting, transpiling, bundling, minifing, and zipping.\
 \nrun `make -f PROJECT_ROOT/makefiles-for-js/makefiles/js.makefile -p` to print out rules of the js makefile
 
-#needed for pipefail option of bash
-SHELL := /bin/bash
-
 ######################################
 #  Knobs
 ######################################
 
-HELP_USE += \n\n**PRODUCTION**: If set then use production options instead of development\
+#HELP_USE += \n\n**USE_PRODUCTION**: If set then use production options instead of development.\
 Also will be set if NODE_ENV=production in the environment.
 NODE_ENV ?=
-PRODUCTION :=
+USE_PRODUCTION :=
 ifeq ($(NODE_ENV),production)
-	PRODUCTION :=1
+	USE_PRODUCTION :=1
 endif
 
 HELP_USE += \n\n**USE_BABEL**: transpile with babel
@@ -35,17 +32,17 @@ POST_ES6 :=1
 # DIR_BASE defines the root of the of the project.
 # It is always required to be defined in the parent.
 ifeq ($(DIR_BASE),)
-	$(error DIR_BASE is undefined)
+$(error DIR_BASE is undefined)
 endif
 
 # directory finished files should go to
 ifeq ($(DIR_TARGET),)
-	$(error DIR_TARGET is undefined)
+$(error DIR_TARGET is undefined)
 endif
 
 # names of the finished files
 ifeq ($(TARGETS),)
-	$(error TARGETS is undefined)
+$(error TARGETS is undefined)
 endif
 
 # for find command; set if you have direcs to skip
@@ -58,6 +55,9 @@ endif
 ######################################
 #  COMMANDS
 ######################################
+
+#needed for pipefail option of bash
+SHELL := /bin/bash
 
 CMD_GZIP := gzip
 
@@ -82,7 +82,7 @@ CMD_BUNDLE-PHOBIA := npx bundle-phobia/index.js
 CMD_BABEL := npx babel
 CMD_BABEL_OPTIONS += --presets=@babel/preset-env
 # add source maps in devolpment
-ifndef PRODUCTION
+ifndef USE_PRODUCTION
 ifdef USE_SOURCEMAPS
 CMD_BABEL_OPTIONS += --source-maps=inline
 endif
@@ -104,7 +104,7 @@ endif
 CMD_BROWSERIFY_OPTIONS := --transform browserify-global-shim 
 ifdef USE_SOURCEMAPS
 # add source maps in development
-ifndef PRODUCTION
+ifndef USE_PRODUCTION
 CMD_BROWSERIFY_OPTIONS += -d
 endif
 endif
@@ -129,34 +129,38 @@ DIR_NODE_MODULES := $(DIR_BASE)/node_modules# npm direc name
 #  RULES
 ######################################
 
-######################################
-# Others
-.PHONY: list-deps list-cdn phobia-deps phobia-cdn
-
+#######################################
+# phobia-cdn
 HELP +=\n\n**phobia-cdn**: Show how much space you are saving in excluded libs
+.PHONY: phobia-cdn
 phobia-cdn: list-cdn
 	@ $(mfs_excluded_libs) | xargs -L1 $(BUNDLE-PHOBIA)
 
+#######################################
+# list-deps
 HELP +=\n\n**list-deps**: Show local dependencies.
+.PHONY: list-deps
 list-deps:
 	@cat $(FILE_DEPENDS)
 
+#######################################
+# phobia-deps
 HELP +=\n\n**phobia-deps**: List package dependencies from bundle-phobia. \
 	\n     "sudo npm i -g bundle-phobia"
+.PHONY: phobia-deps
 phobia-deps: $(FILE_DEPENDS) list-deps
 	@cat $(FILE_DEPENDS) | xargs -L1 $(CMD_BUNDLE-PHOBIA)
 
-#  makes a dependency graph with dot (super coolio)
-#  https://github.com/lindenb/makefile2graph
+#######################################
+# dot-graph
 HELP +=\n\n**dot-graph**: Create a dependency graph of targets.  \
-	\n    needs makefile2graph https://github.com/lindenb/makefile2graph)
+\n    needs makefile2graph https://github.com/lindenb/makefile2graph)
 .PHONY: dot-graph
 dot-graph: $(TARGETS) 
 	make -Bnd | make2graph | dot -Tsvg -o ../.dot-graph.svg
 
-
-######################################
-# targets
+#######################################
+# target dir
 # everything is built in the DIR_BUILD and then moved to DIR_TARGET
 $(DIR_TARGET)%: $(DIR_BUILD)%
 	@ $(call _info_msg,target - cp,$@,$(_WHITE))
@@ -165,23 +169,22 @@ $(DIR_TARGET)%: $(DIR_BUILD)%
 
 ######################################
 # index.js
+# moves index.js out of target dir and into project base
 $(DIR_BASE)/index.%: $(DIR_TARGET)/index.%
 	@ $(call _info_msg,index.js - mv,$@,$(_WHITE))
 	@ mv $< $@
 
 ######################################
 # gzip
-#.PRECIOUS: %.gz
 %.gz: %
 	@ $(call _info_msg,gizp - compress,$@,$(_BLUE))
 	@ $(CMD_GZIP) $< --stdout > $@
 
 ######################################
 # minfy
-#.PRECIOUS: %.min.js
 %.min.js: %.js
 	@ mkdir -p `dirname $@`
-ifdef PRODUCTION
+ifdef USE_PRODUCTION
 	@ $(call _info_msg,uglify - minify (production),$@,$(_BLUE))
 	@ $(CMD_UGLIFYJS) -cmo $@ $<
 else
@@ -191,6 +194,7 @@ endif
 
 ######################################
 # package-lock.json, exclude.deps
+# just makes sure they exists
 $(FILE_EXCL) $(FILE_PACKAGE_LOCK):
 	@ $(call _info_msg,touch - create,$@,$(_BOLD))
 	@ touch $@

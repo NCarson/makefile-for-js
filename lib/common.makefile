@@ -27,7 +27,7 @@ MAKEFLAGS += --no-builtin-rules --no-builtin-variables
 SUFFIXES :=
 
 ######################################
-# Knobs
+# KNOBS
 ######################################
 
 HELP_USE += **USE_MDLESS**: use mdless command to form command line markdown output \

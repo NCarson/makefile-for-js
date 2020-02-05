@@ -6,7 +6,11 @@ HELP_FILE += \#src.makefile\
 \nrun `make PRODUCTION=1` production production mode (minified) aka NODE_ENV=production\
 
 ######################################
-#  DIRECS and FILES
+# KNOBS
+######################################
+
+######################################
+#  FILES and DIRECS
 ######################################
 
 #XXX dont add trailing '/' to paths
@@ -25,7 +29,7 @@ DIR_LOCAL_DEPS :=
 
 #######################################
 #  PACKAGE BUILD
-######################################
+
 DIR_TARGET := $(DIR_BASE)/public/dist# finished files go here
 VENDOR_BASENAME :=vendor# this will be the name of vendor bundle in DIR_TARGET
 BUNDLE_BASENAME :=bundle# this will be the name of your source bundle DIR_TARGET
@@ -45,7 +49,7 @@ TARGETS :=  $(BUNDLE_TARGET) $(VENDOR_TARGET)
 
 #######################################
 #  UMD LIBRARY BUILD
-######################################
+ 
 #DIR_TARGET := $(DIR_BASE)/lib# library type
 #UMD_BASENAME :=umd# XXX this needs to be different from the source file names
 #TARGETS := \
@@ -66,15 +70,19 @@ TARGETS :=  $(BUNDLE_TARGET) $(VENDOR_TARGET)
 #    TARGETS += $(patsubst %.js,%.min.js.gz,$(TARGETS))# gzipped
 #    TARGETS += ../index.js# an index that imports all targets
 
+######################################
+#  COMMANDS
+######################################
+
 ####################################
 # RULES
 ####################################
-HELP +=\n\n**all**: Make all the targets.
+HELP +=\n\n**all**: Make the `TARGETS`.
 .PHONY: all
 all: $(TARGETS)
 .DEFAULT_GOAL := all
 
-HELP +=\n\n**clean**: Remove targets and build direc.
+HELP +=\n\n**clean**: Remove `TARGETS` and `DIR_BUILD`.
 .PHONY: clean
 clean:
 	rm -f $(TARGETS)
@@ -85,7 +93,7 @@ clean:
 ####################################
 # make sure you put the files all on one line or there is weird scope issues
 # make sure all the base variables are defined before these are run
-_DIR_MAKE := $(DIR_MAKEJS)/makefiles
+_DIR_MAKE := $(DIR_MAKEJS)/lib
 include $(_DIR_MAKE)/js.makefile $(_DIR_MAKE)/common.makefile 
 
 ######################################
