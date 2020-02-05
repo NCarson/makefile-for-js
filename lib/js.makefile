@@ -157,7 +157,6 @@ dot-graph: $(TARGETS)
 
 ######################################
 # targets
-#
 # everything is built in the DIR_BUILD and then moved to DIR_TARGET
 $(DIR_TARGET)%: $(DIR_BUILD)%
 	@ $(call _info_msg,target - cp,$@,$(_WHITE))

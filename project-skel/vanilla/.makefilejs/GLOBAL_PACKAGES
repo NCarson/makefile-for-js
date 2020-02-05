@@ -4,4 +4,4 @@
 browserify
 bundle-phobia-cli
 eslint
-uglifyjs
+uglify-js

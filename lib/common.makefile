@@ -30,17 +30,28 @@ SUFFIXES :=
 # Knobs
 ######################################
 
-CMD_MDLESS := mdless
-HELP_USE += \n\n**USE_MDLESS**: use mdless command to form command line markdown output \
+HELP_USE += **USE_MDLESS**: use mdless command to form command line markdown output \
     https://brettterpstra.com/2015/08/21/mdless-better-markdown-in-terminal
 USE_MDLESS :=1
 
 HELP_USE += \n\n**USE_COLOR**: colorize output
 USE_COLOR :=1
 
+#######################################
+# FILES and DIRECS
+#######################################
+
 ######################################
-# Shell Commands / Macros
+#  COMMANDS
 ######################################
+
+CMD_MDLESS := mdless
+
+ifdef USE_MDLESS
+_MDLESS := $(shell echo '|' `which $(CMD_MDLESS) || echo cat`)
+else
+_MDLESS := echo '| echo cat'
+endif
 
 _NORMAL=$(shell tput sgr0)
 _BLACK=$(shell tput setaf 0)
@@ -68,27 +79,20 @@ define _info_msg
 endef
 endif
 
-######################################
-# Common Rules
-######################################
+#######################################
+# RULES
+#######################################
 
-######################################
+#######################################
 # help:
-#XXX default target
-
 HELP +=\n\n**help**: print this message
-ifdef USE_MDLESS
-_MDLESS := $(shell echo '|' `which $(CMD_MDLESS) || echo cat`)
-else
-_MDLESS := | echo cat
-endif
-
 export HELP
 .PHONY: help
+#XXX will be default target unless .DEFAULT_GOAL is set
 help:
 	@ echo "$$HELP" $(_MDLESS)
 
-######################################
+#######################################
 # printall:
 HELP +=\n\n**printall**: print all public type variables\
 	(no underscore; defined in file or command line or environment override)
@@ -97,7 +101,6 @@ HELP +=\n\n**printall**: print all public type variables\
 _FILTERED_VARS := $(foreach V,\
 	$(.VARIABLES),\
 	$(if $(filter-out environment default automatic,$(origin $V)), $V))
-
 
 # filter out leader underscore vars
 _FILTERED_VARS2 := $(foreach V,\
@@ -111,23 +114,22 @@ printall:
 		$(info $(origin $(v));$(v) = $($(v)) ))
 
 
+#######################################
+# printall-raw:
 HELP +=\n\n**printall-raw**: print all variables and values known to make
 printall-raw:
 	$(foreach v,\
 		$(sort $(.VARIABLES)),\
 		$(info $(origin $(v));$(v) = $($(v)) ))
 
-#this is good for starter
-#https://medium.com/stack-me-up/using-makefiles-the-right-way-a82091286950
-
-######################################
+#######################################
 # print-%:
 HELP +=\n\n**print-%**: print-varname - prints the value of varname
 #https://blog.melski.net/2010/11/30/makefile-hacks-print-the-value-of-any-variable/
 print-%:
 	@ echo '$*=$($*)'
 
-######################################
+#######################################
 # help-use:
 HELP +=\n\n**help-use**: print USE_VARNAME type help
 export HELP_USE
@@ -135,7 +137,7 @@ export HELP_USE
 help-use:
 	@ echo "$$HELP_USE" $(_MDLESS)
 
-######################################
+#######################################
 # help-file:
 HELP +=\n\n**help-file**: print help for makefile
 export HELP_FILE
