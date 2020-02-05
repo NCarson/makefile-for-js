@@ -40,6 +40,10 @@ ifeq ($(_git_status),)
 $(info ----------------- git clean)
 endif
 
+ifdef _git_status
+$(info ----------------- git defined)
+endif
+
 include $(DIR_MAKEJS)/lib/common.makefile
 
 #######################################
