@@ -77,6 +77,8 @@ TARGETS :=  $(BUNDLE_TARGET) $(VENDOR_TARGET)
 ####################################
 # RULES
 ####################################
+HELP +=\#\#\#src.makefile
+
 HELP +=\n\n**all**: Make the `TARGETS`.
 .PHONY: all
 all: $(TARGETS)

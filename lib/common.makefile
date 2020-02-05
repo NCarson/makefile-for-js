@@ -83,6 +83,8 @@ endif
 # RULES
 #######################################
 
+HELP +=\n\#\#\#common.makefile
+
 #######################################
 # help:
 HELP +=\n\n**help**: print this message

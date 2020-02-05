@@ -7,6 +7,7 @@ HELP_FILE += \n\#skeleton.makefile\
 \n- Hungarian variable notation: DIR_*, FILE_*, FILES_*, CMD_, USE_*\
 \n- All files should have knobs, files, commands, rules headers in the correct order (see this file.)\
 \n- All no pattern rules should have a sub header\
+\n- TODO and FIXME should be give context without other lines being included
 \
 \n**Variable style**\
 \n- non undscore prepended vars are *public* cmd line changeable\
@@ -46,6 +47,7 @@ include $(DIR_MAKEJS)/lib/common.makefile
 #######################################
 # RULES
 #######################################
+HELP +=\n\#\#\#skeleton.makefile
 
 .DEFAULT_GOAL := help-file # this will reset default from common.makefile (default is help).
 

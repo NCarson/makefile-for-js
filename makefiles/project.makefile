@@ -40,6 +40,8 @@ include $(DIR_MAKEJS)/lib/common.makefile
 # RULES
 #######################################
 
+HELP +=\#\#\#project.makefile
+
 #######################################
 # all
 .DEFAULT_GOAL := all
