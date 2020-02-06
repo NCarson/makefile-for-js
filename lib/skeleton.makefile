@@ -1,5 +1,7 @@
-HELP_FILE += \n\#skeleton.makefile\
-\n\#\#\#Skeleton makefile template\
+HELP_FILE += \n\n`skeleton.makefile`\
+\n\n\#\#\# Skeleton makefile template\
+\n Base file stub for style and structure.
+\n
 \n**General Style**\
 \n- Format help vars in markdown. See this file for style.\
 \n- 39 \# for comment headers.\
@@ -25,7 +27,7 @@ HELP_FILE += \n\#skeleton.makefile\
 #  KNOBS
 ######################################
 
-#HELP_USE += \n\#\#\#skeleton.makefile
+#HELP_USE += \n\n`skeleton.makefile`
 #USE_THINGY := 1
 #HELP_USE += \n\n**USE_THINGY**: What a thingy does
 
@@ -48,7 +50,7 @@ include $(DIR_MAKEJS)/lib/common.makefile
 #######################################
 # RULES
 #######################################
-HELP +=\n\#\#\#skeleton.makefile
+HELP +=\n\n`skeleton.makefile`
 
 .DEFAULT_GOAL := help-file # this will reset default from common.makefile (default is help).
 

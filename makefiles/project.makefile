@@ -1,8 +1,8 @@
-HELP_FILE += \n\#project.makefile\
-\n\#\#\#Project Management makefile\
-\n- Installs package directory configs and directory skeleton.\
-\n- Installs npm compile tools.\
-\n- handles version control of local makefiles.
+HELP_FILE += \n\n`project.makefile`\
+\n\n\#\#\# Project Management makefile\
+\nInstall directory skeleton and project configs. \
+\nInstalls npm packages for compiling.\
+\nHandles peer version control of local makefiles and configs.
 
 ######################################
 #  KNOBS
@@ -43,7 +43,7 @@ include $(DIR_MAKEJS)/lib/common.makefile
 # RULES
 #######################################
 
-HELP +=\n\#\#\#project.makefile
+HELP +=\n\n`project.makefile`
 
 #######################################
 # all

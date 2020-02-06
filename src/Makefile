@@ -1,6 +1,5 @@
-HELP_FILE += \n\n`src.makefile`\
-\n\n\#\#\# JS Source Code Management.\
-\nManages bundle builds for javascript files.\
+HELP_FILE += \#src.makefile\
+\n\#\#\#JS project mananagment for source code.\
 \n\
 \nrun `make help` see top level non-pattern rules\
 \nrun `make` development\
@@ -82,7 +81,7 @@ include $(DIR_MAKEJS)/lib/js.makefile
 ####################################
 # RULES
 ####################################
-HELP +=\n\n`src.makefile`
+HELP +=\n\#\#\#src.makefile
 
 HELP +=\n\n**all**: Make the `TARGETS`.
 .PHONY: all

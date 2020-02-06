@@ -1,5 +1,6 @@
-HELP_FILE +=\n\#js.makefile\
-\n\#\#\#Compiles .js sources through chain of linting, transpiling, bundling, minifing, and zipping.\
+HELP_FILE +=\n\n`js.makefile`\
+\n\n\#\#\# Java Script Transpile Makefile\
+Compiles .js sources through chain of linting, transpiling, bundling, minifing, and zipping.\
 \nrun `make -f PROJECT_ROOT/makefiles-for-js/makefiles/js.makefile -p` to print out rules of the js makefile
 
 ## DIR_BASE defines the root of the of the project.
@@ -22,9 +23,9 @@ HELP_FILE +=\n\#js.makefile\
 #  Knobs
 ######################################
 
-HELP_USE += \n\#\#\#js.makefile
+HELP_USE += \n\n`js.makefile`
 
-HELP_USE += \n**USE PRODUCTION**: If set then use production options instead of development.\
+HELP_USE += \n\n**USE PRODUCTION**: If set then use production options instead of development.\
 \n    Also will be set if NODE_ENV=production in the environment.
 NODE_ENV ?=
 USE_PRODUCTION :=
@@ -132,7 +133,7 @@ DIR_NODE_MODULES := $(DIR_BASE)/node_modules# npm direc name
 #  RULES
 ######################################
 
-HELP +=\n\#\#\#js.makefile
+HELP +=\n\n`js.makefile`
 
 #######################################
 # phobia-cdn

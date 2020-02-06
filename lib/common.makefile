@@ -1,5 +1,10 @@
-HELP_FILE += \n\#common.makefile\
-\n\#\#\#Common makefile library\
+HELP_FILE += \n\n`common.makefile`\
+\n\#\#\# Common Makefile Library\
+\nBase makefile library\
+\nThis is included from a top level makefile.\
+
+HELP_EXTRA += \n\n`common.makefile`\
+\n\
 \nrun `make help` see top level non-pattern rules\
 \nrun `make help-file` help for each included file\
 \nrun `make help-use` help for USE_\% type variables\
@@ -11,16 +16,18 @@ HELP_FILE += \n\#common.makefile\
 \nBAD: `USE_THINGY :=0`\
 \nGOOD: `USE_THINGY :=`\
 \nThis is because make usually checks for existance of variable being set.\
-\n\#\#\#\#Watch out with spaces when setting variables.\
+\n\#\#\#\# Watch out with spaces when setting variables.\
 \nMake is very literal in setting things.\
 \nBAD: `DIR_BASE := .. \\\\n`\# will evaluate to '.. '\
 \nGOOD: `DIR_BASE := ..\\\\n`\# will evaluate to '..'\
 \nSo the value starts right after assingment symbol and ends at newline or comment hash.\
-\n\#\#\#\#Dont set variables with the environment\
+\n\#\#\#\# Dont set variables with the environment\
 \nThe -e switch will push the whole environment in and who knows whats in there.\
 \nSetting variables after the the make command will isolate and document what you are trying to do.\
 \nBAD: `USE_THINGY=1 make -e`\# set through environment\
-\nGOOD: `make USE_THINGY=1`\# set by make
+\nGOOD: `make USE_THINGY=1`\# set by make\
+\nUnsetting variables on the command line\
+\nGOOD: `make USE_THINGY=`
 
 # wipe out built in C stuff
 MAKEFLAGS += --no-builtin-rules --no-builtin-variables
@@ -30,11 +37,11 @@ SUFFIXES :=
 # KNOBS
 ######################################
 
-HELP_USE += \n\#\#\#common.makefile\
-\n    *Note:* because of technically difficulity in mdless: 'USE MDLESS' should be 'USE_MDLESS' and so on.\n
+HELP_USE += \n\n`common.makefile`\
+\n\n*Because of technically difficulity in mdless: 'USE MDLESS' should be 'USE_MDLESS' and so on.*
 
-HELP_USE += \n**USE MDLESS**: use mdless command to form command line markdown output \
-\n     https://brettterpstra.com/2015/08/21/mdless-better-markdown-in-terminal
+HELP_USE += \n**USE MDLESS**: use [mdless](https://github.com/ttscoff/mdless) command to form command line markdown output \
+
 USE_MDLESS :=1
 
 HELP_USE += \n**USE COLOR**: colorize output
@@ -53,7 +60,7 @@ CMD_MDLESS := mdless
 ifdef USE_MDLESS
 _MDLESS := $(shell echo '|' `which $(CMD_MDLESS) || echo cat`)
 else
-_MDLESS := echo '| echo cat'
+_MDLESS :=
 endif
 
 _NORMAL=$(shell tput sgr0)
@@ -86,7 +93,7 @@ endif
 # RULES
 #######################################
 
-HELP +=\n\#\#\#common.makefile
+HELP +=\n\n`common.makefile`
 
 #######################################
 # help:
@@ -94,7 +101,10 @@ HELP +=\n\n**help**: print this message
 .PHONY: help
 #XXX will be default target unless .DEFAULT_GOAL is set
 help:
-	@ echo -e '$(HELP)' $(_MDLESS)
+	@ echo 
+	@ echo -e \
+		'\n.DEFAULT_GOAL = $(.DEFAULT_GOAL)' \
+		'\n$(HELP)' $(_MDLESS)
 
 #######################################
 # printall:
@@ -138,8 +148,7 @@ print-%:
 HELP +=\n\n**help-use**: print USE_VARNAME type help
 .PHONY: help-use
 help-use:
-	#@ echo "$$HELP_USE" $(_MDLESS)
-	@ echo -e '$(HELP_USE)'  $(_MDLESS)
+	@ echo -e '$(HELP_USE)' $(_MDLESS)
 
 #######################################
 # help-file:
@@ -147,3 +156,10 @@ HELP +=\n\n**help-file**: print help for makefile
 .PHONY: help-file
 help-file:
 	@ echo -e '$(HELP_FILE)' $(_MDLESS)
+
+#######################################
+# help-extra
+HELP +=\n\n**help-extra**: print extra help
+.PHONY: help-extra
+help-extra:
+	@ echo -e '$(HELP_EXTRA)' $(_MDLESS)

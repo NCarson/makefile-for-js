@@ -1,0 +1,7 @@
+@babel/cli
+@babel/core
+@babel/runtime
+browserify
+bundle-phobia-cli
+eslint
+uglify-js

@@ -1,7 +1,6 @@
-HELP_FILE += \n\#root.makefile\
-\n\#\#\#Top Level Project Makefile\
-\n- Makes source sub dirs\
-\n- publishes npm package\
+HELP_FILE += \n\n`root.makefile`\
+\n\n\#\#\# Local Project Makefile\
+\nMakes source sub-dirs and publishes npm package.
 
 
 ######################################
@@ -33,7 +32,7 @@ include $(DIR_MAKEJS)/lib/common.makefile
 #######################################
 # RULES
 #######################################
-HELP +=\n\#\#\#root.makefile
+HELP +=\n\n`root.makefile`
 
 .DEFAULT_GOAL := all
 HELP +=\n\n**all**: make all sub makes
