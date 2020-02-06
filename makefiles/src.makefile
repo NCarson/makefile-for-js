@@ -70,7 +70,7 @@ TARGETS :=  $(BUNDLE_TARGET) $(VENDOR_TARGET)
 #    TARGETS += $(patsubst %.js,%.min.js.gz,$(TARGETS))# gzipped
 #    TARGETS += ../index.js# an index that imports all targets
 
-DIR_MAKEJS := ../makefile-for-js
+DIR_MAKEJS := $(DIR_BASE)/makefile-for-js
 include $(DIR_MAKEJS)/lib/common.makefile
 include $(DIR_MAKEJS)/lib/js.makefile 
 
