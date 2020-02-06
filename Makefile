@@ -15,6 +15,7 @@ HELP_FILE += \n\# Makefile\
 
 DIR_MAKEJS := .
 DIR_DOCS := ./docs
+DIR_INSTALL := ..
 
 FILE_HEADER := .html/.header.html
 FILE_FOOTER := .html/.footer.html
@@ -44,9 +45,25 @@ HELP +=\n\#\#\#Makefile
 
 #######################################
 # all
-HELP +=\n\n**all**: make docs
+HELP +=\n\n**all**: make install
 .PHONY: all
-all: doc
+all: install
+
+#######################################
+# git-doc-commit
+HELP +=\n\n**git-doc-commit**: boilerplate add commmit with message
+.PHONY: git-doc-commit
+git-doc-commit:
+	git add .
+	git commit -m 'updated doc'
+
+#######################################
+# install
+HELP +=\n\n**install**: copy project to `DIR_INSTALL`
+.PHONY: install
+install:
+	cp --no-clobber makefiles/project.makefile $(DIR_INSTALL)
+	echo DIR_MAKEJS := $(CURDIR) >> $(DIR_INSTALL)/project.makefile
 
 #######################################
 # doc-clean

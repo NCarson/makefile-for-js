@@ -119,7 +119,7 @@ _FILTERED_VARS := $(foreach V,\
 # filter out leader underscore vars
 _FILTERED_VARS2 := $(foreach V,\
 	$(_FILTERED_VARS),\
-	$(if $(filter-out _% HELP HELP_FILE HELP_USE,$V), $V))
+	$(if $(filter-out _% HELP HELP_FILE HELP_USE HELP_EXTRA,$V), $V))
 
 .PHONY: printvars
 printall:
