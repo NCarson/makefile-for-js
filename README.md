@@ -42,3 +42,7 @@
 * Mirrors project directory repo. see `makefile-for-js/project-skel/vanilla`
 * Creates diff files for fixing conflicts in repo config file changes.
 * installs skeleton npm packages
+
+**A Picture Is Worth a Thousand Words ...**
+
+<img src="./.dot-graph.svg" width=800>
