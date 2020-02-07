@@ -70,14 +70,14 @@ clean:
 HELP +=\n\n**npm-install**: install compile plugins locally
 .PHONY: npm-install
 npm-install:
-	$(CMD_NPM) i $(_packages)
+	$(CMD_NPM) i $(_packages) $(_global_packages)
 
 #######################################
-# npm-install-global
-HELP +=\n\n**npm-install-global**: installs compile tools globaly for command line usage
-.PHONY: npm-install-global
-npm-install-global:
-	sudo $(CMD_NPM) i -g $(_global_packages)
+# npm-install-global #TODO figure out fake npm command to link and de-link
+#HELP +=\n\n**npm-install-global**: installs compile tools globaly for command line usage
+#.PHONY: npm-install-global
+#npm-install-global:
+#	sudo $(CMD_NPM) i -g $(_global_packages)
 
 #######################################
 # diffs
@@ -86,7 +86,7 @@ HELP +=\n\n**diffs**: make diff files if needed from MANIFEST files\
 \n    where current is your local file; base-file is the original repo file from `make install`;\
 \n    and other-file is the new repo file. If there is difference will create a file named\
 \n    'your-file.diff'. It is up to the caller to merge the difference by hand. After\
-\n    edits are finished and integerated into your source (FIXME see FILE_COMMIT)\ reinstall files to get a new commit hash.
+\n    edits are finished and integerated into your source. Run `make files` to get a new commit hash.
 .PHONY: diffs
 ifneq ($(_git_current_commit),$(shell cat $(FILE_COMMIT))) #1
 ifeq ($(_git_status),) #2
@@ -103,7 +103,6 @@ endif #1
 #######################################
 # .makefilejs/COMMIT
 HELP +=\n\n**.makefilejs/COMMIT**: copys skeleton directory and git commit hash from `DIR_PRJ_ROOT`
-# FIXME: check that COMMIT depends on makefilejs direc
 $(FILE_COMMIT): $(FILE_MANIFEST)
 	cp --no-clobber -RL $(DIR_PRJ_ROOT)/. ./ #dots and dashes count
 	touch $(CURDIR)/$(FILE_COMMIT)

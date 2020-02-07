@@ -17,6 +17,7 @@ DIR_MAKEJS := .
 DIR_DOCS := ./docs
 DIR_INSTALL := ..
 
+FILE_RELEASE := $(DIR_DOCS)/RELEASE
 FILE_HEADER := .html/.header.html
 FILE_FOOTER := .html/.footer.html
 FILE_BODY := $(DIR_DOCS)/body.html
@@ -109,6 +110,11 @@ $(DIR_DOCS)/%.makefile.html : $(DIR_DOCS)/%.makefile.md
 	@ echo 'HTML <a href="$*.makefile.html"> $(notdir $@)</a><br/>' >> $(FILE_BODY)
 	@ $(CMD_MARKDOWN) $< > $@
 
+$(FILE_RELEASE):
+	echo 'makefile-for-js\nversion ?.?.?\n\nFIXME:' > $(FILE_RELEASE)
+	grep -R FIXME makefiles lib scripts >> $(FILE_RELEASE)
+	echo 'TODO:' >> $(FILE_RELEASE)
+	grep -R TODO makefiles lib scripts >> $(FILE_RELEASE)
 
 ######################################
 # YOUR RULES and OVERIDES

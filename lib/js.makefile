@@ -207,8 +207,8 @@ $(FILE_EXCL) $(FILE_PACKAGE_LOCK):
 
 ######################################
 # vendor dep file
-# FIXME @ modular libries are broken.
-# TODO decide if ES5 files should be regular depend
+# FIXME vendor dep file: '@' type modular libries are broken.
+# TODO vendor dep file: decide if ES5 files should be regular depend
 _SRC_PATH := $(shell pwd)
 _NODE_PATH := $(shell cd $(DIR_NODE_MODULES) && pwd)
 # notice order-only prereq: | 
