@@ -1,2 +1,5 @@
 *.swp
-docs
+node_modules
+public
+build
+package-lock.json

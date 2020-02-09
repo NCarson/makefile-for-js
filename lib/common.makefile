@@ -33,19 +33,33 @@ HELP_EXTRA += \n\n`common.makefile`\
 MAKEFLAGS += --no-builtin-rules --no-builtin-variables
 SUFFIXES :=
 
+# https://stackoverflow.com/questions/10858261/abort-makefile-if-variable-not-set
+# Check that given variables are set and all have non-empty values,
+# die with an error otherwise.
+#
+# Params:
+#   1. Variable name(s) to test.
+#   2. (optional) Error message to print.
+check_defined = \
+    $(strip $(foreach 1,$1, \
+        $(call __check_defined,$1,$(strip $(value 2)))))
+__check_defined = \
+    $(if $(value $1),, \
+      $(error Undefined $1$(if $2, ($2))))
+
 ######################################
 # KNOBS
 ######################################
 
+#\n\n*Because of technically difficulity in mdless: 'USE MDLESS' should be 'USE_MDLESS' and so on.*
 HELP_USE += \n\n`common.makefile`\
-\n\n*Because of technically difficulity in mdless: 'USE MDLESS' should be 'USE_MDLESS' and so on.*
 
-HELP_USE += \n**USE MDLESS**: use [mdless](https://github.com/ttscoff/mdless) command to form command line markdown output \
+HELP_USE += \n\n**USE MDLESS**: use [mdless](https://github.com/ttscoff/mdless) output markdown\
 
-USE_MDLESS :=1
+USE_MDLESS ?=1
 
-HELP_USE += \n**USE COLOR**: colorize output
-USE_COLOR :=1
+HELP_USE += \n\n**USE COLOR**: colorize output
+USE_COLOR ?=1
 
 #######################################
 # FILES and DIRECS
@@ -112,12 +126,12 @@ HELP +=\n\n**printall**: print all public type variables\
 	(no underscore; defined in file or command line or environment override)
 
 # filter out env, default and auto vars
-_FILTERED_VARS := $(foreach V,\
+_FILTERED_VARS = $(foreach V,\
 	$(.VARIABLES),\
 	$(if $(filter-out environment default automatic,$(origin $V)), $V))
 
 # filter out leader underscore vars
-_FILTERED_VARS2 := $(foreach V,\
+_FILTERED_VARS2 = $(foreach V,\
 	$(_FILTERED_VARS),\
 	$(if $(filter-out _% HELP HELP_FILE HELP_USE HELP_EXTRA,$V), $V))
 
@@ -126,7 +140,6 @@ printall:
 	$(foreach v,\
 		$(sort $(_FILTERED_VARS2)),\
 		$(info $(origin $(v));$(v) = $($(v)) ))
-
 
 #######################################
 # printall-raw:
@@ -145,7 +158,7 @@ print-%:
 
 #######################################
 # help-use:
-HELP +=\n\n**help-use**: print USE_VARNAME type help
+HELP +=\n\n**help-use**: print help for variables prefixed with USE
 .PHONY: help-use
 help-use:
 	@ echo -e '$(HELP_USE)' $(_MDLESS)
@@ -163,3 +176,9 @@ HELP +=\n\n**help-extra**: print extra help
 .PHONY: help-extra
 help-extra:
 	@ echo -e '$(HELP_EXTRA)' $(_MDLESS)
+
+# help-implicit
+HELP +=\n\n**help-implicit**: print implicit rules
+.PHONY: help-implicit
+help-implicit:
+	@ make -prR | grep '^# Implicit Rules' -A100000000 | grep '^# Files' -B1000000 | head -n-4 | tail -n+3

@@ -3,7 +3,6 @@
 #######################################
 
 DIR_PRJ_ROOT ?= .
-
 #######################################
 # DIR_MAKEJS
 # find out if we are in dev mode or using this as a npm package
@@ -24,37 +23,21 @@ ifndef DIR_MAKEJS
 $(error could not find makefile-for-js)
 endif
 
-#######################################
-# FILES and DIRECS
-#######################################
-
-#######################################
-# RULES
-#######################################
-
-#######################################
-# all
-HELP +=\n\n**all**: runs files and npm-install rules
-.DEFAULT_GOAL := all
-.PHONY: all
-all: files npm-install
-
-#######################################
-# clean
-HELP +=\n\n**clean**: removes files that were added by 'all' rule using the manifset file in `DIR_CACHE`
-.PHONY: clean
-clean:
-	rm --interactive=once $(_mnf_files) $(FILE_COMMIT) $(FILE_MANIFEST)
-
 ######################################
-# INCLUDE
+# KNOBS
 ######################################
 
-include $(DIR_MAKEJS)/lib/project.makefile
-include $(DIR_MAKEJS)/lib/common.makefile
-.DEFAULT_GOAL := help
+######################################
+#  FILES and DIRECS
+######################################
 
-######################################
-# YOUR RULES and OVERIDES
-######################################
+#XXX dont add trailing '/' to paths
+DIR_SRC := .
+DIR_BUILD := $(DIR_SRC)/build
+# set this for ignored directories in your source direc
+DIR_EXCL_SRC :=
+# Set this if you have a local node module
+# in another directory i.e. npm install --save ../my/local/node_module/.
+# This will will rebuild the bundle every time these dependencies change.
+DIR_LOCAL_DEPS :=
 

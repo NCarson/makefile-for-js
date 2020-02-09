@@ -46,15 +46,3 @@ HELP +=\n\n**clean**: removes files that were added by 'all' rule using the mani
 clean:
 	rm --interactive=once $(_mnf_files) $(FILE_COMMIT) $(FILE_MANIFEST)
 
-######################################
-# INCLUDE
-######################################
-
-include $(DIR_MAKEJS)/lib/project.makefile
-include $(DIR_MAKEJS)/lib/common.makefile
-.DEFAULT_GOAL := help
-
-######################################
-# YOUR RULES and OVERIDES
-######################################
-

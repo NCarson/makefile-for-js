@@ -4,17 +4,13 @@
 
 <img 
     alt='screenshot' 
-    src='https://raw.githubusercontent.com/NCarson/makefile-for-js/master/.screen.png'
+    src='https://raw.githubusercontent.com/NCarson/makefile-for-js-js/master/.screen.png'
     width='600' />
 
 - implicit rules for making JS files (like how you type `make` in C source and it compiles)
 - Management of project template configs and directory structure
 - Easy to modify to different needs.
 - Easy to use. self documenting. Well commented.
-
-### API Doc
-
-https://ncarson.github.io/makefile-for-js/
 
 ### JS transpile Features
 
@@ -36,19 +32,7 @@ https://ncarson.github.io/makefile-for-js/
 
 ### Quick Start Grok
 
-- **download** Make a new directory.
-- Inside the direc run `git clone https://github.com/NCarson/makefile-for-js.git`.
-- Run `cd makefile-for-js && make install`. This will copy `project.makefile`
-  into the new directory.
-
-- **check out makefile** From the new directory, try `make -f project.makefile help.` This will give
-  you the different top level targets it supports. All makefiles from this
-  project support a common help interface. Also try help-use, help-file, help-extra,
-  and printall. Browse `project.makefile`. All project makefiles have the same
-  structure.
-
-- **install files** Run `make -f project.makefile all`. This will install configs, directories,
-  and packages that the makefiles use.
+- **install** `./bin/makefile-js.js` -> Makefile
 
 - **try out compiling** In `./src`, run `make`. Also try out the help commands. Maybe add a toy `hello.js`
   (It can just be blank). New files are picked up automatically and will rebuild necessary files.
@@ -61,13 +45,6 @@ https://ncarson.github.io/makefile-for-js/
   'smartly' like this where only the changes in the dependencies need to be
   rebuilt. If you keep most of your code in vendor your build times should be quite
   fast.
-
-- **two gits** Notice that once you `git init` your project, makefile-for-js you will become a sub-git.
-  You may want to fork it to customize your workflow. As time goes on your
-  configs evolve and so do the repo ones. You can use `make -f project.makefile
-  diffs` To write diffs between your file and the config files with the original
-  commit as the reference file. Once you are happy with your merges run `make -f
-  project.makefile install` again to update the commit reference.
 
 - **USE vars** There a lots of switches to customize generation. Perhaps you dont need babel,
   then you could add `USE_BABEL :=` in the Makefile so it would not transpile.

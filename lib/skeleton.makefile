@@ -1,12 +1,12 @@
 HELP_FILE += \n\n`skeleton.makefile`\
 \n\n\#\#\# Skeleton makefile template\
-\n Base file stub for style and structure.
-\n
+\n Base file stub for style and structure.\
+\n\
 \n**General Style**\
 \n- Format help vars in markdown. See this file for style.\
 \n- 39 \# for comment headers.\
 \n- 1 space between headers.\
-\n- Hungarian variable notation: DIR_*, FILE_*, FILES_*, CMD_, USE_*\
+\n- Hungarian variable notation: DIR, FILE, FILES, CMD, USE, TARGET\
 \n- All files should have knobs, files, commands, rules headers in the correct order (see this file.)\
 \n- All no pattern rules should have a sub header\
 \n- *todo* and *fixme* should be give context without other lines being included\
@@ -19,17 +19,22 @@ HELP_FILE += \n\n`skeleton.makefile`\
 \
 \n**Help Style Guide**\
 \n- non pattern rules should have a `HELP` comment set. See this file for style.\
-\n- knob variables (USE_THINGY) should have a `HELP_USE` comment set. See this file for style.\
+\n- knob variables (USE THINGY) should have a `HELP_USE` comment set. See this file for style.\
 \n- files should have a `HELP_FILE` comment set. See this file for style.\
 
+# internal for doc builds 
+ifdef _USE_COMMON
+include $(DIR_MAKEJS)/lib/common.makefile
+endif
 
 ######################################
 #  KNOBS
 ######################################
 
 #HELP_USE += \n\n`skeleton.makefile`
-#USE_THINGY := 1
+
 #HELP_USE += \n\n**USE_THINGY**: What a thingy does
+#USE_THINGY := 1
 
 #######################################
 # FILES and DIRECS
@@ -42,10 +47,7 @@ DIR_MAKEJS := ./makefile-for-js
 ######################################
 
 #CMD_GIT := git
-#_global_packages = $(shell cat $(DIR_CACHE)/GLOBAL_PACKAGES)
 
-#XXX watch were we put this. as it will have diffent results in different locations
-include $(DIR_MAKEJS)/lib/common.makefile
 
 #######################################
 # RULES
@@ -66,6 +68,12 @@ HELP +=\n\n`skeleton.makefile`
 #_FILE_REPO := $(DIR_CACHE)/old_repo # vars that are used in just one rule should be with rule
 #%.diff:
 #	cd $(DIR_MAKEJS) && $(CMD_GIT) checkout $(_commit) $(GIT_PRJ_ROOT)/$* #get version when we installed
+
+######################################
+# INCLUDES
+######################################
+
+include $(DIR_MAKEJS)/lib/common.makefile
 
 ######################################
 # YOUR RULES and OVERIDES

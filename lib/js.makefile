@@ -1,22 +1,14 @@
 HELP_FILE +=\n\n`js.makefile`\
-\n\n\#\#\# Java Script Transpile Makefile\
-Compiles .js sources through chain of linting, transpiling, bundling, minifing, and zipping.\
-\nrun `make -f PROJECT_ROOT/makefiles-for-js/makefiles/js.makefile -p` to print out rules of the js makefile
+\n\n\#\#\# Java Script Source Code Makefile\
+\nCompiles .js sources through chain of linting, transpiling, bundling, minifing, and zipping.\
 
-## DIR_BASE defines the root of the of the project.
-## It is always required to be defined in the parent.
-#ifeq ($(DIR_BASE),)
-#$(error DIR_BASE is undefined)
-#endif
-#
-## directory finished files should go to
-#ifeq ($(DIR_TARGET),)
-#$(error DIR_TARGET is undefined)
-#endif
-#
-## names of the finished files
-#ifeq ($(TARGETS),)
-#$(error TARGETS is undefined)
+# internal for doc builds 
+ifdef _USE_COMMON
+include $(DIR_MAKEJS)/lib/common.makefile
+endif
+
+#ifndef DIR_PRJ_ROOT #FIXME kludge (this runs wild in the node_modules dir for some reason if unset)
+#DIR_PRJ_ROOT := .
 #endif
 
 ######################################
@@ -28,26 +20,25 @@ HELP_USE += \n\n`js.makefile`
 HELP_USE += \n\n**USE PRODUCTION**: If set then use production options instead of development.\
 \n    Also will be set if NODE_ENV=production in the environment.
 NODE_ENV ?=
-USE_PRODUCTION :=
+USE_PRODUCTION ?=
 ifeq ($(NODE_ENV),production)
-	USE_PRODUCTION :=1
+	USE_PRODUCTION ?=1
 endif
 
-
 HELP_USE += \n\n**USE BABEL**: transpile with babel
-USE_BABEL :=1
+USE_BABEL ?=1
 
 HELP_USE += \n\n**USE LINTER**: use eslint
-USE_LINTER :=1
+USE_LINTER ?=0
 
 HELP_USE += \n\n**USE SOURCEMAPS**: bundle source maps for debugging
-USE_SOURCEMAPS :=1
+USE_SOURCEMAPS ?=1
 
 HELP_USE += \n\n**USE REACT**: set transform flags for react
-USE_REACT :=1
+USE_REACT ?=0
 
-HELP_USE += \n\n**POST US6**: babel transform for static class props and object spreads
-USE_POST_ES5 :=1
+HELP_USE += \n\n**USE POST ES6**: babel transform for static class props and object spreads
+USE_POST_ES6 ?=0
 
 # for find command; set if you have direcs to skip
 ifeq (strip($(DIR_EXCL_SRC)),)
@@ -97,7 +88,7 @@ CMD_BABEL_OPTIONS += --presets=@babel/preset-react --plugins @babel/plugin-trans
 endif
 
 # latest ES features
-ifdef USE_POST_ES5 
+ifdef USE_POST_ES6 
 CMD_BABEL_OPTIONS += --plugins @babel/plugin-transform-object-assign,@babel/plugin-proposal-class-properties,@babel/plugin-syntax-dynamic-import
 endif
 
@@ -122,12 +113,12 @@ CMD_BROWSERIFY := npx browserify
 #  FILES and DIRECS
 ######################################
 
-FILES_SRC = $(shell find $(DIR_SRC) $(_MFS_EXCLUDE) -name '*.js')
+FILES_SRC = $(shell find $(DIR_SRC) $(_MFS_EXCLUDE) -name '*.js') #FIXME prune out node_modules dir just in case
 FILES_ES5 = $(patsubst $(DIR_SRC)%.js,$(DIR_BUILD)%.js,$(FILES_SRC))
-FILE_PACKAGE_LOCK :=$(DIR_BASE)/package-lock.json# the npm package-lock
+FILE_PACKAGE_LOCK :=$(DIR_PRJ_ROOT)/package-lock.json# the npm package-lock
 FILE_EXCL := $(DIR_SRC)/exclude.deps# libs listed here wont be built in bundle or vendor (for cdn)
 FILE_DEPENDS :=$(DIR_BUILD)/$(VENDOR_BASENAME).deps# keeps track of what modules the bundle is using
-DIR_NODE_MODULES := $(DIR_BASE)/node_modules# npm direc name
+DIR_NODE_MODULES := $(DIR_PRJ_ROOT)/node_modules# npm direc name
 
 ######################################
 #  RULES
@@ -136,11 +127,20 @@ DIR_NODE_MODULES := $(DIR_BASE)/node_modules# npm direc name
 HELP +=\n\n`js.makefile`
 
 #######################################
+# _check_vars
+# if var is not defined then error
+_check_vars:
+	@ $(call check_defined, TARGETS)
+	@ $(call check_defined, DIR_TARGET)
+	@ $(call check_defined, DIR_PRJ_ROOT)
+
+#######################################
 # phobia-cdn
-HELP +=\n\n**phobia-cdn**: Show how much space you are saving in excluded libs
+HELP +=\n\n**phobia-cdn**: Show how much space you are saving in excluded libs using [bundle-phobia](https://github.com/pastelsky/bundlephobia)
+
 .PHONY: phobia-cdn
 phobia-cdn: list-cdn
-	@ $(mfs_excluded_libs) | xargs -L1 $(BUNDLE-PHOBIA)
+	@ $(mfs_excluded_libs) | xargs -L1 $(CMD_BUNDLE-PHOBIA)
 
 #######################################
 # list-deps
@@ -151,16 +151,14 @@ list-deps:
 
 #######################################
 # phobia-deps
-HELP +=\n\n**phobia-deps**: List package dependencies from bundle-phobia. \
-	\n     "sudo npm i -g bundle-phobia"
+HELP +=\n\n**phobia-deps**: List package dependencies from [bundle-phobia](https://github.com/pastelsky/bundlephobia)
 .PHONY: phobia-deps
 phobia-deps: $(FILE_DEPENDS) list-deps
 	@cat $(FILE_DEPENDS) | xargs -L1 $(CMD_BUNDLE-PHOBIA)
 
 #######################################
 # dot-graph
-HELP +=\n\n**dot-graph**: Create a dependency graph of targets.  \
-\n    needs makefile2graph https://github.com/lindenb/makefile2graph)
+HELP +=\n\n**dot-graph**: Create a dependency graph of targets with [makefile2graph](https://github.com/lindenb/makefile2graph)
 .PHONY: dot-graph
 dot-graph: $(TARGETS) 
 	make -Bnd | make2graph | dot -Tsvg -o ../.dot-graph.svg
@@ -171,12 +169,12 @@ dot-graph: $(TARGETS)
 $(DIR_TARGET)%: $(DIR_BUILD)%
 	@ $(call _info_msg,target - cp,$@,$(_WHITE))
 	@ mkdir -p $(shell dirname $@)
-	@ cp $(patsubst $(DIR_TARGET)%,$(DIR_BUILD)%,$@) $@
+	@ cp  $<  $@
 
 ######################################
 # index.js
 # moves index.js out of target dir and into project base
-$(DIR_BASE)/index.%: $(DIR_TARGET)/index.%
+$(DIR_PRJ_ROOT)/index.%: $(DIR_TARGET)/index.%
 	@ $(call _info_msg,index.js - mv,$@,$(_WHITE))
 	@ mv $< $@
 
@@ -222,7 +220,7 @@ $(FILE_DEPENDS): $(FILE_EXCL) $(FILE_PACKAGE_LOCK) | $(FILES_ES5)
 	@ $(call _info_msg,browserify - find deps,$@,$(_MAGENTA))
 	@ mkdir -p $(DIR_BUILD)
 	@ set -e; set -o pipefail; $(CMD_BROWSERIFY) --list $(FILES_ES5) \
-		| $(DIR_MAKEJS)/scripts/node_deps.py - $(_SRC_PATH) $(_NODE_PATH) > $@ \
+		| $(DIR_MAKEJS)/script/node_deps.py - $(_SRC_PATH) $(_NODE_PATH) > $@ \
 		> $@
 		
 ######################################
@@ -263,8 +261,8 @@ _INCL_DEPENDS = $(shell \
 
 ######################################
 # transpile - lint and babel
-#.PRECIOUS: $(DIR_BUILD)/%.js
-$(FILES_ES5): $(DIR_BUILD)/%.js: $(DIR_SRC)/%.js 
+.PRECIOUS: $(DIR_BUILD)/%.js
+$(FILES_ES5): $(_check_vars) $(DIR_BUILD)/%.js: $(DIR_SRC)/%.js 
 	@ mkdir -p `dirname $@`
 ifneq ($(USE_LINTER),)
 	@ $(call _info_msg,eslint - lint,$<,$(_GREEN))
