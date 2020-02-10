@@ -11,6 +11,8 @@ endif
 #DIR_PRJ_ROOT := .
 #endif
 
+#TODO  figure out way to make .js extension more flexible - like .jsx.
+
 ######################################
 #  Knobs
 ######################################
@@ -39,13 +41,6 @@ USE_REACT ?=0
 
 HELP_USE += \n\n**USE POST ES6**: babel transform for static class props and object spreads
 USE_POST_ES6 ?=0
-
-# for find command; set if you have direcs to skip
-ifeq (strip($(DIR_EXCL_SRC)),)
-	_MFS_EXCLUDE = 
-else
-	_MFS_EXCLUDE =  -not \( $(patsubst %,-path % -prune -o,$(DIR_EXCL_SRC)) -path $(DIR_BUILD) -prune \)
-endif
 
 ######################################
 #  COMMANDS
@@ -113,7 +108,12 @@ CMD_BROWSERIFY := npx browserify
 #  FILES and DIRECS
 ######################################
 
-FILES_SRC = $(shell find $(DIR_SRC) $(_MFS_EXCLUDE) -name '*.js') #FIXME prune out node_modules dir just in case
+_find_exclude = -not \( -path $1 -prune \) # exclude expression for find
+_FIND_NOTS = $(foreach d, $(DIR_EXCL_SRC) $(DIR_BUILD),  $(call _find_exclude, $d)) # call
+# XXX node_modules will realy reek havic it it gets included
+_SRC_CMD := find $(DIR_SRC) $(_FIND_NOTS) -name '*.js'
+FILES_SRC := $(shell $(_SRC_CMD))
+
 FILES_ES5 = $(patsubst $(DIR_SRC)%.js,$(DIR_BUILD)%.js,$(FILES_SRC))
 FILE_PACKAGE_LOCK :=$(DIR_PRJ_ROOT)/package-lock.json# the npm package-lock
 FILE_EXCL := $(DIR_SRC)/exclude.deps# libs listed here wont be built in bundle or vendor (for cdn)
@@ -166,7 +166,7 @@ dot-graph: $(TARGETS)
 #######################################
 # target dir
 # everything is built in the DIR_BUILD and then moved to DIR_TARGET
-$(DIR_TARGET)%: $(DIR_BUILD)%
+$(DIR_TARGET)%: $(_check_vars) $(DIR_BUILD)%
 	@ $(call _info_msg,target - cp,$@,$(_WHITE))
 	@ mkdir -p $(shell dirname $@)
 	@ cp  $<  $@
@@ -174,7 +174,7 @@ $(DIR_TARGET)%: $(DIR_BUILD)%
 ######################################
 # index.js
 # moves index.js out of target dir and into project base
-$(DIR_PRJ_ROOT)/index.%: $(DIR_TARGET)/index.%
+$(DIR_PRJ_ROOT)/index.%: $(_check_vars) $(DIR_TARGET)/index.%
 	@ $(call _info_msg,index.js - mv,$@,$(_WHITE))
 	@ mv $< $@
 
@@ -262,7 +262,7 @@ _INCL_DEPENDS = $(shell \
 ######################################
 # transpile - lint and babel
 .PRECIOUS: $(DIR_BUILD)/%.js
-$(FILES_ES5): $(_check_vars) $(DIR_BUILD)/%.js: $(DIR_SRC)/%.js 
+$(FILES_ES5): $(DIR_BUILD)/%.js: $(FILES_SRC)
 	@ mkdir -p `dirname $@`
 ifneq ($(USE_LINTER),)
 	@ $(call _info_msg,eslint - lint,$<,$(_GREEN))
@@ -275,5 +275,3 @@ else
 	@ $(call _info_msg,no babel - copy,$<,$(_WHITE))
 	@ cp $< $@
 endif
-
-

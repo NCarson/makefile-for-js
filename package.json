@@ -20,14 +20,14 @@
   },
   "peerDependicies": {},
   "devDependencies": {
-    "babel-eslint": "file:../../../../../usr/lib/node_modules/babel-eslint",
-    "browserify-global-shim": "file:../../../../../usr/lib/node_modules/browserify-global-shim",
     "@babel/plugin-proposal-class-properties": "file:../../../../../usr/lib/node_modules/@babel/plugin-proposal-class-properties",
     "@babel/plugin-syntax-dynamic-import": "file:../../../../../usr/lib/node_modules/@babel/plugin-syntax-dynamic-import",
     "@babel/plugin-transform-object-assign": "file:../../../../../usr/lib/node_modules/@babel/plugin-transform-object-assign",
     "@babel/plugin-transform-react-jsx": "file:../../../../../usr/lib/node_modules/@babel/plugin-transform-react-jsx",
     "@babel/preset-env": "file:../../../../../usr/lib/node_modules/@babel/preset-env",
     "@babel/preset-react": "file:../../../../../usr/lib/node_modules/@babel/preset-react",
+    "babel-eslint": "file:../../../../../usr/lib/node_modules/babel-eslint",
+    "browserify-global-shim": "file:../../../../../usr/lib/node_modules/browserify-global-shim",
     "eslint-plugin-import": "file:../../../../../usr/lib/node_modules/eslint-plugin-import",
     "eslint-plugin-react": "file:../../../../../usr/lib/node_modules/eslint-plugin-react"
   }

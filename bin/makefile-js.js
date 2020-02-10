@@ -16,6 +16,10 @@ program
     .option('--react', 'use react options', false)
     .option('--linter', 'do not lint check with eslint', false)
     .option('--post-es6', 'dont use post es6 features, like object spread', false)
+    /*
+    .option('--excl-src', 'ignore these src directories')
+    .option('--local-deps', 'if these change src files are rebuilt ')
+    */
 
 program.parse(process.argv)
 const opts = program.opts()
@@ -39,9 +43,13 @@ const newOpts = {
     'USE_LINTER': use(opts.linter),
     'USE_SOURCE_MAPS': use(opts.sourceMaps),
     'USE_POST_ES6': use(opts.postEs6),
+    /*
+    'DIR_EXCL_SRC': use(opts.exclSrc),
+    'DIR_LOCAL_DEPS': use(opts.localDeps),
+    */
 }
 writeOptions('MAKEFILE-JS', newOpts)
 
 
 TARGET = ROOT + '.makefile'
-//write(TARGET)
+write(TARGET)

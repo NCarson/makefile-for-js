@@ -44,21 +44,6 @@ _PLUGIN_PACKAGES_FULL = $(_PLUGIN_PACKAGES:%=$(_NPM_ROOT)/%)
 #######################################
 
 HELP +=\n\n`project.makefile`
-
-#######################################
-# all
-HELP +=\n\n**all**: runs files and npm-install rules
-.DEFAULT_GOAL := all
-.PHONY: all
-all: files npm-install
-
-#######################################
-# clean
-HELP +=\n\n**clean**: removes files that were added by 'all' rule using the manifset file in `DIR_CACHE`
-.PHONY: clean
-clean:
-	rm --interactive=once $(_mnf_files) $(FILE_COMMIT) $(FILE_MANIFEST)
-
 #######################################
 # npm-install
 #

@@ -1,2 +1,0 @@
-
-window.alter("HELLO WOLRD")
