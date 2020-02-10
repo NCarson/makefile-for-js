@@ -4,7 +4,7 @@
 
 #Try to figure out where we are in a npm package
 
-DIR_PRJ_ROOT ?= .
+DIR_PRJ_ROOT ?= .#FIXME try to find project root with bin
 #######################################
 # DIR_MAKEJS
 # find out if we are in dev mode or using this as a npm package
@@ -16,7 +16,7 @@ endif
 
 _PACKAGE_NAME := $(shell npm run env | grep ^npm_package_name= | cut -d= -f2)
 ifeq ($(_PACKAGE_NAME),makefile-for-js)
-DIR_MAKEJS := $(DIR_PRJ_ROOT)
+DIR_MAKEJS := $(DIR_PRJ_ROOT) 
 else
 DIR_MAKEJS := $(DIR_PRJ_ROOT)/node_modules/makefile-for-js
 endif

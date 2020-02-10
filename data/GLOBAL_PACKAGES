@@ -5,3 +5,4 @@ browserify
 bundle-phobia-cli
 eslint
 uglify-js
+madge

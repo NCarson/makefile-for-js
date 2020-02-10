@@ -31,16 +31,19 @@ HELP_USE += \n\n**USE BABEL**: transpile with babel
 USE_BABEL ?=1
 
 HELP_USE += \n\n**USE LINTER**: use eslint
-USE_LINTER ?=0
+USE_LINTER ?=
 
 HELP_USE += \n\n**USE SOURCEMAPS**: bundle source maps for debugging
 USE_SOURCEMAPS ?=1
 
 HELP_USE += \n\n**USE REACT**: set transform flags for react
-USE_REACT ?=0
+USE_REACT ?=
 
 HELP_USE += \n\n**USE POST ES6**: babel transform for static class props and object spreads
-USE_POST_ES6 ?=0
+USE_POST_ES6 ?=
+
+HELP_USE += \n\n**USE KEEP BUILD**: leave intermediate files in `DIR_BUILD`
+USE_KEEP_BUILD ?=
 
 ######################################
 #  COMMANDS
@@ -103,13 +106,12 @@ endif
 # on the command line. Very necessary
 CMD_BROWSERIFY := npx browserify
 
-
 ######################################
 #  FILES and DIRECS
 ######################################
 
 _find_exclude = -not \( -path $1 -prune \) # exclude expression for find
-_FIND_NOTS = $(foreach d, $(DIR_EXCL_SRC) $(DIR_BUILD),  $(call _find_exclude, $d)) # call
+_FIND_NOTS = $(foreach d, $(DIR_EXCL_SRC) $(DIR_BUILD) $(DIR_TARGET),  $(call _find_exclude, $d)) # call
 # XXX node_modules will realy reek havic it it gets included
 _SRC_CMD := find $(DIR_SRC) $(_FIND_NOTS) -name '*.js'
 FILES_SRC := $(shell $(_SRC_CMD))
@@ -164,27 +166,23 @@ dot-graph: $(TARGETS)
 	make -Bnd | make2graph | dot -Tsvg -o ../.dot-graph.svg
 
 #######################################
-# target dir
+# target_dir
 # everything is built in the DIR_BUILD and then moved to DIR_TARGET
+#ifdef USE_KEEP_BUILD
+.PRECIOUS: $(DIR_TARGET)/bundle.js
+#endif
 $(DIR_TARGET)/%: $(_check_vars) $(DIR_BUILD)/%
 	@ $(call _info_msg,target - cp,$@,$(_WHITE))
 	@ mkdir -p $(shell dirname $@)
 	@ cp  $<  $@
 
 #######################################
-# ../target dir
-# everything is built in the DIR_BUILD and then moved to DIR_TARGET
+# target_dir/..
+# backup one dir of target dir (index.js for lib builds)
 $(DIR_TARGET)/../%: $(_check_vars) $(DIR_BUILD)/%
 	@ $(call _info_msg,target - cp,$@,$(_WHITE))
 	@ mkdir -p $(shell dirname $@)
 	@ cp  $<  $@
-
-######################################
-# index.js
-# moves index.js out of target dir and into project base
-#$(DIR_PRJ_ROOT)/index.%: $(_check_vars) $(DIR_TARGET)/index.%
-#	@ $(call _info_msg,index.js - mv,$@,$(_WHITE))
-#	@ mv $< $@
 
 ######################################
 # gzip
@@ -227,9 +225,11 @@ _NODE_PATH := $(shell cd $(DIR_NODE_MODULES) && pwd)
 $(FILE_DEPENDS): $(FILE_EXCL) $(FILE_PACKAGE_LOCK) | $(FILES_ES5)
 	@ $(call _info_msg,browserify - find deps,$@,$(_MAGENTA))
 	@ mkdir -p $(DIR_BUILD)
-	@ set -e; set -o pipefail; $(CMD_BROWSERIFY) --list $(FILES_ES5) \
-		| $(DIR_MAKEJS)/script/node_deps.py - $(_SRC_PATH) $(_NODE_PATH) > $@ \
-		> $@
+	@ madge --include-npm --no-color $(FILES_ES5) \
+		| grep node_modules \
+		| sed 's:^.*node_modules/::' \
+		| cut -d/ -f1 > $@
+	@ grep -v '@' $@ || (echo FIXME scoped package dependencies not yet supported && exit 1)
 		
 ######################################
 # bundle helpers
@@ -269,7 +269,7 @@ _INCL_DEPENDS = $(shell \
 
 ######################################
 # transpile - lint and babel
-.PRECIOUS: $(DIR_BUILD)/%.js
+.PRECIOUS: $(DIR_SRC)/%.js
 $(FILES_ES5): $(DIR_BUILD)/%.js: $(DIR_SRC)/%.js
 	@ mkdir -p `dirname $@`
 ifneq ($(USE_LINTER),)
@@ -283,3 +283,4 @@ else
 	@ $(call _info_msg,no babel - copy,$<,$(_WHITE))
 	@ cp  $< $@
 endif
+

@@ -61,6 +61,10 @@ USE_MDLESS ?=1
 HELP_USE += \n\n**USE COLOR**: colorize output
 USE_COLOR ?=1
 
+HELP_USE += \n\n**OPT QUIET**: Do not print format strings. Good with `make OPT_QUIET=1 --trace`.
+OPT_QUIET ?=
+
+
 #######################################
 # FILES and DIRECS
 #######################################
@@ -93,15 +97,21 @@ _BLINK=$(shell tput blink)
 _REVERSE=$(shell tput smso)
 _UNDERLINE=$(shell tput smul)
 
+ifndef OPT_QUIET
 ifdef USE_COLOR
+
 define _info_msg 
 	@ printf "%-25s $(3)$(2)$(_NORMAL)\n" "$(1)"
 endef
+
 else
+
 define _info_msg 
 	@printf "%-25s $(2)\n" "$(1)"
 endef
-endif
+
+endif #QUIET
+endif #COLOR
 
 #######################################
 # RULES

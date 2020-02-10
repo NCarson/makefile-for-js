@@ -1,10 +1,15 @@
 #######################################
+# MAKEFILE-TEST OPTIONS 
+#######################################
+DIR_PRJ_ROOT :=../../..
+
+#######################################
 # BOOTSTRAP
 #######################################
 
 #Try to figure out where we are in a npm package
 
-DIR_PRJ_ROOT ?= ..
+DIR_PRJ_ROOT ?= .
 #######################################
 # DIR_MAKEJS
 # find out if we are in dev mode or using this as a npm package
@@ -64,4 +69,5 @@ include $(DIR_MAKEJS)/lib/common.makefile
 ######################################
 # YOUR RULES and OVERIDES
 ######################################
+
 
