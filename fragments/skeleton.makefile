@@ -40,14 +40,11 @@ endif
 # FILES and DIRECS
 #######################################
 
-DIR_MAKEJS := ./makefile-for-js
-
 ######################################
 #  COMMANDS
 ######################################
 
 #CMD_GIT := git
-
 
 #######################################
 # RULES
@@ -69,13 +66,4 @@ HELP +=\n\n`skeleton.makefile`
 #%.diff:
 #	cd $(DIR_MAKEJS) && $(CMD_GIT) checkout $(_commit) $(GIT_PRJ_ROOT)/$* #get version when we installed
 
-######################################
-# INCLUDES
-######################################
-
-include $(DIR_MAKEJS)/lib/common.makefile
-
-######################################
-# YOUR RULES and OVERIDES
-######################################
 

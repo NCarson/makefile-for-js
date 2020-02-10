@@ -1,8 +1,17 @@
 #######################################
+# MAKEFILE-JS OPTIONS 
+#######################################
+DIR_PRJ_ROOT :=..
+USE_REACT :=
+USE_BABEL :=1
+USE_LINTER :=
+USE_SOURCE_MAPS :=1
+USE_POST_ES6 :=
+
+#######################################
 # BOOTSTRAP
 #######################################
 
-DIR_PRJ_ROOT ?= .
 #######################################
 # DIR_MAKEJS
 # find out if we are in dev mode or using this as a npm package
@@ -31,45 +40,27 @@ endif
 #  FILES and DIRECS
 ######################################
 
-#XXX dont add trailing '/' to paths
 DIR_SRC := .
 DIR_BUILD := $(DIR_SRC)/build
-# set this for ignored directories in your source direc
-# XXX This needs leading directories
-DIR_EXCL_SRC := ./node_modules
-# Set this if you have a local node module
-# in another directory i.e. npm install --save ../my/local/node_module/.
-# This will will rebuild the bundle every time these dependencies change.
-DIR_LOCAL_DEPS :=
+DIR_EXCL_SRC := ./pkg
 
 #######################################
-#  PACKAGE BUILD
-
-DIR_TARGET := $(DIR_PRJ_ROOT)/public/dist# finished files go here
-VENDOR_BASENAME :=vendor# this will be the name of vendor bundle in DIR_TARGET
-BUNDLE_BASENAME :=bundle# this will be the name of your source bundle DIR_TARGET
-
-#XXX make sure to define ungzipped version along 
-#    with gzipped so `make clean` works correctly.
-BUNDLE_TARGET := \
-	$(DIR_TARGET)/$(BUNDLE_BASENAME).min.js \
-	$(DIR_TARGET)/$(BUNDLE_BASENAME).min.js.gz
-
-VENDOR_TARGET := \
-	$(DIR_TARGET)/$(VENDOR_BASENAME).min.js \
-	$(DIR_TARGET)/$(VENDOR_BASENAME).min.js.gz
-
-# this it what make will try try to build
-TARGETS :=  $(BUNDLE_TARGET) $(VENDOR_TARGET)
+#  UMD LIBRARY BUILD
+ 
+DIR_TARGET := pkg/lib# library type
+TARGETS := \
+    $(DIR_TARGET)/../index.js \
+    $(DIR_TARGET)/Foo.js \
+	$(DIR_TARGET)/Bar.js
 
 ####################################
 # RULES
 ####################################
 
 HELP +=\n\n**all**: Make the `TARGETS`.
+.DEFAULT_GOAL := all
 .PHONY: all
 all: $(TARGETS)
-.DEFAULT_GOAL := all
 
 HELP +=\n\n**clean**: Remove `TARGETS` and `DIR_BUILD`.
 .PHONY: clean
@@ -91,3 +82,4 @@ include $(DIR_MAKEJS)/lib/common.makefile
 # overide variables and rules here so you will overwrite
 # the include makefiles instead of the other way around
 #
+

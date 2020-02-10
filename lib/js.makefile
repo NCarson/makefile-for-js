@@ -51,8 +51,6 @@ SHELL := /bin/bash
 
 CMD_GZIP := gzip
 
-#CMD_JSON := json#<https://github.com/trentm/json> for project details.
-
 # You dont need uglifyjs if you do not specify min.js or min.js.gz targets.
 CMD_UGLIFYJS :=npx uglifyjs $(CMD_UGLIFYJS_OPTIONS)
 
@@ -65,6 +63,8 @@ CMD_LINTER :=npx eslint $(CMD_LINTER_OPTIONS)
 
 #optional for phobia rule
 CMD_BUNDLE-PHOBIA := npx bundle-phobia/index.js
+
+#CMD_JSON := json#<https://github.com/trentm/json> for project details.
 
 ######################################
 #  Babel
@@ -166,7 +166,15 @@ dot-graph: $(TARGETS)
 #######################################
 # target dir
 # everything is built in the DIR_BUILD and then moved to DIR_TARGET
-$(DIR_TARGET)%: $(_check_vars) $(DIR_BUILD)%
+$(DIR_TARGET)/%: $(_check_vars) $(DIR_BUILD)/%
+	@ $(call _info_msg,target - cp,$@,$(_WHITE))
+	@ mkdir -p $(shell dirname $@)
+	@ cp  $<  $@
+
+#######################################
+# ../target dir
+# everything is built in the DIR_BUILD and then moved to DIR_TARGET
+$(DIR_TARGET)/../%: $(_check_vars) $(DIR_BUILD)/%
 	@ $(call _info_msg,target - cp,$@,$(_WHITE))
 	@ mkdir -p $(shell dirname $@)
 	@ cp  $<  $@
@@ -174,9 +182,9 @@ $(DIR_TARGET)%: $(_check_vars) $(DIR_BUILD)%
 ######################################
 # index.js
 # moves index.js out of target dir and into project base
-$(DIR_PRJ_ROOT)/index.%: $(_check_vars) $(DIR_TARGET)/index.%
-	@ $(call _info_msg,index.js - mv,$@,$(_WHITE))
-	@ mv $< $@
+#$(DIR_PRJ_ROOT)/index.%: $(_check_vars) $(DIR_TARGET)/index.%
+#	@ $(call _info_msg,index.js - mv,$@,$(_WHITE))
+#	@ mv $< $@
 
 ######################################
 # gzip
@@ -262,7 +270,7 @@ _INCL_DEPENDS = $(shell \
 ######################################
 # transpile - lint and babel
 .PRECIOUS: $(DIR_BUILD)/%.js
-$(FILES_ES5): $(DIR_BUILD)/%.js: $(FILES_SRC)
+$(FILES_ES5): $(DIR_BUILD)/%.js: $(DIR_SRC)/%.js
 	@ mkdir -p `dirname $@`
 ifneq ($(USE_LINTER),)
 	@ $(call _info_msg,eslint - lint,$<,$(_GREEN))
@@ -273,5 +281,5 @@ ifneq ($(USE_BABEL),)
 	@ $(CMD_BABEL) $(CMD_BABEL_OPTIONS) $(DIR_SRC)/$< --out-file $@ 
 else
 	@ $(call _info_msg,no babel - copy,$<,$(_WHITE))
-	@ cp $< $@
+	@ cp  $< $@
 endif

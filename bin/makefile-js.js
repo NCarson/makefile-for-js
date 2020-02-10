@@ -7,8 +7,6 @@ const { write } = require('./lib')
 const { writeOptions } = require('./lib')
 
 program
-    .arguments('[filename]')
-    .action( (filename) => argFilename = filename)
     .description('output makefile for JS source transpiling.')
     .option('--kind <bundle | umd>', 'bundle or umd library type build', 'bundle')
     .option('--no-babel', 'do not transpile with babel')
