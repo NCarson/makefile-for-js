@@ -1,6 +1,6 @@
 {
   "name": "makefile-for-js",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "makefile generator for JS files",
   "main": "index.js",
   "bin": {
