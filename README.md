@@ -24,11 +24,12 @@
 * Supports development and production modes.
 
 ### Toolchain
-- babel
-- browserify
-- eslint
-- uglify-js
-- madge
+
+- [babel](https://github.com/babel/babel)
+- [browserify](https://github.com/browserify/browserify)
+- [eslint](https://github.com/eslint/eslint)
+- [uglify-js](https://github.com/mishoo/UglifyJS)
+- [madge](https://github.com/pahen/madge)
 
 ## Try it Out
 
@@ -37,7 +38,8 @@ mkdir test && cd test
 npm init --yes
 npm install makefile-for-js
 npx makefile-project > Makefile # root project Makefile
-make npm-install # will install compile dev tool packages
+make npm-install # will install compile dev tool packages to package
+# sudo make npm-install USE_GLOBAL_COMPILE=1 USE_GLOBAL_PLUGIN_COMPILE =1 # will install globally and link to package
 mkdir src && cd src
 npx makefile-js > Makefile # src code Makefile
 touch test.js
