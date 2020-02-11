@@ -211,26 +211,21 @@ $(FILE_EXCL) $(FILE_PACKAGE_LOCK):
 
 ######################################
 # vendor dep file
-# FIXME vendor dep file: '@' type modular libries are broken.
-# TODO vendor dep file: decide if ES5 files should be regular depend
+#
+# XXX vendor dep file: # decide if ES5 files should be regular depend
 _SRC_PATH := $(shell pwd)
 _NODE_PATH := $(shell cd $(DIR_NODE_MODULES) && pwd)
 # notice order-only prereq: | 
 # FILES_ES5 will only be a prereq if PACKAGE_LOCK is old.
 # Otherwise vendor would be dependent on FILES_ES5 and always be rebuilt.
 #
-# 1. have browserify find dependencies
-# 2. filter out source direc and transform to package name
 .DELETE_ON_ERROR:
 $(FILE_DEPENDS): $(FILE_EXCL) $(FILE_PACKAGE_LOCK) | $(FILES_ES5)
-	@ $(call _info_msg,browserify - find deps,$@,$(_MAGENTA))
+	@ $(call _info_msg,madge - find deps,$@,$(_MAGENTA))
 	@ mkdir -p $(DIR_BUILD)
 	@ madge --include-npm --no-color $(FILES_ES5) \
-		| grep node_modules \
-		| sed 's:^.*node_modules/::' \
-		| cut -d/ -f1 > $@
-	@ grep -v '@' $@ || (echo FIXME scoped package dependencies not yet supported && exit 1)
-		
+		| $(DIR_MAKEJS)/bin/module_name.js --stdin > $@
+
 ######################################
 # bundle helpers
 #

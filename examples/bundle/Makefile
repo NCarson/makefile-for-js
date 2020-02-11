@@ -46,7 +46,7 @@ DIR_SRC := .
 DIR_BUILD := $(DIR_SRC)/build
 # set this for ignored directories in your source direc
 # XXX This needs leading directories
-DIR_EXCL_SRC := ./node_modules ./public
+DIR_EXCL_SRC := ./node_modules ./public ./test
 # Set this if you have a local node module
 # in another directory i.e. npm install --save ../my/local/node_module/.
 # This will will rebuild the bundle every time these dependencies change.
