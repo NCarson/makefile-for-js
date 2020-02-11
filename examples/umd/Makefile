@@ -1,7 +1,7 @@
 #######################################
 # MAKEFILE-JS OPTIONS 
 #######################################
-DIR_PRJ_ROOT :=..
+DIR_PRJ_ROOT :=../..
 USE_REACT :=
 USE_BABEL :=1
 USE_LINTER :=

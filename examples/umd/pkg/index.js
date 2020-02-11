@@ -1,2 +1,6 @@
-module.exports.Foo =  require('./lib/Foo.js')
-module.exports.Bar =  require('./lib/Bar.js')
+"use strict";
+
+module.exports.Foo = require('./lib/Foo.js');
+module.exports.Bar = require('./lib/Bar.js');
+
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi4uL2luZGV4LmpzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiI7O0FBQUEsTUFBTSxDQUFDLE9BQVAsQ0FBZSxHQUFmLEdBQXNCLE9BQU8sQ0FBQyxjQUFELENBQTdCO0FBQ0EsTUFBTSxDQUFDLE9BQVAsQ0FBZSxHQUFmLEdBQXNCLE9BQU8sQ0FBQyxjQUFELENBQTdCIiwiZmlsZSI6ImluZGV4LmpzIiwic291cmNlc0NvbnRlbnQiOlsibW9kdWxlLmV4cG9ydHMuRm9vID0gIHJlcXVpcmUoJy4vbGliL0Zvby5qcycpXG5tb2R1bGUuZXhwb3J0cy5CYXIgPSAgcmVxdWlyZSgnLi9saWIvQmFyLmpzJylcbiJdfQ==
