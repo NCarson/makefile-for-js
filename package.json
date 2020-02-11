@@ -5,8 +5,7 @@
   "main": "index.js",
   "bin": {
     "makefile-js.js": "./bin/makefile-js.js",
-    "makefile-project.js": "./bin/makefile-project.js",
-    "makefile-test.js": "./bin/makefile-test"
+    "makefile-project.js": "./bin/makefile-project.js"
   },
   "files": [
     "makefiles/*",
