@@ -5,7 +5,7 @@ const findNodeModules = require('find-node-modules')
 exports.writeOptions = function writeOptions(name, newOpts, file=process.stdout) {
     file.write(`#######################################\n`)
     file.write(`# ${name} OPTIONS \n`)
-    file.write(`#######################################\n`)
+    file.write(`#######################################\n\n`)
     for (let key in newOpts) {
         file.write(`${key} :=${newOpts[key]}\n`)
     }

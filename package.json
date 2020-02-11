@@ -4,13 +4,15 @@
   "description": "makefile generator for JS files",
   "main": "index.js",
   "bin": {
-    "makefile-js.js": "./bin/makefile-js.js",
-    "makefile-project.js": "./bin/makefile-project.js"
+    "makefile-js": "./bin/makefile-js.js",
+    "makefile-project": "./bin/makefile-project.js",
+    "makefile-test": "./bin/makefile-test.js"
   },
   "files": [
     "makefiles/*",
     "lib/*",
-    "bin/*"
+    "bin/*",
+    "data/*"
   ],
   "repository": {
     "type": "git",
