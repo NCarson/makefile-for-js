@@ -8,7 +8,6 @@
     width='600' />
 
 - implicit rules for making JS files (like how you type `make` in C source and it compiles)
-- Management of project template configs and directory structure
 - Easy to modify to different needs.
 - Easy to use. self documenting. Well commented.
 
@@ -24,13 +23,7 @@
 * Supports gzipped and minimized targets.
 * Supports development and production modes.
 
-### Project Management
-
-* Mirrors project directory repo. see `makefile-for-js/project-skel/vanilla`
-* Creates diff files for fixing conflicts in repo config file changes.
-* installs skeleton npm packages
-
-### Quick Start Grok
+### Features
 
 - **install** `./bin/makefile-js.js` -> Makefile
 
