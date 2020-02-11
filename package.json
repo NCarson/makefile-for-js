@@ -1,14 +1,18 @@
 {
   "name": "makefile-for-js",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "makefile generator for JS files",
   "main": "index.js",
   "bin": {
     "makefile-js": "./bin/makefile-js.js",
     "makefile-project": "./bin/makefile-project.js",
-    "makefile-test":"./bin/makefile-test"
+    "makefile-test": "./bin/makefile-test"
   },
-  "files": ["makefiles/*", "lib/*", "bin/*"],
+  "files": [
+    "makefiles/*",
+    "lib/*",
+    "bin/*"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/NCarson/makefile-for-js-js"
