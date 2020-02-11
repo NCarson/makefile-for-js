@@ -8,27 +8,44 @@
     width='600' />
 
 - implicit rules for making JS files (like how you type `make` in C source and it compiles)
-- Easy to modify to different needs.
-- Easy to use. self documenting. Well commented.
+- Easy to modify and extend to different needs.
+- Nice, 'modern' makefile syntax. Easy to use. self documenting. Well commented.
 
-### JS transpile Features
+## JS transpile Features
 
 * Easy to read colorized output.
 * Knows how to 'do the right thing' for average cases.
 * Supports parallel builds out of the box: `make --jobs=4`.
 * Automatically splits bundle and vendor.
 * Supports code splitting.
-* Supports UMD Builds for libraries.
-* Supports babel and eslint.
+* Supports UMD builds for libraries.
+* Supports `babel` and `eslint`.
 * Supports gzipped and minimized targets.
 * Supports development and production modes.
 
-### Features
+### Toolchain
+- babel
+- browserify
+- eslint
+- uglify-js
+- madge
 
-- **install** `./bin/makefile-js.js` -> Makefile
+## Try it Out
 
-- **try out compiling** In `./src`, run `make`. Also try out the help commands. Maybe add a toy `hello.js`
-  (It can just be blank). New files are picked up automatically and will rebuild necessary files.
+```shell
+mkdir test && cd test
+npm init --yes
+npm install makefile-for-js
+npx makefile-project > Makefile # root project Makefile
+make npm-install # will install compile dev tool packages
+mkdir src && cd src
+npx makefile-js > Makefile # src code Makefile
+touch test.js
+make 
+```
+Default will create `PRJ_ROOT/public/dist/vendor.js` and `PRJ_ROOT/public/dist/bundle.js`.
+
+## Features
 
 - **dependency chain** After running `make` once try `touch hello.js && make`
   Notice that not as many files were rebuilt. The `vendor.js` bundle is only remade
