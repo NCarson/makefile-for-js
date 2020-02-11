@@ -17,6 +17,8 @@ HELP +=\n\n**publish**: publish package to npm registery
 
 publish:
 	#$(MAKE) -C src USE_PRODUCTION=1
+	$(CMD_GIT) add .
+	$(CMD_GIT) commit; 
 	$(CMD_NPM) version patch
 	$(CMD_NPM) publish
 	$(CMD_GIT) push --tags

@@ -4,9 +4,9 @@
   "description": "makefile generator for JS files",
   "main": "index.js",
   "bin": {
-    "makefile-js": "./bin/makefile-js.js",
-    "makefile-project": "./bin/makefile-project.js",
-    "makefile-test": "./bin/makefile-test"
+    "makefile-js.js": "./bin/makefile-js.js",
+    "makefile-project.js": "./bin/makefile-project.js",
+    "makefile-test.js": "./bin/makefile-test"
   },
   "files": [
     "makefiles/*",
