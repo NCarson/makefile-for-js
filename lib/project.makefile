@@ -1,8 +1,5 @@
 HELP_FILE += \n\n`project.makefile`\
 \n\n\#\#\# Project Management makefile\
-\nInstall directory skeleton and project configs. \
-\nInstalls npm packages for compiling.\
-\nHandles peer version control of local makefiles and configs.
 
 ######################################
 #  KNOBS
@@ -27,23 +24,25 @@ USE_GLOBAL_PLUGIN_COMPILE ?=0
 # FILES and DIRECS
 #######################################
 
-######################################
+#######################################
 #  COMMANDS
-######################################
+#######################################
 
 CMD_NPM := npm
+CMD_GIT := git
+
 _GLOBAL_PACKAGES := $(shell cat $(DIR_MAKEJS)/data/GLOBAL_PACKAGES)
 _PLUGIN_PACKAGES := $(shell cat $(DIR_MAKEJS)/data/PLUGIN_PACKAGES)
 _NPM_ROOT := $(shell npm -g root)
 # lets them be installed like links but babel and others will load them
 _PLUGIN_PACKAGES_FULL = $(_PLUGIN_PACKAGES:%=$(_NPM_ROOT)/%)
 
-
 #######################################
 # RULES
 #######################################
 
 HELP +=\n\n`project.makefile`
+
 #######################################
 # npm-install
 #
@@ -62,3 +61,24 @@ ifdef USE_GLOBAL_PLUGIN_COMPILE
 else
 	$(CMD_NPM) -D install $(_PLUGIN_PACKAGES) # will install to package
 endif
+
+#######################################
+# npm-publish
+HELP +=\n\n**npm-publish**: commit; publish with version patch; push with tags
+.PHONY: npm-publish
+npm-publish:
+	#$(MAKE) -C src USE_PRODUCTION=1
+	$(CMD_GIT) add .
+	$(CMD_GIT) commit; 
+	$(CMD_NPM) version patch
+	$(CMD_NPM) publish
+	$(CMD_GIT) push --tags
+
+#######################################
+# git-commit-doc
+HELP +=\n\n**git-commit-doc**: TODO
+.PHONY: git-commit-doc
+git-commit-doc: #FIXME add doc direcs
+	git add README.md
+	git commit -m "updated doc"
+	git push

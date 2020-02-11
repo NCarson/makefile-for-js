@@ -10,6 +10,7 @@
 - implicit rules for making JS files (like how you type `make` in C source and it compiles)
 - Easy to modify and extend to different needs.
 - Nice, 'modern' makefile syntax. Easy to use. self documenting. Well commented.
+- Designed / tested with \*nix type systems. Sorry windows.
 
 ## JS transpile Features
 
@@ -25,11 +26,11 @@
 
 ### Toolchain
 
-- [babel](https://github.com/babel/babel)
-- [browserify](https://github.com/browserify/browserify)
 - [eslint](https://github.com/eslint/eslint)
-- [uglify-js](https://github.com/mishoo/UglifyJS)
+- [babel](https://github.com/babel/babel)
 - [madge](https://github.com/pahen/madge)
+- [browserify](https://github.com/browserify/browserify)
+- [uglify-js](https://github.com/mishoo/UglifyJS)
 
 ## Try it Out
 
@@ -39,7 +40,7 @@ npm init --yes
 npm install makefile-for-js
 npx makefile-project > Makefile # root project Makefile
 make npm-install # will install compile dev tool packages to package
-# sudo make npm-install USE_GLOBAL_COMPILE=1 USE_GLOBAL_PLUGIN_COMPILE =1 # will install globally and link to package
+# sudo make npm-install USE_GLOBAL_COMPILE=1 USE_GLOBAL_PLUGIN_COMPILE=1 # will install globally and link to package
 mkdir src && cd src
 npx makefile-js > Makefile # src code Makefile
 touch test.js
@@ -47,7 +48,7 @@ make
 ```
 Default will create `PRJ_ROOT/public/dist/vendor.js` and `PRJ_ROOT/public/dist/bundle.js`.
 
-## Features
+## Explore
 
 - **dependency chain** After running `make` once try `touch hello.js && make`
   Notice that not as many files were rebuilt. The `vendor.js` bundle is only remade

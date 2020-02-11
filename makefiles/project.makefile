@@ -13,7 +13,7 @@ ifneq ($(_PACKAGE_NAME_S),0)
 $(error no npm package found in this directory $(CURDIR))
 endif
 
-_PACKAGE_NAME := $(shell npm run env | grep ^npm_package_name= | cut -d= -f2)
+_PACKAGE_NAME := $(shell npm run env | grep ^npm_package_name= | cut -d= -f2) 
 ifeq ($(_PACKAGE_NAME),makefile-for-js)
 DIR_MAKEJS := $(DIR_PRJ_ROOT)
 else
@@ -31,20 +31,6 @@ endif
 #######################################
 # RULES
 #######################################
-
-#######################################
-# all
-HELP +=\n\n**all**: runs files and npm-install rules
-.DEFAULT_GOAL := all
-.PHONY: all
-all: files npm-install
-
-#######################################
-# clean
-HELP +=\n\n**clean**: removes files that were added by 'all' rule using the manifset file in `DIR_CACHE`
-.PHONY: clean
-clean:
-	rm --interactive=once $(_mnf_files) $(FILE_COMMIT) $(FILE_MANIFEST)
 
 ######################################
 # INCLUDE
